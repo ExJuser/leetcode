@@ -571,3 +571,15 @@ func isValid(s string) bool {
 	}
 	return len(stack) == 0
 }
+
+func removeDuplicates(s string) string {
+	stack := make([]byte, 0, 1000)
+	for _, char := range s {
+		if len(stack) == 0 || byte(char) != stack[len(stack)-1] {
+			stack = append(stack, byte(char))
+		} else {
+			stack = stack[:len(stack)-1]
+		}
+	}
+	return string(stack)
+}

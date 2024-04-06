@@ -583,3 +583,29 @@ func removeDuplicates(s string) string {
 	}
 	return string(stack)
 }
+
+func evalRPN(tokens []string) int {
+	stack := make([]int, 0, 1000)
+	for _, token := range tokens {
+		if strings.Contains("+-*/", token) {
+			right := stack[len(stack)-1]
+			left := stack[len(stack)-2]
+			stack = stack[:len(stack)-2]
+			temp := 0
+			if token == "+" {
+				temp = left + right
+			} else if token == "-" {
+				temp = left - right
+			} else if token == "*" {
+				temp = left * right
+			} else {
+				temp = left / right
+			}
+			stack = append(stack, temp)
+		} else {
+			num, _ := strconv.Atoi(token)
+			stack = append(stack, num)
+		}
+	}
+	return stack[len(stack)-1]
+}

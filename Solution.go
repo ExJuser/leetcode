@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"container/heap"
 	"math"
 	"os"
 	"slices"
@@ -593,6 +594,52 @@ func maxSlidingWindow(nums []int, k int) (ans []int) {
 		if index >= k-1 {
 			ans = append(ans, nums[queue[0]])
 		}
+	}
+	return
+}
+
+type Pair struct {
+	value int
+	count int
+}
+
+type PairHeap []Pair
+
+func (p *PairHeap) Len() int {
+	return len(*p)
+}
+
+func (p *PairHeap) Less(i, j int) bool {
+	return (*p)[i].count > (*p)[j].count
+}
+
+func (p *PairHeap) Swap(i, j int) {
+	(*p)[i], (*p)[j] = (*p)[j], (*p)[i]
+}
+
+func (p *PairHeap) Push(x any) {
+	*p = append(*p, x.(Pair))
+}
+
+func (p *PairHeap) Pop() any {
+	x := (*p)[len(*p)-1]
+	*p = (*p)[:len(*p)-1]
+	return x
+}
+
+// 前K个高频元素
+func topKFrequent(nums []int, k int) (ans []int) {
+	hp := &PairHeap{}
+	count := make(map[int]int)
+	for _, num := range nums {
+		count[num]++
+	}
+	for value, cnt := range count {
+		heap.Push(hp, Pair{value: value, count: cnt})
+	}
+	for i := 0; i < k; i++ {
+		pair := heap.Pop(hp).(Pair)
+		ans = append(ans, pair.value)
 	}
 	return
 }

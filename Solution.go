@@ -580,9 +580,12 @@ func evalRPN(tokens []string) int {
 func maxSlidingWindow(nums []int, k int) (ans []int) {
 	queue := make([]int, 0)
 	for index, num := range nums {
+		//弹出出了当前窗口的
 		if len(queue) > 0 && index-queue[0] >= k {
 			queue = queue[1:]
 		}
+		//维护单调递减的队列
+		//
 		for len(queue) > 0 && nums[queue[len(queue)-1]] < num {
 			queue = queue[:len(queue)-1]
 		}

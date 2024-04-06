@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"container/heap"
 	"math"
 	"os"
 	"slices"
@@ -149,40 +148,6 @@ func subarraySum(nums []int, k int) int {
 		hash[prefixSum]++
 	}
 	return count
-}
-
-type IntHeap []int
-
-func (h *IntHeap) Len() int {
-	return len(*h)
-}
-
-func (h *IntHeap) Less(i, j int) bool {
-	return (*h)[i] > (*h)[j]
-}
-
-func (h *IntHeap) Swap(i, j int) {
-	(*h)[i], (*h)[j] = (*h)[j], (*h)[i]
-}
-
-func (h *IntHeap) Push(x any) {
-	*h = append(*h, x.(int))
-}
-
-func (h *IntHeap) Pop() any {
-	x := (*h)[len(*h)-1]
-	*h = (*h)[:len(*h)-1]
-	return x
-}
-func maxSlidingWindow(nums []int, k int) (ans []int) {
-	hp := &IntHeap{}
-	*hp = make([]int, k)
-	for i := 0; i <= len(nums)-k; i++ {
-		copy(*hp, nums[i:i+k])
-		heap.Init(hp)
-		ans = append(ans, (*hp)[0])
-	}
-	return
 }
 
 /*
@@ -608,4 +573,23 @@ func evalRPN(tokens []string) int {
 		}
 	}
 	return stack[len(stack)-1]
+}
+
+// 滑动窗口最大值
+// 维护一个单调减的单调队列并时刻弹出已经出了当前滑动窗口的元素
+func maxSlidingWindow(nums []int, k int) (ans []int) {
+	queue := make([]int, 0)
+	for index, num := range nums {
+		if len(queue) > 0 && index-queue[0] >= k {
+			queue = queue[1:]
+		}
+		for len(queue) > 0 && nums[queue[len(queue)-1]] < num {
+			queue = queue[:len(queue)-1]
+		}
+		queue = append(queue, index)
+		if index >= k-1 {
+			ans = append(ans, nums[queue[0]])
+		}
+	}
+	return
 }

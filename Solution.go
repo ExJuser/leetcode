@@ -744,3 +744,97 @@ func minDepth2(root *TreeNode) int {
 	}
 	return height
 }
+
+// 完全二叉树的节点个数
+// 先求二叉树的深度 然后看最后一层有多少节点
+// 可以用层序遍历求解 时间复杂度和空间复杂度都比较高
+//
+//	func countNodes(root *TreeNode) int {
+//		if root == nil {
+//			return 0
+//		}
+//		queue := make([]*TreeNode, 0, 1000)
+//		levels := make([][]int, 0)
+//		queue = append(queue, root)
+//		for len(queue) > 0 {
+//			size := len(queue)
+//			res := make([]int, 0, size)
+//			for i := 0; i < size; i++ {
+//				temp := queue[0]
+//				queue = queue[1:]
+//				res = append(res, temp.Val)
+//				if temp.Left != nil {
+//					queue = append(queue, temp.Left)
+//				}
+//				if temp.Right != nil {
+//					queue = append(queue, temp.Right)
+//				}
+//			}
+//			levels = append(levels, res)
+//		}
+//		return int(math.Pow(2, float64(len(levels)-1))) + len(levels[len(levels)-1]) - 1
+//	}
+
+func countNodes(root *TreeNode) int {
+	var dfs func(node *TreeNode) int
+	dfs = func(node *TreeNode) int {
+		if node == nil {
+			return 0
+		}
+		var leftHeight, rightHeight int
+		temp := node.Left
+		for ; temp != nil; temp = temp.Left {
+			leftHeight++
+		}
+		temp = node.Right
+		for ; temp != nil; temp = temp.Right {
+			rightHeight++
+		}
+		if leftHeight == rightHeight {
+			return int(math.Pow(2, float64(leftHeight+1))) - 1
+		}
+		return countNodes(node.Left) + countNodes(node.Right) + 1
+	}
+	return dfs(root)
+}
+func Abs(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
+}
+
+// 平衡二叉树 两次递归 比较麻烦
+//func isBalanced(root *TreeNode) bool {
+//	var dfs func(node *TreeNode) bool
+//	dfs = func(node *TreeNode) bool {
+//		if node == nil {
+//			return true
+//		}
+//		if Abs(maxDepth(node.Left)-maxDepth(node.Right)) <= 1 {
+//			return dfs(node.Left) && dfs(node.Right)
+//		} else {
+//			return false
+//		}
+//	}
+//	return dfs(root)
+//}
+
+func isBalanced(root *TreeNode) bool {
+	var dfs func(node *TreeNode) int
+	dfs = func(node *TreeNode) int {
+		if node == nil {
+			return 0
+		}
+		leftHeight := dfs(node.Left)
+		if leftHeight == -1 {
+			return -1
+		}
+		rightHeight := dfs(node.Right)
+		if rightHeight == -1 || Abs(leftHeight-rightHeight) > 1 {
+			return -1
+		}
+		return max(leftHeight, rightHeight) + 1
+	}
+	return dfs(root) != -1
+}

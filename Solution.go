@@ -838,3 +838,54 @@ func isBalanced(root *TreeNode) bool {
 	}
 	return dfs(root) != -1
 }
+
+// 二叉树的所有路径 初阶回溯
+func binaryTreePaths(root *TreeNode) (ans []string) {
+	var dfs func(node *TreeNode, path []string)
+	dfs = func(node *TreeNode, path []string) {
+		if node == nil {
+			return
+		}
+		path = append(path, strconv.Itoa(node.Val))
+		if node.Left == nil && node.Right == nil {
+			ans = append(ans, strings.Join(path, "->"))
+		}
+		dfs(node.Left, path)
+		dfs(node.Right, path)
+	}
+	dfs(root, []string{})
+	return
+}
+
+// 左叶子之和
+//func sumOfLeftLeaves(root *TreeNode) int {
+//	var dfs func(node *TreeNode) int
+//	dfs = func(node *TreeNode) int {
+//		if node == nil {
+//			return 0
+//		}
+//		//若左子树是叶子结点
+//		if node.Left != nil && node.Left.Left == nil && node.Left.Right == nil {
+//			return node.Left.Val + dfs(node.Right)
+//		}
+//		return dfs(node.Left) + dfs(node.Right)
+//	}
+//	return dfs(root)
+//}
+
+func sumOfLeftLeaves(root *TreeNode) (ans int) {
+	var dfs func(node *TreeNode)
+	dfs = func(node *TreeNode) {
+		if node == nil {
+			return
+		}
+		//左子树是叶子结点
+		if node.Left != nil && node.Left.Left == nil && node.Left.Right == nil {
+			ans += node.Left.Val
+		}
+		dfs(node.Left)
+		dfs(node.Right)
+	}
+	dfs(root)
+	return
+}

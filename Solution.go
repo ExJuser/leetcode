@@ -688,3 +688,59 @@ func maxDepth(root *TreeNode) int {
 	}
 	return dfs(root)
 }
+
+// 二叉树的最小深度
+func minDepth(root *TreeNode) int {
+	var dfs func(node *TreeNode) int
+	dfs = func(node *TreeNode) int {
+		if node == nil {
+			return 0
+		}
+		//如果是叶子结点
+		//if node.Left == nil && node.Right == nil {
+		//	return 1
+		//}
+		//如果左子树为空 应该递归右子树
+		//if node.Left == nil {
+		//	return dfs(node.Right) + 1
+		//}
+		//如果右子树为空 应该递归左子树
+		//if node.Right == nil {
+		//	return dfs(node.Left) + 1
+		//}
+
+		//一步到位其实不好理解 完整的在上面的注释
+		if node.Left == nil || node.Right == nil {
+			return dfs(node.Left) + dfs(node.Right) + 1
+		}
+		return min(dfs(node.Left), dfs(node.Right)) + 1
+	}
+	return dfs(root)
+}
+
+// 用层序遍历实现二叉树的最小深度
+func minDepth2(root *TreeNode) int {
+	queue := make([]*TreeNode, 0, 1000)
+	if root != nil {
+		queue = append(queue, root)
+	}
+	height := 0
+	for len(queue) > 0 {
+		height++
+		size := len(queue)
+		for i := 0; i < size; i++ {
+			temp := queue[0]
+			queue = queue[1:]
+			if temp.Left == nil && temp.Right == nil {
+				return height
+			}
+			if temp.Left != nil {
+				queue = append(queue, temp.Left)
+			}
+			if temp.Right != nil {
+				queue = append(queue, temp.Right)
+			}
+		}
+	}
+	return height
+}

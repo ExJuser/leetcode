@@ -643,3 +643,48 @@ func topKFrequent(nums []int, k int) (ans []int) {
 	}
 	return
 }
+
+// 翻转二叉树
+func invertTree(root *TreeNode) *TreeNode {
+	var dfs func(node *TreeNode)
+	dfs = func(node *TreeNode) {
+		if node == nil {
+			return
+		}
+		node.Left, node.Right = node.Right, node.Left
+		dfs(node.Left)
+		dfs(node.Right)
+	}
+	dfs(root)
+	return root
+}
+
+// 对称二叉树
+func isSymmetric(root *TreeNode) bool {
+	var dfs func(left, right *TreeNode) bool
+	dfs = func(left, right *TreeNode) bool {
+		//if left == nil && right == nil {
+		//	return true
+		//}
+		//if left == nil || right == nil {
+		//	return false
+		//}
+		if left == nil || right == nil {
+			return left == right
+		}
+		return left.Val == right.Val && dfs(left.Left, right.Right) && dfs(left.Right, right.Left)
+	}
+	return dfs(root.Left, root.Right)
+}
+
+// 二叉树的最大深度
+func maxDepth(root *TreeNode) int {
+	var dfs func(node *TreeNode) int
+	dfs = func(node *TreeNode) int {
+		if node == nil {
+			return 0
+		}
+		return max(dfs(node.Left), dfs(node.Right)) + 1
+	}
+	return dfs(root)
+}

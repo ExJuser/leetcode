@@ -1,6 +1,8 @@
 package main
 
-import "math"
+import (
+	"math"
+)
 
 func getMaximum(nums []int) (int, int) {
 	maximum := math.MinInt8
@@ -62,4 +64,60 @@ func searchBST(root *TreeNode, val int) *TreeNode {
 		}
 	}
 	return dfs(root)
+}
+func getLeft(node *TreeNode) int {
+	for node.Left != nil {
+		node = node.Left
+	}
+	return node.Val
+}
+func getRight(node *TreeNode) int {
+	for node.Right != nil {
+		node = node.Right
+	}
+	return node.Val
+}
+
+// 验证二叉搜索树
+//func isValidBST(root *TreeNode) bool {
+//	//一个节点需要小于右子树的任意一个节点
+//	//也就是说需要小于右边的最小的
+//	//同理 需要大于左边的最大的
+//	var dfs func(node *TreeNode) bool
+//	dfs = func(node *TreeNode) bool {
+//		if node == nil {
+//			return true
+//		}
+//		//如果左子树和右子树都是合法的二叉搜索树 再去下一步判断
+//		//否则直接返回false
+//		if dfs(node.Left) && dfs(node.Right) {
+//			//当前节点需要小于右边的最小的 大于左边的最大的
+//			return (node.Right == nil || node.Val < getLeft(node.Right)) && (node.Left == nil || node.Val > getRight(node.Left))
+//		} else {
+//			return false
+//		}
+//	}
+//	return dfs(root)
+//}
+
+// 二叉搜索树的中序遍历为升序
+func isValidBST(root *TreeNode) bool {
+	sequences := make([]int, 0, 1000)
+	var dfs func(node *TreeNode)
+	dfs = func(node *TreeNode) {
+		if node == nil {
+			return
+		}
+		dfs(node.Left)
+		sequences = append(sequences, node.Val)
+		dfs(node.Right)
+	}
+	dfs(root)
+	//判断sequences是否严格递增
+	for i := 1; i < len(sequences); i++ {
+		if !(sequences[i] > sequences[i-1]) {
+			return false
+		}
+	}
+	return true
 }

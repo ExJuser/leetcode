@@ -6,6 +6,7 @@ import (
 	"math"
 	"os"
 	"slices"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -888,4 +889,63 @@ func sumOfLeftLeaves(root *TreeNode) (ans int) {
 	}
 	dfs(root)
 	return
+}
+
+// 正整数和负整数的最大计数
+// 找到第一个>=0的 找到第一个>0的
+func maximumCount(nums []int) int {
+	negative := sort.SearchInts(nums, 0)
+	positive := sort.Search(len(nums)-negative, func(i int) bool {
+		return nums[i+negative] > 0
+	})
+	return max(len(nums)-negative-positive, negative)
+}
+
+// 找树左下角的值 层序遍历解法
+//func findBottomLeftValue(root *TreeNode) int {
+//	levels := levelOrder(root)
+//	return levels[len(levels)-1][0]
+//}
+
+//提前得到树的最大深度 第一个达到最大深度的一定是左下角
+//func findBottomLeftValue(root *TreeNode) int {
+//	depth := maxDepth(root)
+//	ans := math.MaxInt
+//	var dfs func(node *TreeNode, height int)
+//	dfs = func(node *TreeNode, height int) {
+//		if node == nil || ans != math.MaxInt {
+//			return
+//		}
+//		if height < depth {
+//			dfs(node.Left, height+1)
+//			dfs(node.Right, height+1)
+//		} else if height == depth {
+//			ans = node.Val
+//			return
+//		} else {
+//			return
+//		}
+//	}
+//	dfs(root, 1)
+//	return ans
+//}
+
+// 如果深度变大 第一个到达的一定是最左边的节点
+// 深度不变大 维持不变
+func findBottomLeftValue(root *TreeNode) (ans int) {
+	curMaxDepth := 0
+	var dfs func(node *TreeNode, depth int)
+	dfs = func(node *TreeNode, depth int) {
+		if node == nil {
+			return
+		}
+		if depth > curMaxDepth {
+			ans = node.Val
+			curMaxDepth = depth
+		}
+		dfs(node.Left, depth+1)
+		dfs(node.Right, depth+1)
+	}
+	dfs(root, 1)
+	return ans
 }

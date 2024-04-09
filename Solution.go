@@ -949,3 +949,34 @@ func findBottomLeftValue(root *TreeNode) (ans int) {
 	dfs(root, 1)
 	return ans
 }
+
+// 路径总和
+func hasPathSum(root *TreeNode, targetSum int) bool {
+	var dfs func(node *TreeNode, sum int) bool
+	dfs = func(node *TreeNode, sum int) bool {
+		if node == nil {
+			return false
+		}
+		sum += node.Val
+		if node.Left == nil && node.Right == nil {
+			return sum == targetSum
+		}
+		return dfs(node.Left, sum) || dfs(node.Right, sum)
+	}
+	return dfs(root, 0)
+}
+
+// 从中序和后序遍历序列构造二叉树
+func buildTree(inorder []int, postorder []int) *TreeNode {
+	if len(postorder) == 0 {
+		return nil
+	}
+	//后序遍历的最后一个作为 "根节点"
+	rootVal := postorder[len(postorder)-1]
+	index := slices.Index(inorder, rootVal)
+	return &TreeNode{
+		Val:   rootVal,
+		Left:  buildTree(inorder[:index], postorder[:index]),
+		Right: buildTree(inorder[index+1:], postorder[index:len(postorder)-1]),
+	}
+}

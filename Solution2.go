@@ -196,3 +196,24 @@ func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
 	}
 	return dfs(root)
 }
+
+// 如果二叉树是二叉搜索树
+func lowestCommonAncestor2(root, p, q *TreeNode) *TreeNode {
+	//二叉搜索树可以通过值来判断 当前节点的值如果比pq都小 递归右子树
+	//如果都大 递归左子树
+	//处于二者之间 直接返回
+	var dfs func(node *TreeNode) *TreeNode
+	dfs = func(node *TreeNode) *TreeNode {
+		if node == nil || node == p || node == q {
+			return node
+		}
+		if node.Val < p.Val && node.Val < q.Val {
+			return dfs(node.Right)
+		} else if node.Val > p.Val && node.Val > q.Val {
+			return dfs(node.Left)
+		} else {
+			return node
+		}
+	}
+	return dfs(root)
+}

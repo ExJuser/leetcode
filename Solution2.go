@@ -217,3 +217,42 @@ func lowestCommonAncestor2(root, p, q *TreeNode) *TreeNode {
 	}
 	return dfs(root)
 }
+
+// 二叉搜索树的插入操作
+//
+//	func insertIntoBST(root *TreeNode, val int) *TreeNode {
+//		var dfs func(node *TreeNode)
+//		dfs = func(node *TreeNode) {
+//			if val > node.Val {
+//				if node.Right == nil {
+//					node.Right = &TreeNode{Val: val}
+//				} else {
+//					dfs(node.Right)
+//				}
+//			} else {
+//				if node.Left == nil {
+//					node.Left = &TreeNode{Val: val}
+//				} else {
+//					dfs(node.Left)
+//				}
+//			}
+//		}
+//		if root == nil {
+//			return &TreeNode{Val: val}
+//		}
+//		dfs(root)
+//		return root
+//	}
+//
+// 更简单的方法
+func insertIntoBST(root *TreeNode, val int) *TreeNode {
+	if root == nil {
+		return &TreeNode{Val: val}
+	}
+	if root.Val > val {
+		root.Left = insertIntoBST(root.Left, val)
+	} else {
+		root.Right = insertIntoBST(root.Right, val)
+	}
+	return root
+}

@@ -121,3 +121,78 @@ func isValidBST(root *TreeNode) bool {
 	}
 	return true
 }
+
+// 二叉搜索树的最小绝对差
+func getMinimumDifference(root *TreeNode) int {
+	//中序遍历 时刻维护上一个节点的值
+	ans := math.MaxInt
+	prev := -1
+	var dfs func(node *TreeNode)
+	dfs = func(node *TreeNode) {
+		if node == nil {
+			return
+		}
+		dfs(node.Left)
+		if prev != -1 {
+			ans = min(ans, Abs(node.Val-prev))
+		}
+		prev = node.Val
+		dfs(node.Right)
+	}
+	dfs(root)
+	return ans
+}
+
+// 二叉搜索树中的众数
+func findMode(root *TreeNode) (ans []int) {
+	prev := -1
+	timesCnt := 1
+	maxTimes := 1
+	var dfs func(node *TreeNode)
+	dfs = func(node *TreeNode) {
+		if node == nil {
+			return
+		}
+		dfs(node.Left)
+		if node.Val == prev {
+			timesCnt++
+		} else {
+			timesCnt = 1
+		}
+		if timesCnt == maxTimes {
+			ans = append(ans, node.Val)
+		} else if timesCnt > maxTimes {
+			ans = []int{node.Val}
+			maxTimes = timesCnt
+		}
+		prev = node.Val
+		dfs(node.Right)
+	}
+	dfs(root)
+	return
+}
+
+// 二叉树的最近公共祖先
+func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
+	var dfs func(node *TreeNode) *TreeNode
+	dfs = func(node *TreeNode) *TreeNode {
+		if node == nil || node == p || node == q {
+			return node
+		}
+		//如果递归左子树的结果不为空 说明p或者q在左子树
+		left := dfs(node.Left)
+		//如果递归右子树的结果不为空 说明p或者q在右子树
+		right := dfs(node.Right)
+		//两个都不为空 说明一个在左一个在右 直接返回当前节点就是lca
+		if left != nil && right != nil {
+			return node
+		}
+		//如果左子树为空 两个节点都在右子树
+		if left == nil {
+			return right
+		}
+		//两个节点都在左子树
+		return left
+	}
+	return dfs(root)
+}

@@ -256,3 +256,27 @@ func insertIntoBST(root *TreeNode, val int) *TreeNode {
 	}
 	return root
 }
+
+// 删除二叉搜索树中的节点
+func deleteNode(root *TreeNode, key int) *TreeNode {
+	if root == nil {
+		return root
+	}
+	if root.Val == key {
+		if root.Left != nil {
+			temp := root.Left
+			for temp.Right != nil {
+				temp = temp.Right
+			}
+			temp.Right = root.Right
+			return root.Left
+		}
+		return root.Right
+	}
+	if root.Val < key {
+		root.Right = deleteNode(root.Right, key)
+	} else if root.Val > key {
+		root.Left = deleteNode(root.Left, key)
+	}
+	return root
+}

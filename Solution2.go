@@ -312,3 +312,21 @@ func sortedArrayToBST(nums []int) *TreeNode {
 		Right: sortedArrayToBST(nums[mid+1:]),
 	}
 }
+
+// 二叉搜索树转换为累加树
+func convertBST(root *TreeNode) *TreeNode {
+	sum := 0
+	//中序遍历 倒着返回
+	var dfs func(node *TreeNode)
+	dfs = func(node *TreeNode) {
+		if node == nil {
+			return
+		}
+		dfs(node.Right)
+		sum += node.Val
+		node.Val = sum
+		dfs(node.Left)
+	}
+	dfs(root)
+	return root
+}

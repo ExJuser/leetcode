@@ -280,3 +280,22 @@ func deleteNode(root *TreeNode, key int) *TreeNode {
 	}
 	return root
 }
+
+// 修建二叉搜索树
+func trimBST(root *TreeNode, low int, high int) *TreeNode {
+	//如果当前节点小于low 其左子树更小 也需要删掉 直接返回其右子树的修剪结果
+	//如果当前节点大于high 其右子树更大 也需要删掉
+	//如果当前节点处于两者之间 当前节点不需要删除 但是需要分别递归删除其左右子树
+	if root == nil {
+		return nil
+	}
+	if root.Val < low {
+		return trimBST(root.Right, low, high)
+	} else if root.Val > high {
+		return trimBST(root.Left, low, high)
+	} else {
+		root.Left = trimBST(root.Left, low, high)
+		root.Right = trimBST(root.Right, low, high)
+		return root
+	}
+}

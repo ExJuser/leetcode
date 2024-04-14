@@ -279,22 +279,22 @@ func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 
 你应当 保留 两个分区中每个节点的初始相对位置。
 */
-func partition(head *ListNode, x int) *ListNode {
-	leftDummy := &ListNode{}
-	rightDummy := &ListNode{}
-	p, q := leftDummy, rightDummy
-	for ; head != nil; head = head.Next {
-		if head.Val < x {
-			p.Next = &ListNode{Val: head.Val}
-			p = p.Next
-		} else {
-			q.Next = &ListNode{Val: head.Val}
-			q = q.Next
-		}
-	}
-	p.Next = rightDummy.Next
-	return leftDummy.Next
-}
+//func partition(head *ListNode, x int) *ListNode {
+//	leftDummy := &ListNode{}
+//	rightDummy := &ListNode{}
+//	p, q := leftDummy, rightDummy
+//	for ; head != nil; head = head.Next {
+//		if head.Val < x {
+//			p.Next = &ListNode{Val: head.Val}
+//			p = p.Next
+//		} else {
+//			q.Next = &ListNode{Val: head.Val}
+//			q = q.Next
+//		}
+//	}
+//	p.Next = rightDummy.Next
+//	return leftDummy.Next
+//}
 
 // MinStack
 /**

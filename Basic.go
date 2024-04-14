@@ -1,9 +1,5 @@
 package main
 
-import (
-	"fmt"
-)
-
 // SelectionSort 选择排序
 // 每一轮都找到一个最小的数
 func SelectionSort(nums []int) {
@@ -124,9 +120,32 @@ func merge(nums []int, left, mid, right int) {
 		nums[left+i] = temp[i]
 	}
 }
+func quickSort(nums []int) {
+	quickSortHelper(nums, 0, len(nums)-1)
+}
+func quickSortHelper(nums []int, left, right int) {
+	if left >= right {
+		return
+	}
+	pivot := partition(nums, left, right)
+	quickSortHelper(nums, left, pivot-1)
+	quickSortHelper(nums, pivot+1, right)
+}
 
-func main() {
-	nums := []int{1, 5, 6, 7, 2, 6, 4, 5, 9}
-	MergeSort(nums)
-	fmt.Println(nums)
+// 直接把最右边的数作为pivot
+func partition(nums []int, left, right int) int {
+	pivot := right
+	index := left
+	//因此不需要遍历到最后一个数
+	for i := left; i < right; i++ {
+		if nums[i] < nums[pivot] {
+			nums[i], nums[index] = nums[index], nums[i]
+			index++
+		}
+	}
+	//没有遍历到的那个数和counter位置的数交换
+	nums[index], nums[pivot] = nums[pivot], nums[index]
+	//这样子counter左边的数都比counter小 右边的数都比counter大
+	//且counter位置的数已经是最终位置了
+	return index
 }

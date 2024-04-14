@@ -1,6 +1,7 @@
 package main
 
 import (
+	"container/heap"
 	"math"
 )
 
@@ -329,4 +330,49 @@ func convertBST(root *TreeNode) *TreeNode {
 	}
 	dfs(root)
 	return root
+}
+
+type NodeHeap []*ListNode
+
+func (n *NodeHeap) Len() int {
+	return len(*n)
+}
+
+func (n *NodeHeap) Less(i, j int) bool {
+	return (*n)[i].Val < (*n)[j].Val
+}
+
+func (n *NodeHeap) Swap(i, j int) {
+	(*n)[i], (*n)[j] = (*n)[j], (*n)[i]
+}
+
+func (n *NodeHeap) Push(x any) {
+	*n = append(*n, x.(*ListNode))
+}
+
+func (n *NodeHeap) Pop() any {
+	x := (*n)[n.Len()-1]
+	*n = (*n)[:n.Len()-1]
+	return x
+}
+
+// 堆排序解法
+func mergeKLists(lists []*ListNode) *ListNode {
+	dummy := &ListNode{}
+	cur := dummy
+	hp := &NodeHeap{}
+	for _, list := range lists {
+		if list != nil {
+			heap.Push(hp, list)
+		}
+	}
+	for hp.Len() > 0 {
+		popNode := heap.Pop(hp).(*ListNode)
+		cur.Next = &ListNode{Val: popNode.Val}
+		if popNode.Next != nil {
+			heap.Push(hp, popNode.Next)
+		}
+		cur = cur.Next
+	}
+	return dummy.Next
 }

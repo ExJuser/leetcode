@@ -466,6 +466,7 @@ func partition2(s string) (ans [][]string) {
 		}
 		//如果是最后一个位置 必须切割
 		if i < len(s)-1 {
+			//意思就是如果还没有到最后一个位置 就可以跳过不切割
 			dfs(pre, i+1, path)
 		}
 		//切割 先判断能否构成回文串
@@ -498,5 +499,86 @@ func partition3(s string) (ans [][]string) {
 		}
 	}
 	dfs(0, []string{})
+	return
+}
+
+// 组合总和3
+// k个数相加和为n
+// 枚举每一个选择的数
+//
+//	func combinationSum3(k int, n int) (ans [][]int) {
+//		var dfs func(i int, path []int, sum int)
+//		dfs = func(i int, path []int, sum int) {
+//			if sum == n && len(path) == k {
+//				ans = append(ans, append([]int{}, path...))
+//			}
+//			for j := i; j <= 9; j++ {
+//				path = append(path, j)
+//				dfs(j+1, path, sum+j)
+//				path = path[:len(path)-1]
+//			}
+//		}
+//		dfs(1, []int{}, 0)
+//		return
+//	}
+//
+// 每一个数选还是不选
+func combinationSum3(k int, n int) (ans [][]int) {
+	var dfs func(i int, path []int, sum int)
+	dfs = func(i int, path []int, sum int) {
+		if len(path) == k {
+			if sum == n {
+				ans = append(ans, append([]int{}, path...))
+			}
+			return
+		}
+		dfs(i+1, path, sum)
+		path = append(path, i)
+		dfs(i+1, path, sum+i)
+		path = path[:len(path)-1]
+	}
+	dfs(1, []int{}, 0)
+	return
+}
+
+// 组合总和
+//
+//	func combinationSum(candidates []int, target int) (ans [][]int) {
+//		var dfs func(i, sum int, path []int)
+//		dfs = func(i, sum int, path []int) {
+//			if sum > target || i == len(candidates) {
+//				return
+//			}
+//			if sum == target {
+//				ans = append(ans, append([]int{}, path...))
+//				return
+//			}
+//			dfs(i+1, sum, path)
+//			path = append(path, candidates[i])
+//			dfs(i, sum+candidates[i], path)
+//			path = path[:len(path)-1]
+//		}
+//		dfs(0, 0, []int{})
+//		return
+//	}
+//
+// 枚举每一个选择的数
+func combinationSum(candidates []int, target int) (ans [][]int) {
+	var dfs func(start, sum int, path []int)
+	dfs = func(start, sum int, path []int) {
+		if sum >= target || start == len(candidates) {
+			if sum == target {
+				ans = append(ans, append([]int{}, path...))
+			}
+			return
+		}
+		//枚举每一个选择的数
+		for i := start; i < len(candidates); i++ {
+			path = append(path, candidates[i])
+			dfs(i, sum+candidates[i], path)
+			path = path[:len(path)-1]
+		}
+	}
+	dfs(0, 0, []int{})
 	return
 }

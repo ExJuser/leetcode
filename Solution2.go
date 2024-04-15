@@ -376,3 +376,72 @@ func mergeKLists(lists []*ListNode) *ListNode {
 	}
 	return dummy.Next
 }
+
+// 电话号码的字母组合
+func letterCombinations(digits string) (ans []string) {
+	mapping := []string{"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"}
+	var dfs func(i int, path []byte)
+	dfs = func(i int, path []byte) {
+		if i == len(digits) {
+			ans = append(ans, string(path))
+			return
+		}
+		for _, ch := range mapping[digits[i]-'0'] {
+			path = append(path, byte(ch))
+			dfs(i+1, path)
+			//恢复现场
+			path = path[:len(path)-1]
+		}
+	}
+	if len(digits) == 0 {
+		return
+	}
+	dfs(0, []byte{})
+	return
+}
+
+// 组合: 从1-n中选取k个数
+func combine(n int, k int) (ans [][]int) {
+	//i代表当前从哪开始选择数字
+	var dfs func(start int, path []int)
+	dfs = func(start int, path []int) {
+		if len(path) == k {
+			ans = append(ans, append([]int{}, path...))
+			return
+		}
+		//从start开始向下选择
+		for i := start; i <= n; i++ {
+			path = append(path, i)
+			dfs(i+1, path)
+			path = path[:len(path)-1]
+		}
+	}
+	dfs(1, []int{})
+	return
+}
+
+// 子集问题
+func subsets(nums []int) (ans [][]int) {
+	var dfs func(start int, path []int)
+	dfs = func(start int, path []int) {
+		//采用枚举选择的数字时 每一步都是答案
+		//而采用选或者不选模式时 一直到最后才是答案 因为每一步都可以不选
+		ans = append(ans, append([]int{}, path...))
+		if start == len(nums) {
+			return
+		}
+		//选或者不选
+		//dfs(start+1, path)
+		//path = append(path, nums[start])
+		//dfs(start+1, path)
+		//path = path[:len(path)-1]
+		//枚举选择的数字
+		for i := start; i < len(nums); i++ {
+			path = append(path, nums[i])
+			dfs(i+1, path)
+			path = path[:len(path)-1]
+		}
+	}
+	dfs(0, []int{})
+	return
+}

@@ -445,3 +445,58 @@ func subsets(nums []int) (ans [][]int) {
 	dfs(0, []int{})
 	return
 }
+
+func isPalindrome(str string) bool {
+	for i := 0; i < len(str)/2; i++ {
+		if str[i] != str[len(str)-i-1] {
+			return false
+		}
+	}
+	return true
+}
+
+// 分割回文串
+// 每一个位置都有切割或者不切割两种选择
+func partition2(s string) (ans [][]string) {
+	var dfs func(pre, i int, path []string)
+	dfs = func(pre, i int, path []string) {
+		if i == len(s) {
+			ans = append(ans, append([]string{}, path...))
+			return
+		}
+		//如果是最后一个位置 必须切割
+		if i < len(s)-1 {
+			dfs(pre, i+1, path)
+		}
+		//切割 先判断能否构成回文串
+		if isPalindrome(s[pre : i+1]) {
+			path = append(path, s[pre:i+1])
+			dfs(i+1, i+1, path)
+			path = path[:len(path)-1]
+		}
+	}
+	dfs(0, 0, []string{})
+	return
+}
+
+// 枚举每一个切割的位置
+func partition3(s string) (ans [][]string) {
+	var dfs func(start int, path []string)
+	dfs = func(start int, path []string) {
+		if start == len(s) {
+			ans = append(ans, append([]string{}, path...))
+			return
+		}
+		//枚举每一个切割的位置
+		for i := start; i < len(s); i++ {
+			t := s[start : i+1]
+			if isPalindrome(t) {
+				path = append(path, t)
+				dfs(i+1, path)
+				path = path[:len(path)-1]
+			}
+		}
+	}
+	dfs(0, []string{})
+	return
+}

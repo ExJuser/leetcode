@@ -664,6 +664,7 @@ func subsetsWithDup(nums []int) (ans [][]int) {
 			return
 		}
 		for i := start; i < len(nums); i++ {
+			//这种去重方式要求序列有序
 			if i > start && nums[i] == nums[i-1] {
 				continue
 			}
@@ -728,5 +729,69 @@ func combinationSum2(candidates []int, target int) (ans [][]int) {
 		}
 	}
 	dfs(0, 0, []int{})
+	return
+}
+
+// 非递减子序列
+// 暴力去重
+//
+//	func findSubsequences(nums []int) (ans [][]int) {
+//		mp := make(map[string]struct{})
+//		var dfs func(start int, path []int)
+//		dfs = func(start int, path []int) {
+//			if start == len(nums) {
+//				if len(path) >= 2 {
+//					bytes, _ := json.Marshal(path)
+//					key := string(bytes)
+//					if _, ok := mp[key]; !ok {
+//						mp[key] = struct{}{}
+//						ans = append(ans, append([]int{}, path...))
+//					}
+//				}
+//				return
+//			}
+//			//不选
+//			dfs(start+1, path)
+//			//选
+//			if len(path) == 0 || nums[start] >= path[len(path)-1] {
+//				path = append(path, nums[start])
+//				dfs(start+1, path)
+//				path = path[:len(path)-1]
+//			}
+//		}
+//		dfs(0, []int{})
+//		return
+//	}
+//
+// 非递减子序列
+// 高效去重
+func findSubsequences(nums []int) (ans [][]int) {
+	var dfs func(start int, path []int)
+	dfs = func(start int, path []int) {
+		if len(path) >= 2 {
+			ans = append(ans, append([]int{}, path...))
+		}
+		if start == len(nums) {
+			return
+		}
+		for i := start; i < len(nums); i++ {
+			//非常关键的去重逻辑
+			//假设存在序列4677
+			//假设第一个元素4已经确定 for循环遍历677
+			//此时start=1
+			//遍历到第二个7的时候 nums[start:i]=nums[1:3]=[6,7]
+			//因此contains方法返回true 存在重复 7已经在之前出现过
+			//画出树状图就可以很清晰的看出重复的地方
+			if len(path) == 0 || nums[i] >= path[len(path)-1] {
+				if slices.Contains(nums[start:i], nums[i]) {
+					continue
+				}
+				path = append(path, nums[i])
+				dfs(i+1, path)
+				path = path[:len(path)-1]
+			}
+		}
+	}
+	dfs(0, []int{})
 	return
 }

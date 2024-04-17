@@ -795,3 +795,26 @@ func findSubsequences(nums []int) (ans [][]int) {
 	dfs(0, []int{})
 	return
 }
+
+// 全排列
+func permute(nums []int) (ans [][]int) {
+	used := make([]bool, len(nums))
+	var dfs func(path []int)
+	dfs = func(path []int) {
+		if len(path) == len(nums) {
+			ans = append(ans, append([]int{}, path...))
+			return
+		}
+		for i := 0; i < len(nums); i++ {
+			if !used[i] {
+				path = append(path, nums[i])
+				used[i] = true
+				dfs(path)
+				path = path[:len(path)-1]
+				used[i] = false
+			}
+		}
+	}
+	dfs([]int{})
+	return
+}

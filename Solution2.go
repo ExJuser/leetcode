@@ -2,7 +2,6 @@ package main
 
 import (
 	"container/heap"
-	"encoding/json"
 	"math"
 	"slices"
 	"strconv"
@@ -629,30 +628,53 @@ func restoreIpAddresses(s string) (ans []string) {
 // 子集2
 // 返回整数数组所有可能的子集
 // 如何去重:①序列化后暴力去重
+//func subsetsWithDup(nums []int) (ans [][]int) {
+//	mp := make(map[string]struct{})
+//	slices.Sort(nums)
+//	var dfs func(start int, path []int)
+//	dfs = func(start int, path []int) {
+//		if start == len(nums) {
+//			bytes, _ := json.Marshal(path)
+//			key := string(bytes)
+//			if _, ok := mp[key]; !ok {
+//				ans = append(ans, append([]int{}, path...))
+//				mp[key] = struct{}{}
+//			}
+//			return
+//		}
+//		dfs(start+1, path)
+//		path = append(path, nums[start])
+//		dfs(start+1, path)
+//		path = path[:len(path)-1]
+//	}
+//	dfs(0, []int{})
+//	return
+//}
+
+// 子集2
+// 返回整数数组所有可能的子集
+// 如何去重:②高效去重
 func subsetsWithDup(nums []int) (ans [][]int) {
-	mp := make(map[string]struct{})
 	slices.Sort(nums)
 	var dfs func(start int, path []int)
 	dfs = func(start int, path []int) {
+		//不是选或者不选的模式 每一步都需要收集答案
+		ans = append(ans, append([]int{}, path...))
 		if start == len(nums) {
-			bytes, _ := json.Marshal(path)
-			key := string(bytes)
-			if _, ok := mp[key]; !ok {
-				ans = append(ans, append([]int{}, path...))
-				mp[key] = struct{}{}
-			}
 			return
 		}
-		dfs(start+1, path)
-		path = append(path, nums[start])
-		dfs(start+1, path)
-		path = path[:len(path)-1]
+		for i := start; i < len(nums); i++ {
+			if i > start && nums[i] == nums[i-1] {
+				continue
+			}
+			path = append(path, nums[i])
+			dfs(i+1, path)
+			path = path[:len(path)-1]
+		}
 	}
 	dfs(0, []int{})
 	return
 }
-
-//
 
 //这种去重方式会超时
 //func combinationSum2(candidates []int, target int) (ans [][]int) {
@@ -684,3 +706,27 @@ func subsetsWithDup(nums []int) (ans [][]int) {
 //	dfs([]int{}, 0, 0)
 //	return
 //}
+
+// 组合总和2
+func combinationSum2(candidates []int, target int) (ans [][]int) {
+	slices.Sort(candidates)
+	var dfs func(i, sum int, path []int)
+	dfs = func(i, sum int, path []int) {
+		if sum >= target {
+			if sum == target {
+				ans = append(ans, append([]int{}, path...))
+			}
+			return
+		}
+		for j := i; j < len(candidates); j++ {
+			if j > i && candidates[j] == candidates[j-1] {
+				continue
+			}
+			path = append(path, candidates[j])
+			dfs(j+1, sum+candidates[j], path)
+			path = path[:len(path)-1]
+		}
+	}
+	dfs(0, 0, []int{})
+	return
+}

@@ -2,7 +2,11 @@ package main
 
 import (
 	"container/heap"
+	"encoding/json"
 	"math"
+	"slices"
+	"strconv"
+	"strings"
 )
 
 func getMaximum(nums []int) (int, int) {
@@ -582,3 +586,101 @@ func combinationSum(candidates []int, target int) (ans [][]int) {
 	dfs(0, 0, []int{})
 	return
 }
+
+// 复原IP地址
+func restoreIpAddresses(s string) (ans []string) {
+	var dfs func(start, length int, path []string)
+	var isOK func(str string) bool
+	dfs = func(start, length int, path []string) {
+		if len(path) > 4 {
+			return
+		}
+		if start == len(s) {
+			if len(path) == 4 {
+				ans = append(ans, strings.Join(path, "."))
+			}
+			return
+		}
+		//不添加
+		if start+length < len(s) {
+			dfs(start, length+1, path)
+		}
+		//添加前先判断是否合法
+		if isOK(s[start : start+length]) {
+			path = append(path, s[start:start+length])
+			dfs(start+length, 1, path)
+			path = path[:len(path)-1]
+		}
+	}
+	isOK = func(str string) bool {
+		//如果第一位为0 就必须只是0
+		//如果第一位不是0
+		if str[0] == '0' {
+			return str == "0"
+		} else {
+			num, _ := strconv.Atoi(str)
+			return num > 0 && num <= 255
+		}
+	}
+	dfs(0, 1, []string{})
+	return
+}
+
+// 子集2
+// 返回整数数组所有可能的子集
+// 如何去重:①序列化后暴力去重
+func subsetsWithDup(nums []int) (ans [][]int) {
+	mp := make(map[string]struct{})
+	slices.Sort(nums)
+	var dfs func(start int, path []int)
+	dfs = func(start int, path []int) {
+		if start == len(nums) {
+			bytes, _ := json.Marshal(path)
+			key := string(bytes)
+			if _, ok := mp[key]; !ok {
+				ans = append(ans, append([]int{}, path...))
+				mp[key] = struct{}{}
+			}
+			return
+		}
+		dfs(start+1, path)
+		path = append(path, nums[start])
+		dfs(start+1, path)
+		path = path[:len(path)-1]
+	}
+	dfs(0, []int{})
+	return
+}
+
+//
+
+//这种去重方式会超时
+//func combinationSum2(candidates []int, target int) (ans [][]int) {
+//	slices.Sort(candidates)
+//	mp := make(map[string]struct{})
+//	var dfs func(path []int, i, sum int)
+//	dfs = func(path []int, i, sum int) {
+//		if sum > target {
+//			return
+//		}
+//		if i == len(candidates) {
+//			if sum == target {
+//				bytes, _ := json.Marshal(path)
+//				key := string(bytes)
+//				if _, ok := mp[key]; !ok {
+//					ans = append(ans, append([]int{}, path...))
+//					mp[key] = struct{}{}
+//				}
+//			}
+//			return
+//		}
+//		//不选
+//		dfs(path, i+1, sum)
+//		//选
+//		path = append(path, candidates[i])
+//		dfs(path, i+1, sum+candidates[i])
+//		path = path[:len(path)-1]
+//	}
+//	dfs([]int{}, 0, 0)
+//	return
+//}

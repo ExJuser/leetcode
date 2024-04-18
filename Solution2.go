@@ -818,3 +818,30 @@ func permute(nums []int) (ans [][]int) {
 	dfs([]int{})
 	return
 }
+
+// 全排列2
+func permuteUnique(nums []int) (ans [][]int) {
+	used := make([]bool, len(nums))
+	slices.Sort(nums)
+	var dfs func(path []int)
+	dfs = func(path []int) {
+		if len(path) == len(nums) {
+			ans = append(ans, append([]int{}, path...))
+			return
+		}
+		for i := 0; i < len(nums); i++ {
+			if !used[i] {
+				if i > 0 && nums[i] == nums[i-1] && !used[i-1] {
+					continue
+				}
+				path = append(path, nums[i])
+				used[i] = true
+				dfs(path)
+				path = path[:len(path)-1]
+				used[i] = false
+			}
+		}
+	}
+	dfs([]int{})
+	return
+}

@@ -845,3 +845,64 @@ func permuteUnique(nums []int) (ans [][]int) {
 	dfs([]int{})
 	return
 }
+
+// N皇后
+// 确实变强了不少 二刷一遍过
+func solveNQueens(n int) (ans [][]string) {
+	var (
+		initPath func(n int) [][]string
+		//i表示第几个皇后/放在第几行 path代表二维的棋盘
+		dfs func(i int, path [][]string)
+		//将二维棋盘转化为字符串数组形式 每一行对应一个形如"..Q."的字符串
+		//用strings.Join实现
+		pathToString func(path [][]string) []string
+		//检查皇后之间是否存在冲突
+		//不能在同行同列 不能在斜线上 根据新皇后的位置快速判断是否存在冲突
+		isLegal func(path [][]string, i, j int) bool
+	)
+	initPath = func(n int) (path [][]string) {
+		for i := 0; i < n; i++ {
+			for j := 0; j < n; j++ {
+				path[i][j] = "."
+			}
+		}
+		return
+	}
+	dfs = func(i int, path [][]string) {
+		if i == n {
+			ans = append(ans, pathToString(path))
+			return
+		}
+		for j := 0; j < n; j++ {
+			if isLegal(path, i, j) {
+				path[i][j] = "Q"
+				dfs(i+1, path)
+				path[i][j] = "."
+			}
+		}
+	}
+	pathToString = func(path [][]string) (str []string) {
+		for _, row := range path {
+			str = append(str, strings.Join(row, ""))
+		}
+		return
+	}
+	isLegal = func(path [][]string, i, j int) bool {
+		//不需要检查同行 只需要检查同列
+		for x := 0; x < len(path); x++ {
+			for y := 0; y < len(path); y++ {
+				//同列
+				if y == j && path[x][y] == "Q" {
+					return false
+				}
+				if (x+y == i+j || x-y == i-j) && path[x][y] == "Q" {
+					return false
+				}
+			}
+		}
+		return true
+	}
+	path := initPath(n)
+	dfs(0, path)
+	return
+}

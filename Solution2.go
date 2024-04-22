@@ -906,3 +906,20 @@ func solveNQueens(n int) (ans [][]string) {
 	dfs(0, path)
 	return
 }
+
+// 组合总和4 动态规划
+func combinationSum4(nums []int, target int) int {
+	//exist[i]=1代表i在nums中存在
+	exist := make([]int, 1000)
+	//dp[i]代表nums中可以组成
+	dp := make([]int, target+1)
+	for _, num := range nums {
+		exist[num] = 1
+	}
+	for i := 1; i < target; i++ {
+		for j := 0; j < i; j++ {
+			dp[i] += dp[j] + exist[i-j]
+		}
+	}
+	return dp[target]
+}

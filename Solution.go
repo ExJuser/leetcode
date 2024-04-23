@@ -841,22 +841,22 @@ func isBalanced(root *TreeNode) bool {
 }
 
 // 二叉树的所有路径 初阶回溯
-func binaryTreePaths(root *TreeNode) (ans []string) {
-	var dfs func(node *TreeNode, path []string)
-	dfs = func(node *TreeNode, path []string) {
-		if node == nil {
-			return
-		}
-		path = append(path, strconv.Itoa(node.Val))
-		if node.Left == nil && node.Right == nil {
-			ans = append(ans, strings.Join(path, "->"))
-		}
-		dfs(node.Left, path)
-		dfs(node.Right, path)
-	}
-	dfs(root, []string{})
-	return
-}
+//func binaryTreePaths(root *TreeNode) (ans []string) {
+//	var dfs func(node *TreeNode, path []string)
+//	dfs = func(node *TreeNode, path []string) {
+//		if node == nil {
+//			return
+//		}
+//		path = append(path, strconv.Itoa(node.Val))
+//		if node.Left == nil && node.Right == nil {
+//			ans = append(ans, strings.Join(path, "->"))
+//		}
+//		dfs(node.Left, path)
+//		dfs(node.Right, path)
+//	}
+//	dfs(root, []string{})
+//	return
+//}
 
 // 左叶子之和
 //func sumOfLeftLeaves(root *TreeNode) int {

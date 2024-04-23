@@ -1,6 +1,7 @@
 package main
 
 import (
+	"container/heap"
 	"slices"
 	"sort"
 	"strconv"
@@ -149,6 +150,99 @@ func maxSubArray(nums []int) int {
 	for i := 1; i < len(nums); i++ {
 		nums[i] = max(nums[i], nums[i-1]+nums[i])
 		ans = max(ans, nums[i])
+	}
+	return ans
+}
+
+// 买卖股票的最佳时机2 dp解法
+func maxProfit(prices []int) int {
+	//[0]:持有股票
+	//[1]:不持有股票
+	dp := make([][2]int, len(prices))
+	dp[0][0] = -prices[0]
+	for i := 1; i < len(prices); i++ {
+		//在i天持有股票：i-1天已经持有、i天买入
+		dp[i][0] = max(dp[i-1][0], dp[i-1][1]-prices[i])
+		//i天不持有股票：i-1天不持有、i-1天持有i天卖出
+		dp[i][1] = max(dp[i-1][1], dp[i-1][0]+prices[i])
+	}
+	return dp[len(prices)-1][1]
+}
+
+// 跳跃游戏
+// 2,3,1,1,4
+// 覆盖范围
+func canJump(nums []int) bool {
+	maxRight := 0
+	for i := 0; i <= maxRight && i < len(nums); i++ {
+		maxRight = max(maxRight, i+nums[i])
+	}
+	return maxRight >= len(nums)-1
+}
+
+// 跳跃游戏2
+//
+//	func jump(nums []int) int {
+//		dp := make([]int, len(nums))
+//		for i := 1; i < len(nums); i++ {
+//			dp[i] = math.MaxInt
+//		}
+//		for i := 0; i < len(nums); i++ {
+//			for j := 1; j <= nums[i] && j < len(nums)-i; j++ {
+//				dp[i+j] = min(dp[i+j], dp[i]+1)
+//			}
+//		}
+//		return dp[len(nums)-1]
+//	}
+
+func jump(nums []int) int {
+	var maxRight, right, steps int
+	for i := 0; i < len(nums)-1; i++ {
+		maxRight = max(maxRight, i+nums[i])
+		if i == right {
+			right = maxRight
+			steps++
+		}
+	}
+	return steps
+}
+
+type IntHeap []int
+
+func (h *IntHeap) Len() int {
+	return len(*h)
+}
+
+func (h *IntHeap) Less(i, j int) bool {
+	return (*h)[i] < (*h)[j]
+}
+
+func (h *IntHeap) Swap(i, j int) {
+	(*h)[i], (*h)[j] = (*h)[j], (*h)[i]
+}
+
+func (h *IntHeap) Push(x any) {
+	*h = append(*h, x.(int))
+}
+
+func (h *IntHeap) Pop() any {
+	x := (*h)[h.Len()-1]
+	*h = (*h)[:h.Len()-1]
+	return x
+}
+
+func largestSumAfterKNegations(nums []int, k int) int {
+	hp := &IntHeap{}
+	*hp = nums
+	heap.Init(hp)
+	ans := 0
+	for k > 0 {
+		x := heap.Pop(hp).(int)
+		heap.Push(hp, -x)
+		k--
+	}
+	for _, num := range *hp {
+		ans += num
 	}
 	return ans
 }

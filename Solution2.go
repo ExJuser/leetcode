@@ -923,3 +923,51 @@ func combinationSum4(nums []int, target int) int {
 	}
 	return dp[target]
 }
+func solveSudoku(board [][]byte) {
+	var (
+		blanks    [][2]int
+		rowUsed   [9][10]bool
+		colUsed   [9][10]bool
+		blockUsed [3][3][10]bool
+		init      func()
+		dfs       func(index int) bool
+	)
+	init = func() {
+		for i := 0; i < len(board); i++ {
+			for j := 0; j < len(board[i]); j++ {
+				if board[i][j] == '.' {
+					blanks = append(blanks, [2]int{i, j})
+				} else {
+					digit := board[i][j] - '0'
+					rowUsed[i][digit] = true
+					colUsed[j][digit] = true
+					blockUsed[i/3][j/3][digit] = true
+				}
+			}
+		}
+	}
+	dfs = func(index int) bool {
+		if index == len(blanks) {
+			return true
+		}
+		i, j := blanks[index][0], blanks[index][1]
+		for digit := 1; digit <= 9; digit++ {
+			if !rowUsed[i][digit] && !colUsed[j][digit] && !blockUsed[i/3][j/3][digit] {
+				board[i][j] = byte(digit) + '0'
+				rowUsed[i][digit] = true
+				colUsed[j][digit] = true
+				blockUsed[i/3][j/3][digit] = true
+				if dfs(index + 1) {
+					return true
+				}
+				board[i][j] = '.'
+				rowUsed[i][digit] = false
+				colUsed[j][digit] = false
+				blockUsed[i/3][j/3][digit] = false
+			}
+		}
+		return false
+	}
+	init()
+	dfs(0)
+}

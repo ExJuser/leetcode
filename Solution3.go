@@ -121,3 +121,24 @@ func perfectMenu(materials []int, cookbooks [][]int, attribute [][]int, limit in
 	dfs(0, 0, 0)
 	return ans
 }
+
+// 摆动序列 动态规划解法
+func wiggleMaxLength(nums []int) int {
+	dp1 := make([]int, len(nums))
+	dp2 := make([]int, len(nums))
+	for i := 0; i < len(nums); i++ {
+		dp1[i] = 1
+		dp2[i] = 1
+	}
+	for i := 1; i < len(nums); i++ {
+		for j := 0; j < i; j++ {
+			if dp1[j]%2 == 0 && nums[i] < nums[j] || dp1[j]%2 != 0 && nums[i] > nums[j] {
+				dp1[i] = max(dp1[i], dp1[j]+1)
+			}
+			if dp2[j]%2 == 0 && nums[i] > nums[j] || dp2[j]%2 != 0 && nums[i] < nums[j] {
+				dp2[i] = max(dp2[i], dp2[j]+1)
+			}
+		}
+	}
+	return max(slices.Max(dp1), slices.Max(dp2))
+}

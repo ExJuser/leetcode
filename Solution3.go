@@ -246,3 +246,20 @@ func largestSumAfterKNegations(nums []int, k int) int {
 	}
 	return ans
 }
+
+func canCompleteCircuit(gas []int, cost []int) int {
+	var start, leftGas, gasSum, costSum int
+	for i := 0; i < len(gas); i++ {
+		gasSum += gas[i]
+		costSum += cost[i]
+		leftGas += gas[i] - cost[i]
+		if leftGas < 0 {
+			start = i + 1
+			leftGas = 0
+		}
+	}
+	if gasSum < costSum {
+		return -1
+	}
+	return start
+}

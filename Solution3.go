@@ -253,6 +253,7 @@ func canCompleteCircuit(gas []int, cost []int) int {
 		gasSum += gas[i]
 		costSum += cost[i]
 		leftGas += gas[i] - cost[i]
+		//从start到i的位置都不能作为起点 直接选择i+1作为新的起点
 		if leftGas < 0 {
 			start = i + 1
 			leftGas = 0
@@ -262,4 +263,98 @@ func canCompleteCircuit(gas []int, cost []int) int {
 		return -1
 	}
 	return start
+}
+
+// 分发糖果
+func candy(ratings []int) int {
+	candies := make([]int, len(ratings))
+	ans := 0
+	for _, i := range candies {
+		candies[i] = 1
+	}
+	for i := 0; i < len(candies); i++ {
+		if i != 0 && ratings[i] > ratings[i-1] {
+			candies[i] = candies[i-1] + 1
+		}
+	}
+	for i := len(candies) - 1; i >= 0; i-- {
+		if i != len(candies)-1 && ratings[i] > ratings[i+1] {
+			candies[i] = candies[i+1] + 1
+		}
+	}
+	for c := range candies {
+		ans += c
+	}
+	return ans
+}
+
+// if else
+func lemonadeChange(bills []int) bool {
+	var five, ten, twenty int
+	for _, bill := range bills {
+		if bill == 5 {
+			five++
+		} else if bill == 10 {
+			if five == 0 {
+				return false
+			} else {
+				five--
+				ten++
+			}
+		} else if bill == 20 {
+			if five == 0 {
+				return false
+			} else {
+				//优先找10+5
+				if ten == 0 {
+					if five < 3 {
+						return false
+					} else {
+						five -= 3
+						twenty++
+					}
+				} else {
+					five--
+					ten--
+					twenty++
+				}
+			}
+		}
+	}
+	return true
+}
+
+func reconstructQueue(people [][]int) [][]int {
+	slices.SortFunc(people, func(a, b []int) int {
+		if a[0] == b[0] {
+			return a[1] - b[1]
+		}
+		return a[0] - b[0]
+	})
+	for i, p := range people {
+		if p[1] < i {
+			//需要将其插入到i位置
+			temp := p
+			for j := i; j > p[1]; j-- {
+				people[j] = people[j-1]
+			}
+			people[p[1]] = temp
+		}
+	}
+	return people
+}
+func findMinArrowShots(points [][]int) int {
+	slices.SortFunc(points, func(a, b []int) int {
+		return a[1] - b[1]
+	})
+	prev := points[0]
+	ans := 0
+	for i := 1; i < len(points); i++ {
+		cur := points[i]
+		if cur[0] > prev[1] {
+			ans++
+			prev = cur
+		}
+	}
+	return ans
 }

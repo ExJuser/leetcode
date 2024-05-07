@@ -402,3 +402,20 @@ func findMinArrowShots(points [][]int) int {
 	}
 	return ans + 1
 }
+func eraseOverlapIntervals(intervals [][]int) int {
+	slices.SortFunc(intervals, func(a, b []int) int {
+		return a[0] - b[0]
+	})
+	ans := 0
+	right := intervals[0][1]
+	for i := 1; i < len(intervals); i++ {
+		cur := intervals[i]
+		if cur[0] >= right { //区间没有重叠
+			right = cur[1]
+		} else {
+			right = min(right, cur[1])
+			ans++
+		}
+	}
+	return ans
+}

@@ -343,18 +343,62 @@ func reconstructQueue(people [][]int) [][]int {
 	}
 	return people
 }
+
+//func findMinArrowShots(points [][]int) int {
+//	slices.SortFunc(points, func(a, b []int) int {
+//对右边界排序
+//		return a[1] - b[1]
+//	})
+//	prev := points[0]
+//	ans := 0
+//	for i := 1; i < len(points); i++ {
+//		cur := points[i]
+//		if cur[0] > prev[1] {
+//			ans++
+//			prev = cur
+//		}
+//	}
+//	return ans
+//}
+
+//func findMinArrowShots(points [][]int) int {
+//	slices.SortFunc(points, func(a, b []int) int {
+//		//对左边界排序
+//		return a[0] - b[0]
+//	})
+//	prev := points[0]
+//	cnt := 0
+//	for i := 1; i < len(points); i++ {
+//		cur := points[i]
+//		//与prev代表的气球没有重叠部分
+//		if cur[0] > prev[1] {
+//			cnt++
+//			prev = cur
+//		} else {
+//			//cur被prev所包含 prev需要更新为范围更小的那一个
+//			if cur[1] < prev[1] {
+//				prev = cur
+//			}
+//		}
+//	}
+//	return cnt + 1
+//}
+
 func findMinArrowShots(points [][]int) int {
 	slices.SortFunc(points, func(a, b []int) int {
-		return a[1] - b[1]
+		//对左边界排序
+		return a[0] - b[0]
 	})
-	prev := points[0]
 	ans := 0
+	right := points[0][1]
 	for i := 1; i < len(points); i++ {
 		cur := points[i]
-		if cur[0] > prev[1] {
+		if cur[0] > right { //没有重叠部分
 			ans++
-			prev = cur
+			right = cur[1]
+		} else { //有重叠部分
+			right = min(right, cur[1])
 		}
 	}
-	return ans
+	return ans + 1
 }

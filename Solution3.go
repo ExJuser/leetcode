@@ -419,3 +419,38 @@ func eraseOverlapIntervals(intervals [][]int) int {
 	}
 	return ans
 }
+
+// 维护每一个字母的最后一个位置
+func partitionLabels(s string) (ans []int) {
+	lastAppearance := make([]int, 26)
+	for i := 0; i < len(s); i++ {
+		lastAppearance[s[i]-'a'] = i
+	}
+	for i := 0; i < len(s); {
+		j := i
+		right := lastAppearance[s[i]-'a']
+		for ; j <= right; j++ {
+			right = max(right, lastAppearance[s[j]-'a'])
+		}
+		ans = append(ans, j-i)
+		i = j
+	}
+	return
+}
+
+// 合并区间
+func merge2(intervals [][]int) (ans [][]int) {
+	slices.SortFunc(intervals, func(a, b []int) int {
+		return a[0] - b[0]
+	})
+	prev := intervals[0]
+	for i := 1; i < len(intervals); i++ {
+		cur := intervals[i]
+		if cur[0] > prev[0] {
+			ans = append(ans, prev)
+		} else {
+			prev[1] = max(prev[1], cur[1])
+		}
+	}
+	return
+}

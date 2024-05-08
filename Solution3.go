@@ -454,3 +454,27 @@ func merge2(intervals [][]int) (ans [][]int) {
 	}
 	return
 }
+
+// 单调递增的数字
+// 贪心：从某一位开始后面都变成9
+func monotoneIncreasingDigits(n int) (ans int) {
+	ints := make([]int, 0)
+	for ; n > 0; n /= 10 {
+		ints = append(ints, n%10)
+	}
+	slices.Reverse(ints)
+	flag := len(ints)
+	for i := len(ints) - 1; i >= 1; i-- {
+		if ints[i] < ints[i-1] {
+			ints[i-1] -= 1
+			flag = i
+		}
+	}
+	for i := flag; i < len(ints); i++ {
+		ints[i] = 9
+	}
+	for i := 0; i < len(ints); i++ {
+		ans = 10*ans + ints[i]
+	}
+	return
+}

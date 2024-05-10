@@ -527,3 +527,14 @@ func uniquePathsWithObstacles(obstacleGrid [][]int) int {
 	}
 	return dp[m-1][n-1]
 }
+func integerBreak(n int) int {
+	dp := make([]int, n+1)
+	dp[1] = 1
+	dp[2] = 1
+	for i := 3; i <= n; i++ {
+		for j := 1; j < i; j++ {
+			dp[i] = max(dp[i], max(dp[j], j)*(i-j))
+		}
+	}
+	return dp[n]
+}

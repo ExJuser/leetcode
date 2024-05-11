@@ -2,6 +2,7 @@ package main
 
 import (
 	"container/heap"
+	"math"
 	"slices"
 	"sort"
 	"strconv"
@@ -717,22 +718,19 @@ func coinChange(coins []int, amount int) int {
 		return 0
 	}
 	dp := make([]int, amount+1)
-	for i := 0; i < len(coins); i++ {
-		if coins[i] <= amount {
-			dp[coins[i]] = 1
-		}
+	dp[0] = 0
+	for i := 1; i < len(dp); i++ {
+		dp[i] = math.MaxInt
 	}
 	for i := 0; i < len(coins); i++ {
 		for j := coins[i]; j <= amount; j++ {
-			if dp[j-coins[i]] != 0 {
+			//dp[j-coins[i]] == math.MaxInt 表示没有组成j-coins[i]的组合
+			if dp[j-coins[i]] != math.MaxInt {
 				dp[j] = min(dp[j], dp[j-coins[i]]+1)
-				if dp[j] == 0 {
-					dp[j] = dp[j-coins[i]] + 1
-				}
 			}
 		}
 	}
-	if dp[amount] == 0 {
+	if dp[amount] == math.MaxInt {
 		return -1
 	}
 	return dp[amount]

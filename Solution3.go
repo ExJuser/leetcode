@@ -529,12 +529,104 @@ func uniquePathsWithObstacles(obstacleGrid [][]int) int {
 }
 func integerBreak(n int) int {
 	dp := make([]int, n+1)
-	dp[1] = 1
 	dp[2] = 1
 	for i := 3; i <= n; i++ {
 		for j := 1; j < i; j++ {
+			//dp[j] 拆分j时的最大乘积
+			//j 不拆分时 就是j本身
 			dp[i] = max(dp[i], max(dp[j], j)*(i-j))
 		}
 	}
 	return dp[n]
 }
+
+// 一颗二叉搜索树的左子树和右子树都是二叉搜索树
+func numTrees(n int) int {
+	dp := make([]int, n+1)
+	dp[0] = 1
+	dp[1] = 1
+	for i := 2; i <= n; i++ {
+		for j := 0; j < i; j++ {
+			//固定一个节点
+			//假设左子树j个节点 右子树i-j-1个节点 总结点数为i个
+			//左边j个节点组成的二叉搜索树有dp[j]种
+			//右边同理
+			dp[i] += dp[j] * dp[i-j-1]
+		}
+	}
+	return dp[n]
+}
+
+//背包问题之01背包 一个物品只能使用一次
+//dp[i][j]: 任取0-i的物品装满容量为j的背包的最大价值
+//dp[i][j]=max(dp[i-1][j],dp[i-1][j-weight[i]]+value[i])
+//dp[i-1][j]: 不取物品i装满容量为j的背包的最大价值
+//dp[i-1][j-weight[i]]: 不取物品i时装满容量为j-weight[i]的背包的最大价值
+//dp[i-1][j-weight[i]]+value[i]: 取物品i装满容量为j的背包的最大价值
+//在使用二维dp数组时 需要初始化第一行和第一列
+//且使用二维dp数组时 遍历背包和物品的顺序可以颠倒
+//一维dp数组 dp[j]=max(dp[j],dp[j-weight[i]]+value[i])
+//必须先遍历物品再遍历背包 且背包需要倒序遍历
+//为什么需要倒序遍历: 确保物品只被添加一次
+//递推公式中更大的j由之前的j推到得来
+//若正序遍历会反复添加物品 例如容量为2的背包 正序遍历会两次添加重量为1的物品
+// 对应背包容量为0时 初始化为0
+// 对应物品0时根据物品0重量与当前背包容量的关系确定如何初始化
+
+// 分割等和子集：能否装满容量为元素和1/2的背包
+// 01背包问题的一种容量和价值等值的应用
+func canPartition(nums []int) bool {
+	var sum int
+	for _, num := range nums {
+		sum += num
+	}
+	if sum%2 != 0 {
+		return false
+	}
+	//容量为target的背包所能装的最大价值是否是target
+	target := sum / 2
+	dp := make([]int, target+1)
+	for i := 0; i < len(nums); i++ {
+		for j := target; j >= nums[i]; j-- {
+			dp[j] = max(dp[j], dp[j-nums[i]]+nums[i])
+		}
+	}
+	return dp[target] == target
+}
+
+// 最后一块石头的重量
+func lastStoneWeightII(stones []int) int {
+	//[2,7,4,1,8,1] 总和为23
+	//装满容量为12/11的背包的最大价值x
+	//return |sum-2x|
+	var sum int
+	for _, num := range stones {
+		sum += num
+	}
+	target := sum / 2
+	dp := make([]int, target+1)
+	for i := 0; i < len(stones); i++ {
+		for j := target; j >= stones[i]; j-- {
+			dp[j] = max(dp[j], dp[j-stones[i]]+stones[i])
+		}
+	}
+	return Abs(sum - 2*dp[target])
+}
+
+// 回溯解法
+//func findTargetSumWays(nums []int, target int) (ans int) {
+//	var dfs func(start, sum int)
+//	dfs = func(start, sum int) {
+//		if start == len(nums) {
+//			if sum == target {
+//				ans++
+//			}
+//			return
+//		}
+//		//加号或者减号
+//		dfs(start+1, sum+nums[start])
+//		dfs(start+1, sum-nums[start])
+//	}
+//	dfs(0, 0)
+//	return
+//}

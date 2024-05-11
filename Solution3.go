@@ -630,3 +630,28 @@ func lastStoneWeightII(stones []int) int {
 //	dfs(0, 0)
 //	return
 //}
+
+// 动态规划解法
+// 将数组分为两个集合left和right
+// left+right=sum left-right=target
+// left=(sum+target)/2
+func findTargetSumWays(nums []int, target int) int {
+	var sum int
+	for _, num := range nums {
+		sum += num
+	}
+	if sum+target < 0 || (sum+target)%2 != 0 {
+		return 0
+	}
+	left := (sum + target) / 2
+	//dp[i]: 装满容量为i的背包有多少种方法
+	dp := make([]int, left+1)
+	dp[0] = 1
+	for i := 0; i < len(nums); i++ {
+		for j := left; j >= nums[i]; j-- {
+			//装满j-nums[i]的背包有多少种方法即在确定装入nums[i]时装满j的背包有多少种方法
+			dp[j] += dp[j-nums[i]]
+		}
+	}
+	return dp[left]
+}

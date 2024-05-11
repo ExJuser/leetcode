@@ -683,3 +683,18 @@ func findMaxForm(strs []string, m int, n int) int {
 	}
 	return dp[m][n]
 }
+
+// 背包问题之完全背包：每个物品可以使用无数次
+// 对背包的遍历改为正序遍历即可 倒序遍历就是为了限制每一个物品只能使用一次
+// 且对物品和背包的便利没有先后顺序要求
+func change(amount int, coins []int) int {
+	//dp[i] 表示组合金额i的组合数
+	dp := make([]int, amount+1)
+	dp[0] = 1
+	for i := 0; i < len(coins); i++ {
+		for j := coins[i]; j <= amount; j++ {
+			dp[j] += dp[j-coins[i]]
+		}
+	}
+	return dp[amount]
+}

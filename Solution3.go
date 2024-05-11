@@ -650,8 +650,36 @@ func findTargetSumWays(nums []int, target int) int {
 	for i := 0; i < len(nums); i++ {
 		for j := left; j >= nums[i]; j-- {
 			//装满j-nums[i]的背包有多少种方法即在确定装入nums[i]时装满j的背包有多少种方法
+			//后续动态规划问题中xxx有多少种方法经常出现的递推公式
 			dp[j] += dp[j-nums[i]]
 		}
 	}
 	return dp[left]
+}
+
+// 相当于放入容量m和n的背包的最大物品数量
+func findMaxForm(strs []string, m int, n int) int {
+	var oneCount func(str string) int
+	oneCount = func(str string) (cnt int) {
+		for _, char := range str {
+			if char == '1' {
+				cnt++
+			}
+		}
+		return
+	}
+	dp := make([][]int, m+1)
+	for i := 0; i < len(dp); i++ {
+		dp[i] = make([]int, n+1)
+	}
+	for i := 0; i < len(strs); i++ {
+		oneCnt := oneCount(strs[i])
+		zeroCnt := len(strs[i]) - oneCnt
+		for j := m; j >= zeroCnt; j-- {
+			for k := n; k >= oneCnt; k-- {
+				dp[j][k] = max(dp[j][k], dp[j-zeroCnt][k-oneCnt]+1)
+			}
+		}
+	}
+	return dp[m][n]
 }

@@ -788,3 +788,24 @@ func rob(nums []int) int {
 	}
 	return dp[len(nums)-1]
 }
+
+// 打家劫舍2
+func rob2(nums []int) int {
+	if len(nums) == 1 {
+		return nums[0]
+	}
+	//每一个dp[i]对应于两种状态：偷第一家和不偷第一家
+	dp := make([][2]int, len(nums))
+	dp[0][0] = nums[0]
+	dp[0][1] = 0
+	dp[1][0] = nums[0]
+	dp[1][1] = nums[1]
+	for i := 2; i < len(nums); i++ {
+		dp[i][0] = dp[i-1][0]
+		dp[i][1] = max(dp[i-1][1], dp[i-2][1]+nums[i])
+		if i != len(nums)-1 {
+			dp[i][0] = max(dp[i][0], dp[i-2][0]+nums[i])
+		}
+	}
+	return max(dp[len(nums)-1][0], dp[len(nums)-1][1])
+}

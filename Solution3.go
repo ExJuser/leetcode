@@ -735,3 +735,41 @@ func coinChange(coins []int, amount int) int {
 	}
 	return dp[amount]
 }
+
+// 完全平方数：完全背包
+func numSquares(n int) int {
+	//squares即物品
+	squares := make([]int, 0, 100)
+	for i := 1; i <= 100; i++ {
+		squares = append(squares, i*i)
+	}
+	//dp[i]表示和为i的完全平方数的最少数量
+	dp := make([]int, n+1)
+	for i := 1; i < len(dp); i++ {
+		dp[i] = i
+	}
+	for i := 0; i < len(squares); i++ {
+		for j := squares[i]; j <= n; j++ {
+			dp[j] = min(dp[j], dp[j-squares[i]]+1)
+		}
+	}
+	return dp[n]
+}
+
+// 单词拆分
+func wordBreak(s string, wordDict []string) bool {
+	n := len(s)
+	dp := make([]bool, n)
+	//这里一开始遍历顺序写反了
+	//原因是这里更类似于排列问题 因为组成单词的先后顺序是有意义的
+	for j := 0; j < n; j++ {
+		for i := 0; i < len(wordDict); i++ {
+			if j+len(wordDict[i]) <= n {
+				if (j == 0 || dp[j-1]) && s[j:j+len(wordDict[i])] == wordDict[i] {
+					dp[j+len(wordDict[i])-1] = true
+				}
+			}
+		}
+	}
+	return dp[n-1]
+}

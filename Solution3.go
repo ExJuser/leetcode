@@ -2,6 +2,7 @@ package main
 
 import (
 	"container/heap"
+	"fmt"
 	"math"
 	"slices"
 	"sort"
@@ -924,4 +925,31 @@ func maxProfit3(k int, prices []int) int {
 		}
 	}
 	return dp[len(prices)-1][2*k-1]
+}
+
+// 买卖股票的最佳时机含冷冻期
+func maxProfit4(prices []int) int {
+	//持有 卖出 冷冻期
+	dp := make([][3]int, len(prices))
+	dp[0][0] = -prices[0]
+	for i := 1; i < len(prices); i++ {
+		dp[i][0] = max(dp[i-1][0], dp[i-1][2]-prices[i])
+		dp[i][1] = max(dp[i-1][0]+prices[i], dp[i-1][1])
+		dp[i][2] = dp[i-1][1]
+	}
+	return max(dp[len(prices)-1][1], dp[len(prices)-1][2])
+}
+
+// 买卖股票的最佳时机含手续费
+func maxProfit5(prices []int, fee int) int {
+	//持有和卖出 另外考虑手续费
+	dp := make([][2]int, len(prices))
+	dp[0][0] = -prices[0] - fee
+	dp[0][1] = 0
+	for i := 1; i < len(prices); i++ {
+		dp[i][0] = max(dp[i-1][0], dp[i-1][1]-prices[i]-fee)
+		dp[i][1] = max(dp[i-1][1], dp[i-1][0]+prices[i])
+	}
+	fmt.Println(dp)
+	return dp[len(prices)-1][1]
 }

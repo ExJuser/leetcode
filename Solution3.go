@@ -850,3 +850,21 @@ func maxPathSum(root *TreeNode) int {
 	dfs(root)
 	return ans
 }
+
+// 打家劫舍3
+// 二叉树上的每一个节点只有两个状态
+func rob3(root *TreeNode) int {
+	//dp[0]不偷当前节点 该子树的最大金钱
+	//dp[1]偷当前节点 该子树的最大金钱
+	var dfs func(node *TreeNode) [2]int
+	dfs = func(node *TreeNode) [2]int {
+		if node == nil {
+			return [2]int{0, 0}
+		}
+		left := dfs(node.Left)
+		right := dfs(node.Right)
+		return [2]int{max(left[0], left[1]) + max(right[0], right[1]), node.Val + left[0] + right[0]}
+	}
+	res := dfs(root)
+	return max(res[0], res[1])
+}

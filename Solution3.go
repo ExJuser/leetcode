@@ -809,3 +809,44 @@ func rob2(nums []int) int {
 	}
 	return max(dp[len(nums)-1][0], dp[len(nums)-1][1])
 }
+
+// 二叉树的直径
+// 在每一个节点拐弯的直径：左子树最大深度+右子树最大深度
+// 遍历的过程中不断求最大值
+func diameterOfBinaryTree(root *TreeNode) (ans int) {
+	var dfs func(node *TreeNode) int
+	dfs = func(node *TreeNode) int {
+		if node == nil {
+			return 0
+		}
+		left := dfs(node.Left)
+		right := dfs(node.Right)
+		ans = max(ans, left+right)
+		//当前节点的最大深度
+		return max(left, right) + 1
+	}
+	dfs(root)
+	return
+}
+
+// 最大路径和
+// 核心在于递归返回的时候只能返回较大的一边（两边都是负数则不考虑）
+// 而对每一个节点求最大值答案的时候可以两边都考虑
+func maxPathSum(root *TreeNode) int {
+	ans := math.MinInt
+	var dfs func(node *TreeNode) int
+	dfs = func(node *TreeNode) int {
+		if node == nil {
+			return 0
+		}
+		left := dfs(node.Left)
+		right := dfs(node.Right)
+		val := node.Val
+		//返回所有可能情况下的最大值
+		ans = max(ans, val, val+left, val+right, val+left+right)
+		//只返回一边 如果两边都是负数 直接返回当前节点作为最大路径和
+		return max(val, val+left, val+right)
+	}
+	dfs(root)
+	return ans
+}

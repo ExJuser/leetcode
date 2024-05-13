@@ -856,15 +856,72 @@ func maxPathSum(root *TreeNode) int {
 func rob3(root *TreeNode) int {
 	//dp[0]不偷当前节点 该子树的最大金钱
 	//dp[1]偷当前节点 该子树的最大金钱
-	var dfs func(node *TreeNode) [2]int
-	dfs = func(node *TreeNode) [2]int {
+	var dfs func(node *TreeNode) []int
+	dfs = func(node *TreeNode) []int {
 		if node == nil {
-			return [2]int{0, 0}
+			return []int{0, 0}
 		}
 		left := dfs(node.Left)
 		right := dfs(node.Right)
-		return [2]int{max(left[0], left[1]) + max(right[0], right[1]), node.Val + left[0] + right[0]}
+		return []int{max(left[0], left[1]) + max(right[0], right[1]), node.Val + left[0] + right[0]}
 	}
-	res := dfs(root)
-	return max(res[0], res[1])
+	return slices.Max(dfs(root))
+}
+
+// 买卖股票的最佳时机2：任何时刻都只能持有一个股票 可以多次买卖
+func maxProfit1(prices []int) int {
+	//持有、卖出
+	dp := make([][2]int, len(prices))
+	dp[0][0] = -prices[0]
+	for i := 1; i < len(prices); i++ {
+		//i天持有：i-1不持有、i-1也持有
+		dp[i][0] = max(dp[i-1][0], dp[i-1][1]-prices[i])
+		//i天不持有：i天卖出 i-1卖出
+		dp[i][1] = max(dp[i-1][0]+prices[i], dp[i-1][1])
+	}
+	return max(dp[len(prices)-1][0], dp[len(prices)-1][1])
+}
+
+// 买卖股票的最佳时机3
+func maxProfit2(prices []int) int {
+	//dp0 第一次持有~
+	//dp1 第一次卖出~
+	//dp2 第二次持有~
+	//dp3 第二次卖出~
+	dp := make([][4]int, len(prices))
+	dp[0][0] = -prices[0]
+	dp[0][2] = -prices[0]
+	for i := 1; i < len(prices); i++ {
+		dp[i][0] = max(dp[i-1][0], -prices[i])
+		dp[i][1] = max(dp[i-1][1], dp[i-1][0]+prices[i])
+		dp[i][2] = max(dp[i-1][2], dp[i-1][1]-prices[i])
+		dp[i][3] = max(dp[i-1][3], dp[i-1][2]+prices[i])
+	}
+	return dp[len(prices)-1][3]
+}
+
+// 买卖股票的最佳时机4
+func maxProfit3(k int, prices []int) int {
+	dp := make([][]int, 0, len(prices))
+	for i := 0; i < len(prices); i++ {
+		dp = append(dp, make([]int, 2*k))
+	}
+	for i := 0; i < 2*k; i += 2 {
+		dp[0][i] = -prices[0]
+	}
+	for i := 1; i < len(prices); i++ {
+		for j := 0; j < 2*k; j++ {
+			//dp[i][j]
+			if j == 0 {
+				dp[i][j] = max(dp[i-1][j], -prices[i])
+			} else {
+				if j%2 == 0 {
+					dp[i][j] = max(dp[i-1][j], dp[i-1][j-1]-prices[i])
+				} else {
+					dp[i][j] = max(dp[i-1][j], dp[i-1][j-1]+prices[i])
+				}
+			}
+		}
+	}
+	return dp[len(prices)-1][2*k-1]
 }

@@ -82,3 +82,34 @@ func longestCommonSubsequence(text1 string, text2 string) (ans int) {
 	}
 	return ans
 }
+
+// 不相交的线：最长公共子序列
+func maxUncrossedLines(nums1 []int, nums2 []int) (ans int) {
+	dp := make([][]int, len(nums1)+1)
+	for i := 0; i <= len(nums1); i++ {
+		dp[i] = make([]int, len(nums2)+1)
+	}
+	for i := 0; i < len(nums1); i++ {
+		for j := 0; j < len(nums2); j++ {
+			if nums1[i] == nums2[j] {
+				dp[i+1][j+1] = dp[i][j] + 1
+			} else {
+				dp[i+1][j+1] = max(dp[i][j+1], dp[i+1][j])
+			}
+			ans = max(ans, dp[i+1][j+1])
+		}
+	}
+	return
+}
+
+// 最大子数组和：连续
+func maxSubArray1(nums []int) int {
+	dp := make([]int, len(nums))
+	copy(dp, nums)
+	ans := dp[0]
+	for i := 1; i < len(nums); i++ {
+		dp[i] = max(dp[i], nums[i]+dp[i-1])
+		ans = max(ans, dp[i])
+	}
+	return ans
+}

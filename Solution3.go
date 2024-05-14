@@ -953,27 +953,33 @@ func maxProfit5(prices []int, fee int) int {
 }
 
 // 最长递增子序列：可以不连续
+//func lengthOfLIS(nums []int) int {
+//	ans := 0
+//	dp := make([]int, len(nums))
+//	for i := 1; i < len(nums); i++ {
+//		for j := i - 1; j >= 0; j-- {
+//			if nums[j] < nums[i] {
+//				dp[i] = max(dp[i], dp[j]+1)
+//			}
+//		}
+//		ans = max(ans, dp[i])
+//	}
+//	return ans + 1
+//}
+
 func lengthOfLIS(nums []int) int {
-	ans := 0
 	dp := make([]int, len(nums))
+	for i := 0; i < len(dp); i++ {
+		dp[i] = 1
+	}
+	ans := 1
 	for i := 1; i < len(nums); i++ {
-		for j := i - 1; j >= 0; j-- {
-			if nums[j] < nums[i] {
+		for j := 0; j < i; j++ {
+			if nums[i] > nums[j] {
 				dp[i] = max(dp[i], dp[j]+1)
 			}
 		}
 		ans = max(ans, dp[i])
 	}
-	return ans + 1
-}
-
-// 最长连续递增序列
-func findLengthOfLCIS(nums []int) int {
-	dp := make([]int, len(nums))
-	for i := 1; i < len(nums); i++ {
-		if nums[i] > nums[i-1] {
-			dp[i] = dp[i-1] + 1
-		}
-	}
-	return slices.Max(dp) + 1
+	return ans
 }

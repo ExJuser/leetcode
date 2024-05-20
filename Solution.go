@@ -140,17 +140,17 @@ func threeSum(nums []int) (ans [][]int) {
 	return
 }
 
-func subarraySum(nums []int, k int) int {
-	hash := map[int]int{0: 1}
-	prefixSum := 0
-	count := 0
-	for _, num := range nums {
-		prefixSum += num
-		count += hash[prefixSum-k]
-		hash[prefixSum]++
-	}
-	return count
-}
+//func subarraySum(nums []int, k int) int {
+//	hash := map[int]int{0: 1}
+//	prefixSum := 0
+//	count := 0
+//	for _, num := range nums {
+//		prefixSum += num
+//		count += hash[prefixSum-k]
+//		hash[prefixSum]++
+//	}
+//	return count
+//}
 
 /*
 *

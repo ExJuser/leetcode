@@ -2,6 +2,7 @@ package main
 
 import (
 	"slices"
+	"sort"
 	"strings"
 )
 
@@ -468,4 +469,142 @@ func removeDuplicateLetters(s string) string {
 		count[byte(char)]--
 	}
 	return string(stack)
+}
+
+func vowelStrings(words []string, queries [][]int) (ans []int) {
+	var isVowelString func(word string) bool
+	isVowelString = func(word string) bool {
+		start, end := string(word[0]), string(word[len(word)-1])
+		if strings.Contains("aeiou", start) && strings.Contains("aeiou", end) {
+			return true
+		}
+		return false
+	}
+	prefix := make([]int, len(words)+1)
+	for i := 0; i < len(words); i++ {
+		prefix[i+1] = prefix[i]
+		if isVowelString(words[i]) {
+			prefix[i+1]++
+		}
+	}
+	for _, query := range queries {
+		ans = append(ans, prefix[query[1]+1]-prefix[query[0]])
+	}
+	return
+}
+
+func answerQueries(nums []int, queries []int) []int {
+	slices.Sort(nums)
+	prefix := make([]int, len(nums)+1)
+	ans := make([]int, len(queries))
+	for i := 0; i < len(nums); i++ {
+		prefix[i+1] = prefix[i] + nums[i]
+	}
+	for i, query := range queries {
+		ans[i] = sort.Search(len(prefix), func(i int) bool {
+			return prefix[i] > query
+		}) - 1
+	}
+	return ans
+}
+
+func productQueries(n int, queries [][]int) (ans []int) {
+	var getPowers func(n int) []int
+	getPowers = func(n int) []int {
+		powers := make([]int, 0)
+		base := 1
+		for ; n > 0; n >>= 1 {
+			if n&1 == 1 {
+				powers = append(powers, base)
+			}
+			base *= 2
+		}
+		return powers
+	}
+	powers := getPowers(n)
+	for _, query := range queries {
+		res := 1
+		for i := query[0]; i <= query[1]; i++ {
+			res = res * powers[i] % (1e9 + 7)
+		}
+		ans = append(ans, res)
+	}
+	return
+}
+
+func numSubarraysWithSum(nums []int, goal int) (ans int) {
+	prefix := make([]int, len(nums)+1)
+	for i := 0; i < len(nums); i++ {
+		prefix[i+1] = prefix[i] + nums[i]
+	}
+	cnt := make(map[int]int)
+	for i := 0; i < len(prefix); i++ {
+		cnt[prefix[i]]++
+	}
+	for k, _ := range cnt {
+		if k >= goal {
+			if k == k-goal {
+				ans += cnt[k] * (cnt[k] - 1) / 2
+			} else {
+				ans += cnt[k] * cnt[k-goal]
+			}
+		}
+	}
+	return
+}
+
+// 和为k的子数组数目
+func subarraySum(nums []int, k int) (ans int) {
+	prefix := make([]int, len(nums)+1)
+	for i := 0; i < len(nums); i++ {
+		prefix[i+1] = prefix[i] + nums[i]
+	}
+	cnt := make(map[int]int)
+	for i := 0; i < len(prefix); i++ {
+		ans += cnt[prefix[i]-k]
+		cnt[prefix[i]]++
+	}
+	return ans
+}
+
+func numOfSubarrays(arr []int) (ans int) {
+	prefix := make([]int, len(arr)+1)
+	for i := 0; i < len(arr); i++ {
+		prefix[i+1] = prefix[i] + arr[i]
+	}
+	var OddNum, evenNum int
+	for i := 0; i < len(prefix); i++ {
+		if prefix[i]%2 == 0 {
+			ans = (ans + OddNum) % (1e9 + 7)
+			evenNum++
+		} else {
+			ans = (ans + evenNum) % (1e9 + 7)
+			OddNum++
+		}
+	}
+	return
+}
+
+func subarraysDivByK(nums []int, k int) (ans int) {
+	prefix := make([]int, len(nums)+1)
+	for i := 0; i < len(nums); i++ {
+		//不管用什么方法 目的都是让“前缀和”数组均为正数
+		prefix[i+1] = (prefix[i]%k + nums[i]%k + k) % k
+		//if prefix[i+1] < 0 {
+		//	prefix[i+1] += k
+		//}
+	}
+	//for i := 0; i < len(prefix); i++ {
+	//	//可能不够 这一步的目的就是让其变成正的：同余定理
+	//	//因此直接在上面一步处理
+	//	prefix[i] = (prefix[i] + k) % k
+	//}
+	cnt := make(map[int]int)
+	for i := 0; i < len(prefix); i++ {
+		//没有想到同余定理时需要考虑的情况太多
+		//ans += cnt[prefix[i]] + cnt[prefix[i]-k] + cnt[prefix[i]+k]
+		ans += cnt[prefix[i]]
+		cnt[prefix[i]]++
+	}
+	return
 }

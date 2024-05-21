@@ -635,3 +635,96 @@ func (this *FindElements) Find(target int) bool {
 	}
 	return false
 }
+
+// 从前序与中序遍历序列构造二叉树
+func buildTree(preorder []int, inorder []int) *TreeNode {
+	if len(preorder) > 0 {
+		rootVal := preorder[0]
+		leftLength := slices.Index(inorder, rootVal)
+		left := buildTree(preorder[1:1+leftLength], inorder[:leftLength+1])
+		right := buildTree(preorder[1+leftLength:], inorder[leftLength+1:])
+		return &TreeNode{Val: rootVal, Left: left, Right: right}
+	}
+	return nil
+}
+
+// 滑动窗口：区间子数组个数
+func numSubarrayBoundedMax(nums []int, left int, right int) (ans int) {
+	//对于每一位 第一个大于等于left和第一个大于right的之间的元素个数就是答案
+	l, r := -1, -1
+	for i := 0; i < len(nums); i++ {
+		if nums[i] >= left {
+			l = i
+		}
+		if nums[i] > right {
+			r = i
+		}
+		ans += l - r
+	}
+	return
+}
+
+// 下降路径最小和
+func minFallingPathSum(matrix [][]int) int {
+	dp := make([][]int, len(matrix))
+	for i := 0; i < len(dp); i++ {
+		dp[i] = make([]int, len(matrix[i]))
+	}
+	for i := 0; i < len(dp[0]); i++ {
+		dp[0][i] = matrix[0][i]
+	}
+	for i := 1; i < len(matrix); i++ {
+		for j := 0; j < len(matrix[i]); j++ {
+			dp[i][j] = dp[i-1][j] + matrix[i][j]
+			if j-1 >= 0 {
+				dp[i][j] = min(dp[i][j], dp[i-1][j-1]+matrix[i][j])
+			}
+			if j+1 < len(matrix[i]) {
+				dp[i][j] = min(dp[i][j], dp[i-1][j+1]+matrix[i][j])
+			}
+		}
+	}
+	return slices.Min(dp[len(matrix)-1])
+}
+
+// 常规dp+前缀和：复杂度比较高
+//func maxSubarraySumCircular(nums []int) int {
+//	if len(nums) == 1 {
+//		return nums[0]
+//	}
+//	dp := make([]int, len(nums))
+//	dp[0] = nums[0]
+//	prefix := make([]int, len(nums)+1)
+//	for i := 1; i < len(nums); i++ {
+//		dp[i] = max(nums[i], dp[i-1]+nums[i])
+//		prefix[i] = prefix[i-1] + nums[i-1]
+//	}
+//	prefix[len(nums)] = prefix[len(nums)-1] + nums[len(nums)-1]
+//	dpMax := slices.Max(dp)
+//	prefixMax := 0
+//	for i := 1; i < len(nums); i++ {
+//		dpMax = max(dpMax, prefix[len(nums)]-prefix[i]+max(prefixMax, prefix[i]))
+//	}
+//	return dpMax
+//}
+
+// 存在环形的最大和=数组和-最小子数组和
+func maxSubarraySumCircular(nums []int) int {
+	if len(nums) == 1 {
+		return nums[0]
+	}
+	dpMin := make([]int, len(nums))
+	dpMax := make([]int, len(nums))
+	dpMin[0], dpMax[0] = nums[0], nums[0]
+	arrSum := nums[0]
+	for i := 1; i < len(nums); i++ {
+		dpMax[i] = max(dpMax[i-1]+nums[i], nums[i])
+		dpMin[i] = min(dpMin[i-1]+nums[i], nums[i])
+		arrSum += nums[i]
+	}
+	maxS, minS := slices.Max(dpMax), slices.Min(dpMin)
+	if arrSum == minS {
+		return maxS
+	}
+	return max(maxS, arrSum-minS)
+}

@@ -608,3 +608,30 @@ func subarraysDivByK(nums []int, k int) (ans int) {
 	}
 	return
 }
+
+type FindElements struct {
+	cnt map[int]struct{}
+}
+
+//func Constructor(root *TreeNode) FindElements {
+//	var dfs func(node *TreeNode, val int)
+//	cnt := make(map[int]struct{})
+//	dfs = func(node *TreeNode, val int) {
+//		if node == nil {
+//			return
+//		}
+//		node.Val = val
+//		cnt[val] = struct{}{}
+//		dfs(node.Left, 2*node.Val+1)
+//		dfs(node.Right, 2*node.Val+2)
+//	}
+//	dfs(root, 0)
+//	return FindElements{cnt: cnt}
+//}
+
+func (this *FindElements) Find(target int) bool {
+	if _, ok := this.cnt[target]; ok {
+		return true
+	}
+	return false
+}

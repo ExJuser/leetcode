@@ -728,3 +728,52 @@ func maxSubarraySumCircular(nums []int) int {
 	}
 	return max(maxS, arrSum-minS)
 }
+
+func maxSubArray2(nums []int) int {
+	dp := make([]int, len(nums))
+	dp[0] = nums[0]
+	ans := nums[0]
+	for i := 1; i < len(nums); i++ {
+		dp[i] = max(dp[i-1]+nums[i], nums[i])
+		ans = max(ans, dp[i])
+	}
+	return ans
+}
+
+// 再次应用到了同余原理
+func checkSubarraySum(nums []int, k int) bool {
+	prefix := make([]int, len(nums)+1)
+	for i := 0; i < len(nums); i++ {
+		prefix[i+1] = (prefix[i] + nums[i]) % k
+	}
+	mp := make(map[int]int)
+	mp[0] = -1
+	for i := 0; i < len(nums); i++ {
+		if index, ok := mp[prefix[i+1]]; ok && i-index >= 2 {
+			return true
+		} else if !ok {
+			mp[prefix[i+1]] = i
+		}
+	}
+	return false
+}
+
+// prefix其实也可以优化掉
+func findMaxLength(nums []int) int {
+	prefix := make([]int, len(nums)+1)
+	mp := map[int]int{0: -1}
+	ans := 0
+	for i := 0; i < len(nums); i++ {
+		if nums[i] == 0 {
+			prefix[i+1] = prefix[i] + 1
+		} else {
+			prefix[i+1] = prefix[i] - 1
+		}
+		if index, ok := mp[prefix[i+1]]; ok {
+			ans = max(ans, i-index)
+		} else {
+			mp[prefix[i+1]] = i
+		}
+	}
+	return ans
+}

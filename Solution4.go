@@ -1,8 +1,10 @@
 package main
 
 import (
+	"math"
 	"slices"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -774,6 +776,113 @@ func findMaxLength(nums []int) int {
 		} else {
 			mp[prefix[i+1]] = i
 		}
+	}
+	return ans
+}
+
+// 最具竞争力的子序列
+func mostCompetitive(nums []int, k int) []int {
+	stack := make([]int, 0, len(nums))
+	ans := make([]int, k)
+	for i, num := range nums {
+		for len(stack) > 0 && stack[len(stack)-1] > num && len(nums)-i+len(stack) > k {
+			stack = stack[:len(stack)-1]
+		}
+		stack = append(stack, num)
+		if len(stack) == k {
+			ans = append([]int{}, stack...)
+		}
+	}
+	return ans
+}
+
+// 定长滑动窗口
+func maxVowels(s string, k int) (ans int) {
+	length := 0
+	for i := 0; i < k; i++ {
+		if strings.Contains("aeiou", string(s[i])) {
+			length++
+		}
+	}
+	ans = max(ans, length)
+	for i := 1; i < len(s)-k+1; i++ {
+		if strings.Contains("aeiou", string(s[i-1])) {
+			length--
+		}
+		if strings.Contains("aeiou", string(s[i+k-1])) {
+			length++
+		}
+		ans = max(ans, length)
+	}
+	return
+}
+
+func findMaxAverage(nums []int, k int) float64 {
+	var sum, maxSum int
+	for i := 0; i < k; i++ {
+		sum += nums[i]
+	}
+	maxSum = sum
+	for i := 1; i < len(nums)-k+1; i++ {
+		sum -= nums[i-1] - nums[i+k-1]
+		maxSum = max(sum, maxSum)
+	}
+	return float64(maxSum) / float64(k)
+}
+
+func divisorSubstrings(num int, k int) int {
+	numStr := strconv.Itoa(num)
+	ans := 0
+	for i := 0; i < len(numStr)-k+1; i++ {
+		if val, _ := strconv.Atoi(numStr[i : i+k]); val != 0 && num%val == 0 {
+			ans++
+		}
+	}
+	return ans
+}
+
+func minimumDifference(nums []int, k int) int {
+	ans := math.MaxInt
+	slices.Sort(nums)
+	for i := 0; i < len(nums)-k+1; i++ {
+		ans = min(ans, nums[i+k-1]-nums[i])
+	}
+	return ans
+}
+
+func numOfSubarrays1(arr []int, k int, threshold int) int {
+	var sum, ans int
+	for i := 0; i < k; i++ {
+		sum += arr[i]
+	}
+	if sum >= threshold*k {
+		ans = 1
+	}
+	for i := 1; i < len(arr)-k+1; i++ {
+		sum -= arr[i-1] - arr[i+k-1]
+		if sum >= threshold*k {
+			ans++
+		}
+	}
+	return ans
+}
+
+func getAverages(nums []int, k int) []int {
+	ans := make([]int, len(nums))
+	for i := 0; i < len(ans); i++ {
+		ans[i] = -1
+	}
+	if len(nums) < 2*k+1 {
+		return ans
+	}
+	sum := 0
+	for i := 0; i <= 2*k; i++ {
+		sum += nums[i]
+	}
+	ans[k] = sum / (2*k + 1)
+	for i := k + 1; i < len(nums)-k; i++ {
+		sum -= nums[i-k-1] - nums[i+k]
+		ans[i] = sum / (2*k + 1)
 	}
 	return ans
 }

@@ -970,3 +970,24 @@ func maxKelements(nums []int, k int) (ans int64) {
 	}
 	return
 }
+
+// 即在大小为k的窗口内寻找最少的白块数量
+func minimumRecolors(blocks string, k int) int {
+	var ans, cnt int
+	for i := 0; i < k; i++ {
+		if blocks[i] == 'W' {
+			cnt++
+		}
+	}
+	ans = cnt
+	for i := 1; i < len(blocks)-k+1; i++ {
+		if blocks[i-1] == 'W' {
+			cnt--
+		}
+		if blocks[i+k-1] == 'W' {
+			cnt++
+		}
+		ans = min(ans, cnt)
+	}
+	return ans
+}

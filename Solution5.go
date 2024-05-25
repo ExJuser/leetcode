@@ -24,3 +24,27 @@ func maxSatisfied(customers []int, grumpy []int, minutes int) int {
 	}
 	return ans
 }
+
+func maxSum(nums []int, m int, k int) int64 {
+	mp := make(map[int]int)
+	var sum, ans int64
+	for i := 0; i < k; i++ {
+		mp[nums[i]]++
+		sum += int64(nums[i])
+	}
+	if len(mp) >= m {
+		ans = sum
+	}
+	for i := 1; i < len(nums)-k+1; i++ {
+		mp[nums[i-1]]--
+		mp[nums[i+k-1]]++
+		sum -= int64(nums[i-1] - nums[i+k-1])
+		if cnt, ok := mp[nums[i-1]]; ok && cnt == 0 {
+			delete(mp, nums[i-1])
+		}
+		if len(mp) >= m {
+			ans = max(ans, sum)
+		}
+	}
+	return ans
+}

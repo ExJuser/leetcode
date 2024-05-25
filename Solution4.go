@@ -1,6 +1,7 @@
 package main
 
 import (
+	"container/heap"
 	"math"
 	"slices"
 	"sort"
@@ -885,4 +886,87 @@ func getAverages(nums []int, k int) []int {
 		ans[i] = sum / (2*k + 1)
 	}
 	return ans
+}
+
+func findIndices(nums []int, indexDifference int, valueDifference int) []int {
+	for i := 0; i < len(nums); i++ {
+		for j := i; j < len(nums); j++ {
+			if Abs(i-j) >= indexDifference && Abs(nums[i]-nums[j]) >= valueDifference {
+				return []int{i, j}
+			}
+		}
+	}
+	return []int{-1, -1}
+}
+
+// 最后一块石头的重量
+func lastStoneWeight(stones []int) int {
+	hp := &IntHeap{}
+	*hp = stones
+	heap.Init(hp)
+	for hp.Len() > 1 {
+		y, x := heap.Pop(hp).(int), heap.Pop(hp).(int)
+		if x != y {
+			heap.Push(hp, y-x)
+		}
+	}
+	if hp.Len() == 0 {
+		return 0
+	}
+	return heap.Pop(hp).(int)
+}
+func pickGifts(gifts []int, k int) int64 {
+	hp := &IntHeap{}
+	*hp = gifts
+	heap.Init(hp)
+	for ; k > 0; k-- {
+		gift := heap.Pop(hp).(int)
+		heap.Push(hp, int(math.Sqrt(float64(gift))))
+	}
+	var ans int64
+	for _, gift := range gifts {
+		ans += int64(gift)
+	}
+	return ans
+}
+
+type SmallestInfiniteSet struct {
+	hp       *IntHeap
+	notExist map[int]struct{}
+}
+
+//func Constructor() SmallestInfiniteSet {
+//	hp := &IntHeap{}
+//	set := make([]int, 1000)
+//	for i := 1; i <= 1000; i++ {
+//		set[i-1] = i
+//	}
+//	*hp = set
+//	heap.Init(hp)
+//	return SmallestInfiniteSet{hp: hp, notExist: map[int]struct{}{}}
+//}
+
+func (this *SmallestInfiniteSet) PopSmallest() int {
+	x := heap.Pop(this.hp).(int)
+	this.notExist[x] = struct{}{}
+	return x
+}
+
+func (this *SmallestInfiniteSet) AddBack(num int) {
+	if _, ok := this.notExist[num]; ok {
+		delete(this.notExist, num)
+		heap.Push(this.hp, num)
+	}
+}
+
+func maxKelements(nums []int, k int) (ans int64) {
+	hp := &IntHeap{}
+	*hp = nums
+	heap.Init(hp)
+	for ; k > 0; k-- {
+		x := heap.Pop(hp).(int)
+		ans += int64(x)
+		heap.Push(hp, int(math.Ceil(float64(x)/3)))
+	}
+	return
 }

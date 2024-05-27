@@ -240,3 +240,82 @@ func getOrder(tasks [][]int) (ans []int) {
 	}
 	return
 }
+
+//type IntHeap [][]int
+//
+//func (h IntHeap) Len() int           { return len(h) }
+//func (h IntHeap) Less(i, j int) bool { return h[i][0] < h[j][0] }
+//func (h IntHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
+//func (h *IntHeap) Pop() interface{} {
+//	old := *h
+//	n := len(old)
+//	x := old[n-1]
+//	*h = old[0 : n-1]
+//	return x
+//}
+//func (h *IntHeap) Push(x interface{}) {
+//	*h = append(*h, x.([]int))
+//}
+//func eatenApples(apples []int, days []int) int {
+//	pq := &IntHeap{}
+//	i, ans := 0, 0
+//	for i < len(apples) || pq.Len() > 0{
+//		for pq.Len() > 0 && (*pq)[0][0] <= i {
+//			heap.Pop(pq)
+//		}
+//		if i < len(apples) && apples[i] > 0{
+//			heap.Push(pq, []int{i + days[i], apples[i]})
+//		}
+//		if pq.Len() > 0 {
+//			ans++
+//			(*pq)[0][1]--
+//			if (*pq)[0][1] == 0{
+//				heap.Pop(pq)
+//			}
+//		}
+//		i++
+//	}
+//	return ans
+//}
+
+func maximumSubarraySum(nums []int, k int) (ans int64) {
+	mp := make(map[int]int)
+	var sum int
+	for i := 0; i < k; i++ {
+		mp[nums[i]]++
+		sum += nums[i]
+	}
+	if len(mp) == k {
+		ans = int64(sum)
+	}
+	for i := 1; i < len(nums)-k+1; i++ {
+		mp[nums[i-1]]--
+		mp[nums[i+k-1]]++
+		sum -= nums[i-1] - nums[i+k-1]
+		if mp[nums[i-1]] == 0 {
+			delete(mp, nums[i-1])
+		}
+		if len(mp) == k {
+			ans = max(ans, int64(sum))
+		}
+	}
+	return ans
+}
+
+func maxScore(cardPoints []int, k int) int {
+	n := len(cardPoints) - k
+	cardSum := 0
+	for _, card := range cardPoints {
+		cardSum += card
+	}
+	var sum int
+	for i := 0; i < n; i++ {
+		sum += cardPoints[i]
+	}
+	minSum := sum
+	for i := 1; i < len(cardPoints)-n+1; i++ {
+		sum -= cardPoints[i-1] - cardPoints[i+n-1]
+		minSum = min(minSum, sum)
+	}
+	return cardSum - minSum
+}

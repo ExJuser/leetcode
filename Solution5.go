@@ -319,3 +319,153 @@ func maxScore(cardPoints []int, k int) int {
 	}
 	return cardSum - minSum
 }
+
+func searchMatrix(matrix [][]int, target int) bool {
+	for _, row := range matrix {
+		if target < row[0] {
+			return false
+		} else if target >= row[0] && target <= row[len(row)-1] {
+			if _, b := slices.BinarySearch(row, target); b {
+				return true
+			}
+		}
+		continue
+	}
+	return false
+}
+
+func rotate2(matrix [][]int) {
+	for i := 0; i < len(matrix); i++ {
+		for j := i + 1; j < len(matrix[i]); j++ {
+			matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]
+		}
+	}
+	for _, row := range matrix {
+		slices.Reverse(row)
+	}
+}
+
+// O(m+n)的空间复杂度
+func setZeroes(matrix [][]int) {
+	zeroRow := make(map[int]struct{})
+	zeroCol := make(map[int]struct{})
+	for i := 0; i < len(matrix); i++ {
+		for j := 0; j < len(matrix[i]); j++ {
+			if matrix[i][j] == 0 {
+				zeroRow[i] = struct{}{}
+				zeroCol[j] = struct{}{}
+			}
+		}
+	}
+	for i := 0; i < len(matrix); i++ {
+		for j := 0; j < len(matrix[i]); j++ {
+			_, ok1 := zeroRow[i]
+			_, ok2 := zeroCol[j]
+			if ok1 || ok2 {
+				matrix[i][j] = 0
+			}
+		}
+	}
+}
+
+// 合并区间
+func merge1(intervals [][]int) (ans [][]int) {
+	slices.SortFunc(intervals, func(a, b []int) int {
+		if a[0] == b[0] {
+			return a[1] - b[1]
+		}
+		return a[0] - b[0]
+	})
+	pre := intervals[0]
+	for i := 1; i < len(intervals); i++ {
+		cur := intervals[i]
+		if cur[0] > pre[1] {
+			ans = append(ans, pre)
+			pre = cur
+		} else {
+			pre[1] = max(pre[1], cur[1])
+		}
+	}
+	ans = append(ans, pre)
+	return
+}
+
+func rotate1(nums []int, k int) {
+	slices.Reverse(nums)
+	slices.Reverse(nums[:k])
+	slices.Reverse(nums[k:])
+}
+
+func getIntersectionNode(headA, headB *ListNode) *ListNode {
+	mp := make(map[*ListNode]struct{})
+	for p := headA; p != nil; p = p.Next {
+		mp[p] = struct{}{}
+	}
+	for p := headB; p != nil; p = p.Next {
+		if _, ok := mp[p]; ok {
+			return p
+		}
+	}
+	return nil
+}
+
+func reverseList(head *ListNode) *ListNode {
+	var pre *ListNode
+	for cur := head; cur != nil; {
+		nxt := cur.Next
+		cur.Next = pre
+		pre, cur = cur, nxt
+	}
+	return pre
+}
+func isPalindrome1(head *ListNode) bool {
+	slow, fast := head, head
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+	}
+	for p, q := head, reverseList(slow); p != nil && q != nil; p, q = p.Next, q.Next {
+		if p.Val != q.Val {
+			return false
+		}
+	}
+	return true
+}
+func hasCycle(head *ListNode) bool {
+	slow, fast := head, head
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+		if slow == fast {
+			return true
+		}
+	}
+	return false
+}
+
+func detectCycle(head *ListNode) *ListNode {
+	if !hasCycle(head) {
+		return nil
+	}
+	slow, fast := head, head
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+		if slow == fast {
+			break
+		}
+	}
+	for p := head; p != slow; {
+		p = p.Next
+		slow = slow.Next
+	}
+	return slow
+}
+func findPeaks(mountain []int) (ans []int) {
+	for i := 1; i < len(mountain)-1; i++ {
+		if mountain[i] > mountain[i-1] && mountain[i] > mountain[i+1] {
+			ans = append(ans, i)
+		}
+	}
+	return
+}

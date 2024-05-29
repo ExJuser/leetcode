@@ -469,3 +469,210 @@ func findPeaks(mountain []int) (ans []int) {
 	}
 	return
 }
+
+// 写的太丑陋了
+//func minSwaps(nums []int) int {
+//	var zero, ans, zeroCnt, oneCnt int
+//	for _, num := range nums {
+//		if num == 0 {
+//			zero++
+//		}
+//	}
+//	for i := 0; i < zero; i++ {
+//		if nums[i] == 1 {
+//			oneCnt++
+//		}
+//	}
+//	ans = oneCnt
+//	for i := 1; i < len(nums)-zero+1; i++ {
+//		if nums[i-1] == 1 {
+//			oneCnt--
+//		}
+//		if nums[i+zero-1] == 1 {
+//			oneCnt++
+//		}
+//		ans = min(ans, oneCnt)
+//	}
+//	for i := 0; i < len(nums)-zero; i++ {
+//		if nums[i] == 0 {
+//			zeroCnt++
+//		}
+//	}
+//	ans = min(ans, zeroCnt)
+//	for i := 1; i < zero+1; i++ {
+//		if nums[i-1] == 0 {
+//			zeroCnt--
+//		}
+//		if nums[i+len(nums)-zero-1] == 0 {
+//			zeroCnt++
+//		}
+//		ans = min(ans, zeroCnt)
+//	}
+//	return ans
+//}
+
+func minSwaps(nums []int) int {
+	var oneCnt, zeros, ans int
+	for _, num := range nums {
+		if num == 1 {
+			oneCnt++
+		}
+	}
+	circular := append(nums, nums...)
+	for i := 0; i < oneCnt; i++ {
+		if nums[i] == 0 {
+			zeros++
+		}
+	}
+	ans = zeros
+	for i := 1; i < len(nums); i++ {
+		if circular[i-1] == 0 {
+			zeros--
+		}
+		if circular[i+oneCnt-1] == 0 {
+			zeros++
+		}
+		ans = min(ans, zeros)
+	}
+	return ans
+}
+func checkInclusion(s1 string, s2 string) bool {
+	if len(s1) > len(s2) {
+		return false
+	}
+	mp := make(map[byte]int)
+	for _, char := range s1 {
+		mp[byte(char)]++
+	}
+	for i := 0; i < len(s1); i++ {
+		mp[s2[i]]--
+		if mp[s2[i]] == 0 {
+			delete(mp, s2[i])
+		}
+	}
+	if len(mp) == 0 {
+		return true
+	}
+	for i := 1; i < len(s2)-len(s1)+1; i++ {
+		mp[s2[i-1]]++
+		if mp[s2[i-1]] == 0 {
+			delete(mp, s2[i-1])
+		}
+		mp[s2[i+len(s1)-1]]--
+		if mp[s2[i+len(s1)-1]] == 0 {
+			delete(mp, s2[i+len(s1)-1])
+		}
+		if len(mp) == 0 {
+			return true
+		}
+	}
+	return false
+}
+
+func findAnagrams(s string, p string) (ans []int) {
+	if len(s) < len(p) {
+		return
+	}
+	mp := make(map[byte]int)
+	for _, char := range p {
+		mp[byte(char)]++
+	}
+	for i := 0; i < len(p); i++ {
+		mp[s[i]]--
+		if mp[s[i]] == 0 {
+			delete(mp, s[i])
+		}
+	}
+	if len(mp) == 0 {
+		ans = append(ans, 0)
+	}
+	for i := 1; i < len(s)-len(p)+1; i++ {
+		mp[s[i-1]]++
+		if mp[s[i-1]] == 0 {
+			delete(mp, s[i-1])
+		}
+		mp[s[i+len(p)-1]]--
+		if mp[s[i+len(p)-1]] == 0 {
+			delete(mp, s[i+len(p)-1])
+		}
+		if len(mp) == 0 {
+			ans = append(ans, i)
+		}
+	}
+	return
+}
+
+type FloatHeap []float64
+
+func (f *FloatHeap) Len() int {
+	return len(*f)
+}
+
+func (f *FloatHeap) Less(i, j int) bool {
+	return (*f)[i] > (*f)[j]
+}
+
+func (f *FloatHeap) Swap(i, j int) {
+	(*f)[i], (*f)[j] = (*f)[j], (*f)[i]
+}
+
+func (f *FloatHeap) Push(x any) {
+	*f = append(*f, x.(float64))
+}
+
+func (f *FloatHeap) Pop() any {
+	x := (*f)[f.Len()-1]
+	*f = (*f)[:f.Len()-1]
+	return x
+}
+
+func halveArray(nums []int) int {
+	var arrSum float64
+	var ans int
+	for _, num := range nums {
+		arrSum += float64(num)
+	}
+	halfSum := arrSum / 2
+	hp := &FloatHeap{}
+	for _, num := range nums {
+		heap.Push(hp, float64(num))
+	}
+	for arrSum > halfSum {
+		half := heap.Pop(hp).(float64) / 2
+		arrSum -= half
+		heap.Push(hp, half)
+		ans++
+	}
+	return ans
+}
+func maximumProduct(nums []int, k int) int {
+	hp := &IntHeap{}
+	*hp = nums
+	heap.Init(hp)
+	for ; k > 0; k-- {
+		heap.Push(hp, heap.Pop(hp).(int)+1)
+	}
+	ans := 1
+	for _, num := range *hp {
+		ans = (ans * num) % (1e9 + 7)
+	}
+	return ans
+}
+
+// 不定长滑动窗口
+func lengthOfLongestSubstring(s string) (ans int) {
+	left := 0
+	mp := make(map[byte]int)
+	for right := 0; right < len(s); right++ {
+		mp[s[right]]++
+		for len(mp) < right-left+1 {
+			mp[s[left]]--
+			if mp[s[left]] == 0 {
+				delete(mp, s[left])
+			}
+			left++
+		}
+		ans = max(ans, right-left+1)
+	}
+	return
+}

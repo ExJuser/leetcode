@@ -968,3 +968,19 @@ func isBalanced1(root *TreeNode) bool {
 	}
 	return dfs(root) != -1
 }
+func diameterOfBinaryTree1(root *TreeNode) (ans int) {
+	var dfs func(node *TreeNode) int
+	dfs = func(node *TreeNode) int {
+		//对一个节点来说以它为拐点的直径为左子树长度+右子树长度
+		//而它需要返回给父结点的是左右子树中最长的那一个
+		if node == nil {
+			return 0
+		}
+		left := dfs(node.Left)
+		right := dfs(node.Right)
+		ans = max(ans, left+right)
+		return max(left, right) + 1
+	}
+	dfs(root)
+	return
+}

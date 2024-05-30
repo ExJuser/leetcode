@@ -676,3 +676,295 @@ func lengthOfLongestSubstring(s string) (ans int) {
 	}
 	return
 }
+
+// 完全背包问题：先遍历背包和物品都可以
+func combinationSum41(nums []int, target int) int {
+	dp := make([]int, target+1)
+	dp[0] = 1
+	for i := 0; i <= target; i++ {
+		for j := 0; j < len(nums); j++ {
+			if i >= nums[j] {
+				dp[i] += dp[i-nums[j]]
+			}
+		}
+	}
+	return dp[target]
+}
+func countGoodStrings(low int, high int, zero int, one int) int {
+	dp := make([]int, high+1)
+	dp[zero] += 1
+	dp[one] += 1
+	for i := min(zero, one); i <= high; i++ {
+		if i+zero <= high {
+			dp[i+zero] = (dp[i+zero] + dp[i]) % (1e9 + 7)
+		}
+		if i+one <= high {
+			dp[i+one] = (dp[i+one] + dp[i]) % (1e9 + 7)
+		}
+	}
+	ans := 0
+	for i := low; i <= high; i++ {
+		ans = (ans + dp[i]) % (1e9 + 7)
+	}
+	return ans
+}
+
+// 相邻的数字一定无法同时删除 而且相同的数字要么同时被删除要么同时取得
+// 转化为打家劫舍问题
+func deleteAndEarn(nums []int) int {
+	rob := make([]int, slices.Max(nums)+1)
+	for _, num := range nums {
+		rob[num] += num
+	}
+	dp := make([]int, len(rob))
+	if len(rob) == 1 {
+		return rob[0]
+	}
+	dp[0] = rob[0]
+	dp[1] = max(rob[0], rob[1])
+	for i := 2; i < len(rob); i++ {
+		dp[i] = max(dp[i-1], dp[i-2]+rob[i])
+	}
+	return dp[len(rob)-1]
+}
+func maxSubArray3(nums []int) int {
+	dp := make([]int, len(nums))
+	dp[0] = nums[0]
+	ans := nums[0]
+	for i := 1; i < len(dp); i++ {
+		dp[i] = max(dp[i-1]+nums[i], nums[i])
+		ans = max(ans, dp[i])
+	}
+	return ans
+}
+func maximumCostSubstring(s string, chars string, vals []int) int {
+	dp := make([]int, len(s))
+	valMap := make(map[byte]int)
+	for i, char := range chars {
+		valMap[byte(char)] = vals[i]
+	}
+	if _, ok := valMap[s[0]]; ok {
+		dp[0] = max(0, valMap[s[0]])
+	} else {
+		dp[0] = int(s[0] - 'a' + 1)
+	}
+	ans := dp[0]
+	for i := 1; i < len(s); i++ {
+		if _, ok := valMap[s[i]]; ok {
+			dp[i] = max(valMap[s[i]], dp[i-1]+valMap[s[i]], 0)
+		} else {
+			dp[i] = max(dp[i-1]+int(s[i]-'a'+1), int(s[i]-'a'+1), 0)
+		}
+		ans = max(ans, dp[i])
+	}
+	return ans
+}
+func maxAbsoluteSum(nums []int) int {
+	maxDp := make([]int, len(nums))
+	minDp := make([]int, len(nums))
+	maxDp[0] = nums[0]
+	minDp[0] = nums[0]
+	ans := max(Abs(maxDp[0]), Abs(minDp[0]), 0)
+	for i := 1; i < len(nums); i++ {
+		maxDp[i] = max(maxDp[i-1]+nums[i], nums[i])
+		minDp[i] = min(minDp[i-1]+nums[i], nums[i])
+		ans = max(ans, Abs(maxDp[i]), Abs(minDp[i]))
+	}
+	return ans
+}
+func kConcatenationMaxSum(arr []int, k int) int {
+	var maxSubArray func(nums []int) int
+	maxSubArray = func(nums []int) int {
+		ans := nums[0]
+		for i := 1; i < len(nums); i++ {
+			nums[i] = max(nums[i], (nums[i-1]+nums[i])%(1e9+7))
+			ans = max(ans, nums[i])
+		}
+		return max(ans, 0)
+	}
+	newArr := make([]int, 0, 3*len(arr))
+	for ; k > 0; k-- {
+		newArr = append(newArr, arr...)
+	}
+	return maxSubArray(newArr)
+}
+
+// 层序遍历
+func levelOrder1(root *TreeNode) (ans [][]int) {
+	if root == nil {
+		return
+	}
+	queue := make([]*TreeNode, 0)
+	queue = append(queue, root)
+	for len(queue) > 0 {
+		size := len(queue)
+		level := make([]int, 0, size)
+		for i := 0; i < size; i++ {
+			temp := queue[0]
+			queue = queue[1:]
+			level = append(level, temp.Val)
+			if temp.Left != nil {
+				queue = append(queue, temp.Left)
+			}
+			if temp.Right != nil {
+				queue = append(queue, temp.Right)
+			}
+		}
+		ans = append(ans, level)
+	}
+	return
+}
+func lowestCommonAncestor1(root, p, q *TreeNode) *TreeNode {
+	var dfs func(node *TreeNode) *TreeNode
+	dfs = func(node *TreeNode) *TreeNode {
+		if node == nil {
+			return node
+		}
+		if node == p || node == q {
+			return node
+		}
+		left := dfs(node.Left)
+		right := dfs(node.Right)
+		if left != nil && right != nil {
+			return node
+		} else if left != nil {
+			return left
+		} else {
+			return right
+		}
+	}
+	return dfs(root)
+}
+func zigzagLevelOrder(root *TreeNode) (ans [][]int) {
+	if root == nil {
+		return
+	}
+	queue := make([]*TreeNode, 0)
+	queue = append(queue, root)
+	depth := 0
+	for ; len(queue) > 0; depth++ {
+		size := len(queue)
+		list := make([]int, 0, size)
+		for i := 0; i < size; i++ {
+			temp := queue[0]
+			list = append(list, temp.Val)
+			queue = queue[1:]
+			if temp.Left != nil {
+				queue = append(queue, temp.Left)
+			}
+			if temp.Right != nil {
+				queue = append(queue, temp.Right)
+			}
+		}
+		if depth%2 != 0 {
+			slices.Reverse(list)
+		}
+		ans = append(ans, list)
+	}
+	return
+}
+
+func inorderTraversal(root *TreeNode) (ans []int) {
+	var dfs func(node *TreeNode)
+	dfs = func(node *TreeNode) {
+		if node == nil {
+			return
+		}
+		dfs(node.Left)
+		ans = append(ans, node.Val)
+		dfs(node.Right)
+	}
+	dfs(root)
+	return
+}
+
+func rightSideView(root *TreeNode) (ans []int) {
+	var dfs func(node *TreeNode, depth int)
+	dfs = func(node *TreeNode, depth int) {
+		if node == nil {
+			return
+		}
+		if depth == len(ans) {
+			ans = append(ans, node.Val)
+		}
+		//可能最右节点在左子树
+		dfs(node.Right, depth+1)
+		dfs(node.Left, depth+1)
+	}
+	dfs(root, 0)
+	return
+}
+
+//func rightSideView(root *TreeNode) (ans []int) {
+//	levels := levelOrder(root)
+//	for _, level := range levels {
+//		ans = append(ans, level[len(level)-1])
+//	}
+//	return
+//}
+
+func maxDepth2(root *TreeNode) int {
+	var dfs func(node *TreeNode) int
+	dfs = func(node *TreeNode) int {
+		if node == nil {
+			return 0
+		}
+		return max(dfs(node.Left), dfs(node.Right)) + 1
+	}
+	return dfs(root)
+}
+
+func isSameTree(p *TreeNode, q *TreeNode) bool {
+	var dfs func(p, q *TreeNode) bool
+	dfs = func(p, q *TreeNode) bool {
+		if p == nil || q == nil {
+			if p == nil && q == nil {
+				return true
+			}
+			return false
+		}
+		return p.Val == q.Val && dfs(p.Left, q.Right) && dfs(p.Right, q.Left)
+	}
+	return dfs(p, q)
+}
+
+func isSymmetric1(root *TreeNode) bool {
+	return isSameTree(root.Left, root.Right)
+}
+func sumNumbers(root *TreeNode) (ans int) {
+	var dfs func(node *TreeNode, sum int)
+	dfs = func(node *TreeNode, sum int) {
+		if node == nil {
+			return
+		}
+		sum = sum*10 + node.Val
+		//叶子结点
+		if node.Left == nil && node.Right == nil {
+			ans += sum
+		}
+		dfs(node.Left, sum)
+		dfs(node.Right, sum)
+	}
+	dfs(root, 0)
+	return
+}
+
+// 所有节点的左右子树深度差不超过1
+func isBalanced1(root *TreeNode) bool {
+	var dfs func(node *TreeNode) int
+	dfs = func(node *TreeNode) int {
+		if node == nil {
+			return 0
+		}
+		left := dfs(node.Left)
+		if left == -1 {
+			return -1
+		}
+		right := dfs(node.Right)
+		if right == -1 || Abs(left-right) > 1 {
+			return -1
+		}
+		return max(left, right) + 1
+	}
+	return dfs(root) != -1
+}

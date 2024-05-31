@@ -1,5 +1,7 @@
 package main
 
+import "math/bits"
+
 func pathSum1(root *TreeNode, targetSum int) (ans [][]int) {
 	var dfs func(node *TreeNode, sum int, path []int)
 	dfs = func(node *TreeNode, sum int, path []int) {
@@ -79,4 +81,22 @@ func removeDuplicates1(nums []int) int {
 		}
 	}
 	return index
+}
+func plusOne(digits []int) []int {
+	carry := 0
+	for i := len(digits) - 1; i >= 0; i-- {
+		sum := digits[i] + carry + 1
+		carry = sum / 10
+		digits[i] = sum % 10
+	}
+	if carry != 0 {
+		digits = append([]int{1}, digits...)
+	}
+	return digits
+}
+func hammingWeight(n int) int {
+	return bits.OnesCount32(uint32(n))
+}
+func reverseBits(num uint32) uint32 {
+	return bits.Reverse32(num)
 }

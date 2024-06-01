@@ -284,3 +284,137 @@ func findTargetNode(root *TreeNode, cnt int) int {
 	}
 	return dfsFindTarget(root, cnt)
 }
+func deleteNode1(root *TreeNode, key int) *TreeNode {
+	//被删除的节点的左子树需要迁移到被删除的节点的右子树的最左边
+	var dfs func(node *TreeNode) *TreeNode
+	dfs = func(node *TreeNode) *TreeNode {
+		if node == nil {
+			return node
+		}
+		//即要被删除的节点
+		if node.Val == key {
+			if node.Right == nil {
+				return node.Left
+			}
+			p := node.Right
+			for p != nil && p.Left != nil {
+				p = p.Left
+			}
+			p.Left = node.Left
+			return node.Right
+		}
+		node.Left, node.Right = dfs(node.Left), dfs(node.Right)
+		return node
+	}
+	return dfs(root)
+}
+
+// 使用中序遍历有序的性质
+//func kthSmallest(root *TreeNode, k int) int {
+//	sequence := make([]int, 0)
+//	var dfs func(node *TreeNode)
+//	dfs = func(node *TreeNode) {
+//		if node == nil {
+//			return
+//		}
+//		dfs(node.Left)
+//		sequence = append(sequence, node.Val)
+//		dfs(node.Right)
+//	}
+//	dfs(root)
+//	return sequence[k-1]
+//}
+
+// 如果当前节点左子树的节点数大于k-1 递归寻找左子树
+// 如果当前节点左子树的节点数等于k-1 返回当前节点
+// 如果当前节点左子树的节点数小于k-1 递归寻找右子树 k-左-1
+//
+//	func kthSmallest(root *TreeNode, k int) int {
+//		var dfsNodeCount func(node *TreeNode) int
+//		var dfs func(node *TreeNode, k int) int
+//		dfsNodeCount = func(node *TreeNode) int {
+//			if node == nil {
+//				return 0
+//			}
+//			return dfsNodeCount(node.Left) + dfsNodeCount(node.Right) + 1
+//		}
+//		dfs = func(node *TreeNode, k int) int {
+//			if node == nil {
+//				return -1
+//			}
+//			nodeCount := dfsNodeCount(node.Left)
+//			if nodeCount == k-1 {
+//				return node.Val
+//			} else if nodeCount > k-1 {
+//				return dfs(node.Left, k)
+//			} else {
+//				return dfs(node.Right, k-nodeCount-1)
+//			}
+//		}
+//		return dfs(root, k)
+//	}
+func flatten(root *TreeNode) {
+	var dfs func(node *TreeNode)
+	dfs = func(node *TreeNode) {
+		if node == nil {
+			return
+		}
+		if node.Left != nil {
+			right := node.Right
+			p := node.Left
+			for p != nil && p.Right != nil {
+				p = p.Right
+			}
+			p.Right = right
+			node.Right = node.Left
+			node.Left = nil
+		}
+		dfs(node.Right)
+	}
+	dfs(root)
+}
+func isSameTree(p *TreeNode, q *TreeNode) bool {
+	var dfs func(p, q *TreeNode) bool
+	dfs = func(p, q *TreeNode) bool {
+		if p == nil || q == nil {
+			if p == nil && q == nil {
+				return true
+			}
+			return false
+		}
+		return p.Val == q.Val && dfs(p.Left, q.Left) && dfs(p.Right, q.Right)
+	}
+	return dfs(p, q)
+}
+func isSubtree(root *TreeNode, subRoot *TreeNode) bool {
+	var dfs func(node *TreeNode) bool
+	dfs = func(node *TreeNode) bool {
+		if node == nil {
+			return false
+		}
+		if isSameTree(node, subRoot) {
+			return true
+		}
+		return dfs(node.Left) || dfs(node.Right)
+	}
+	return dfs(root)
+}
+func isSubStructure(A *TreeNode, B *TreeNode) bool {
+	if A == nil || B == nil {
+		return false
+	}
+	var isSub func(A, B *TreeNode) bool
+	isSub = func(A, B *TreeNode) bool {
+		if B == nil {
+			return true
+		}
+		if A == nil {
+			return false
+		}
+		if A.Val == B.Val {
+			return isSub(A.Left, B.Left) && isSub(A.Right, B.Right)
+		}
+		return false
+	}
+	return isSub(A, B) || isSubStructure(A.Left, B) || isSubStructure(A.Right, B)
+}

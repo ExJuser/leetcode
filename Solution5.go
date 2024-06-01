@@ -914,19 +914,19 @@ func maxDepth2(root *TreeNode) int {
 	return dfs(root)
 }
 
-func isSameTree(p *TreeNode, q *TreeNode) bool {
-	var dfs func(p, q *TreeNode) bool
-	dfs = func(p, q *TreeNode) bool {
-		if p == nil || q == nil {
-			if p == nil && q == nil {
-				return true
-			}
-			return false
-		}
-		return p.Val == q.Val && dfs(p.Left, q.Right) && dfs(p.Right, q.Left)
-	}
-	return dfs(p, q)
-}
+//func isSameTree(p *TreeNode, q *TreeNode) bool {
+//	var dfs func(p, q *TreeNode) bool
+//	dfs = func(p, q *TreeNode) bool {
+//		if p == nil || q == nil {
+//			if p == nil && q == nil {
+//				return true
+//			}
+//			return false
+//		}
+//		return p.Val == q.Val && dfs(p.Left, q.Right) && dfs(p.Right, q.Left)
+//	}
+//	return dfs(p, q)
+//}
 
 func isSymmetric1(root *TreeNode) bool {
 	return isSameTree(root.Left, root.Right)

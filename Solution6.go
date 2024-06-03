@@ -399,22 +399,115 @@ func isSubtree(root *TreeNode, subRoot *TreeNode) bool {
 	}
 	return dfs(root)
 }
-func isSubStructure(A *TreeNode, B *TreeNode) bool {
-	if A == nil || B == nil {
-		return false
+
+func distributeCandies1(candyType []int) int {
+	slices.Sort(candyType)
+	types := 1
+	for i := 1; i < len(candyType); i++ {
+		if candyType[i] != candyType[i-1] {
+			types++
+		}
 	}
-	var isSub func(A, B *TreeNode) bool
-	isSub = func(A, B *TreeNode) bool {
+	return min(len(candyType)/2, types)
+}
+
+func isSubStructure(A *TreeNode, B *TreeNode) bool {
+	var dfs func(A, B *TreeNode) bool
+	dfs = func(A, B *TreeNode) bool {
 		if B == nil {
 			return true
 		}
 		if A == nil {
 			return false
 		}
-		if A.Val == B.Val {
-			return isSub(A.Left, B.Left) && isSub(A.Right, B.Right)
-		}
+		return A.Val == B.Val && dfs(A.Left, B.Left) && dfs(A.Right, B.Right)
+	}
+	if A == nil || B == nil {
 		return false
 	}
-	return isSub(A, B) || isSubStructure(A.Left, B) || isSubStructure(A.Right, B)
+	return dfs(A, B) || isSubStructure(A.Left, B) || isSubStructure(A.Right, B)
+}
+
+// 滑动子数组的美丽值：暴力超时
+//func getSubarrayBeauty(nums []int, k int, x int) (ans []int) {
+//	slides := make([]int, 0, k)
+//	for i := 0; i < k; i++ {
+//		slides = append(slides, nums[i])
+//	}
+//	slices.Sort(slides)
+//	if slides[x-1] < 0 {
+//		ans = append(ans, slides[x-1])
+//	} else {
+//		ans = append(ans, 0)
+//	}
+//	for i := 1; i < len(nums)-k+1; i++ {
+//		outIndex, _ := slices.BinarySearch(slides, nums[i-1])
+//		if outIndex+1 < len(slides) {
+//			slides = append(slides[:outIndex], slides[outIndex+1:]...)
+//		} else {
+//			slides = slides[:outIndex]
+//		}
+//		inIndex, _ := slices.BinarySearch(slides, nums[i+k-1])
+//		slides = append(slides[:inIndex], append([]int{nums[i+k-1]}, slides[inIndex:]...)...)
+//		if slides[x-1] < 0 {
+//			ans = append(ans, slides[x-1])
+//		} else {
+//			ans = append(ans, 0)
+//		}
+//	}
+//	return
+//}
+
+func getSubarrayBeauty(nums []int, k int, x int) []int {
+	cnt := make([]int, 101)
+	ans := make([]int, len(nums)-k+1)
+	for i := 0; i < k; i++ {
+		cnt[nums[i]+50]++
+	}
+	left := x
+	for i := 0; i < len(cnt); i++ {
+		left -= cnt[i]
+		if left <= 0 {
+			if i-50 < 0 {
+				ans[0] = i - 50
+			} else {
+				ans[0] = 0
+			}
+			break
+		}
+	}
+	for i := 1; i < len(nums)-k+1; i++ {
+		cnt[nums[i-1]+50]--
+		cnt[nums[i+k-1]+50]++
+		left := x
+		for j := 0; j < len(cnt); j++ {
+			left -= cnt[j]
+			if left <= 0 {
+				if j-50 < 0 {
+					ans[i] = j - 50
+				} else {
+					ans[i] = 0
+				}
+				break
+			}
+		}
+	}
+	return ans
+}
+func distributeCandies2(candies int, num_people int) []int {
+	ans := make([]int, num_people)
+	candy := 1
+	for candies > 0 {
+		for i := 0; i < num_people && candies > 0; i++ {
+			if candies-candy <= 0 {
+				ans[i] += candies
+				candies = 0
+			} else {
+				candies -= candy
+				ans[i] += candy
+				candy++
+			}
+		}
+	}
+	return ans
 }

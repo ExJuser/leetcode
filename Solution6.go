@@ -4,6 +4,7 @@ import (
 	"math"
 	"math/bits"
 	"slices"
+	"sort"
 	"strings"
 )
 
@@ -626,6 +627,79 @@ func longestOnes(nums []int, k int) int {
 	}
 	return ans
 }
-func longestSubarray1(nums []int, limit int) int {
 
+// 单调队列时刻维护窗口内的最大值和最小值
+func longestSubarray1(nums []int, limit int) int {
+	maxQueue := make([]int, 0, len(nums))
+	minQueue := make([]int, 0, len(nums))
+	var left, ans int
+	for right := 0; right < len(nums); right++ {
+		maxQueue = append(maxQueue[:sort.Search(len(maxQueue), func(i int) bool { return maxQueue[i] < nums[right] })], nums[right])
+		minQueue = append(minQueue[:sort.Search(len(minQueue), func(i int) bool { return minQueue[i] > nums[right] })], nums[right])
+		for ; len(maxQueue) > 0 && len(minQueue) > 0 && maxQueue[0]-minQueue[0] > limit; left++ {
+			if maxQueue[0] == nums[left] {
+				maxQueue = maxQueue[1:]
+			}
+			if minQueue[0] == nums[left] {
+				minQueue = minQueue[1:]
+			}
+		}
+		ans = max(ans, right-left+1)
+	}
+	return ans
+}
+
+// 滑动窗口最大值
+// 单调递减的单调队列维护最大值
+// 单调递增的单调队列维护最小值
+func maxSlidingWindow1(nums []int, k int) []int {
+	maxQueue := make([]int, 0, len(nums))
+	ans := make([]int, 0, len(nums)-k+1)
+	for right := 0; right < len(nums); right++ {
+		if len(maxQueue) > 0 && right-maxQueue[0] > k {
+			maxQueue = maxQueue[1:]
+		}
+		for len(maxQueue) > 0 && nums[maxQueue[len(maxQueue)-1]] < nums[right] {
+			maxQueue = maxQueue[:len(maxQueue)-1]
+		}
+		maxQueue = append(maxQueue, right)
+		ans = append(ans, nums[maxQueue[0]])
+	}
+	return ans
+}
+
+// 有可能超时
+func longestNiceSubarray(nums []int) int {
+	var left, ans, temp int
+	for right := 0; right < len(nums); right++ {
+		temp |= nums[right]
+		for ; temp&nums[right] > 0; left++ {
+			temp ^= nums[left]
+		}
+		ans = max(ans, right-left+1)
+	}
+	return ans
+}
+
+// 最长的和为sum-x的子数组
+func minOperations(nums []int, x int) int {
+	numsSum := 0
+	for _, num := range nums {
+		numsSum += num
+	}
+	var left, curSum int
+	maxLen := -1
+	for right := 0; right < len(nums); right++ {
+		curSum += nums[right]
+		for ; left <= right && curSum > numsSum-x; left++ {
+			curSum -= nums[left]
+		}
+		if curSum == numsSum-x {
+			maxLen = max(maxLen, right-left+1)
+		}
+	}
+	if maxLen != -1 {
+		return len(nums) - maxLen
+	}
+	return -1
 }

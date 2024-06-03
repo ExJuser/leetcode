@@ -511,3 +511,121 @@ func distributeCandies2(candies int, num_people int) []int {
 	}
 	return ans
 }
+
+// 最多只有一个0的最长子数组
+func longestSubarray(nums []int) int {
+	var left, zeroCount, ans int
+	for right := 0; right < len(nums); right++ {
+		if nums[right] == 0 {
+			zeroCount++
+		}
+		for ; zeroCount > 1; left++ {
+			if nums[left] == 0 {
+				zeroCount -= 1
+			}
+		}
+		ans = max(ans, right-left)
+	}
+	return ans
+}
+
+// 找到最长的半重复子字符串
+func longestSemiRepetitiveSubstring(s string) int {
+	var repetitiveCount, left, ans int
+	for right := 0; right < len(s); right++ {
+		if right > 0 && s[right] == s[right-1] {
+			repetitiveCount++
+		}
+		for ; repetitiveCount > 1; left++ {
+			if s[left] == s[left+1] {
+				repetitiveCount--
+			}
+		}
+		ans = max(ans, right-left+1)
+	}
+	return ans
+}
+
+func totalFruit(fruits []int) int {
+	fruit := make(map[int]int)
+	var left, ans int
+	for right := 0; right < len(fruits); right++ {
+		fruit[fruits[right]]++
+		for ; len(fruit) > 2; left++ {
+			fruit[fruits[left]]--
+			if fruit[fruits[left]] == 0 {
+				delete(fruit, fruits[left])
+			}
+		}
+		ans = max(ans, right-left+1)
+	}
+	return ans
+}
+
+// 即求和最大的不包含重复元素的子数组
+func maximumUniqueSubarray(nums []int) int {
+	var left, ans, sum int
+	mp := make(map[int]int)
+	for right := 0; right < len(nums); right++ {
+		sum += nums[right]
+		mp[nums[right]]++
+		for ; len(mp) != right-left+1; left++ {
+			mp[nums[left]]--
+			if mp[nums[left]] == 0 {
+				delete(mp, nums[left])
+			}
+			sum -= nums[left]
+		}
+		ans = max(ans, sum)
+	}
+	return ans
+}
+func maxSubarrayLength(nums []int, k int) int {
+	mp := make(map[int]int)
+	var left, ans int
+	for right := 0; right < len(nums); right++ {
+		mp[nums[right]]++
+		for ; mp[nums[right]] > k; left++ {
+			mp[nums[left]]--
+		}
+		ans = max(ans, right-left+1)
+	}
+	return ans
+}
+func maxConsecutiveAnswers(answerKey string, k int) int {
+	var trueCount, falseCount, left, ans int
+	for right := 0; right < len(answerKey); right++ {
+		if answerKey[right] == 'T' {
+			trueCount++
+		} else {
+			falseCount++
+		}
+		for ; trueCount > k && falseCount > k; left++ {
+			if answerKey[left] == 'F' {
+				falseCount--
+			} else {
+				trueCount--
+			}
+		}
+		ans = max(ans, right-left+1)
+	}
+	return ans
+}
+func longestOnes(nums []int, k int) int {
+	var zeroCount, left, ans int
+	for right := 0; right < len(nums); right++ {
+		if nums[right] == 0 {
+			zeroCount++
+		}
+		for ; zeroCount > k; left++ {
+			if nums[left] == 0 {
+				zeroCount--
+			}
+		}
+		ans = max(ans, right-left+1)
+	}
+	return ans
+}
+func longestSubarray1(nums []int, limit int) int {
+
+}

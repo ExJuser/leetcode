@@ -682,7 +682,7 @@ func longestNiceSubarray(nums []int) int {
 }
 
 // 最长的和为sum-x的子数组
-func minOperations(nums []int, x int) int {
+func minOperations1(nums []int, x int) int {
 	numsSum := 0
 	for _, num := range nums {
 		numsSum += num
@@ -702,4 +702,168 @@ func minOperations(nums []int, x int) int {
 		return len(nums) - maxLen
 	}
 	return -1
+}
+
+// 1 1 1 2 3 3 4 4 6 8 9
+func maxFrequency(nums []int, k int) int {
+	slices.Sort(nums)
+	var left, sum, ans int
+	for right := 0; right < len(nums); right++ {
+		sum += nums[right]
+		for ; nums[right]*(right-left+1)-sum > k; left++ {
+			sum -= nums[left]
+		}
+		ans = max(ans, right-left+1)
+	}
+	return ans
+}
+
+// 从左右两端取 abc三个字符都取走k个所需的最少操作次数
+// 反向思考即包含xxx个abc字符的最长子串
+func takeCharacters(s string, k int) int {
+	cnt := make(map[byte]int)
+	for _, char := range s {
+		cnt[byte(char)]++
+	}
+	targetA, targetB, targetC := cnt['a']-k, cnt['b']-k, cnt['c']-k
+	if targetA < 0 || targetB < 0 || targetC < 0 {
+		return -1
+	}
+	var left, curA, curB, curC, ans int
+	for right := 0; right < len(s); right++ {
+		if s[right] == 'a' {
+			curA++
+		} else if s[right] == 'b' {
+			curB++
+		} else {
+			curC++
+		}
+		for ; curA > targetA || curB > targetB || curC > targetC; left++ {
+			if s[left] == 'a' {
+				curA--
+			} else if s[left] == 'b' {
+				curB--
+			} else {
+				curC--
+			}
+		}
+		ans = max(ans, right-left+1)
+	}
+	return len(s) - ans
+}
+
+// 勉强能过 维护最大值的部分还可以优化 但不知道如何优化了
+func longestEqualSubarray(nums []int, k int) int {
+	cnt := make(map[int]int)
+	var maxTimes, left, ans int
+	for right := 0; right < len(nums); right++ {
+		cnt[nums[right]]++
+		maxTimes = max(maxTimes, cnt[nums[right]])
+		for ; maxTimes+k < right-left+1; left++ {
+			cnt[nums[left]]--
+			if cnt[nums[left]] == maxTimes-1 {
+				for _, v := range cnt {
+					maxTimes = max(maxTimes, v)
+				}
+			}
+			if cnt[nums[left]] == 0 {
+				delete(cnt, nums[left])
+			}
+		}
+		ans = max(ans, maxTimes)
+	}
+	return ans
+}
+func minSubArrayLen1(target int, nums []int) int {
+	var left, sum int
+	ans := len(nums) + 1
+	for right := 0; right < len(nums); right++ {
+		sum += nums[right]
+		for ; sum >= target; left++ {
+			ans = min(ans, right-left+1)
+			sum -= nums[left]
+		}
+	}
+	if ans == len(nums)+1 {
+		return 0
+	}
+	return ans
+}
+
+// 写的太繁琐了
+//
+//	func balancedString(s string) int {
+//		target := make(map[byte]int)
+//		for _, char := range s {
+//			target[byte(char)]++
+//		}
+//		for k, v := range target {
+//			if v > len(s)/4 {
+//				target[k] = v - len(s)/4
+//			} else {
+//				delete(target, k)
+//			}
+//		}
+//		if len(target) == 0 {
+//			return 0
+//		}
+//		var left int
+//		var checkCnt func(cnt map[byte]int) bool
+//		checkCnt = func(cnt map[byte]int) bool {
+//			for _, v := range cnt {
+//				if v > 0 {
+//					return false
+//				}
+//			}
+//			return true
+//		}
+//		ans := len(s) + 1
+//		for right := 0; right < len(s); right++ {
+//			if _, ok := target[s[right]]; ok {
+//				target[s[right]]--
+//			}
+//			for ; checkCnt(target); left++ {
+//				if _, ok := target[s[left]]; ok {
+//					target[s[left]]++
+//				}
+//				ans = min(ans, right-left+1)
+//			}
+//		}
+//		return ans
+//	}
+
+// 包含t中所有字符的最短子串
+func minWindow(s string, t string) string {
+	target := make(map[byte]int)
+	exist := make(map[byte]int)
+	for _, char := range t {
+		target[byte(char)]++
+	}
+	for _, char := range s {
+		exist[byte(char)]++
+	}
+	for k, v := range target {
+		if v > exist[k] {
+			return ""
+		}
+	}
+	check := func(target map[byte]int) bool {
+		for _, v := range target {
+			if v > 0 {
+				return false
+			}
+		}
+		return true
+	}
+	left, ans := 0, s
+	for right := 0; right < len(s); right++ {
+		target[s[right]]--
+		for ; check(target); left++ {
+			if right-left+1 < len(ans) {
+				ans = s[left : right+1]
+			}
+			target[s[left]]++
+		}
+	}
+	return ans
 }

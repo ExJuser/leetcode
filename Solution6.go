@@ -867,3 +867,92 @@ func minWindow(s string, t string) string {
 	}
 	return ans
 }
+
+// 暴力判断是否有序
+//func findLengthOfShortestSubarray(arr []int) int {
+//	if slices.IsSorted(arr) {
+//		return 0
+//	}
+//	var left int
+//	ans := len(arr) + 1
+//	for right := 0; right < len(arr); right++ {
+//		for ; left <= right && slices.IsSorted(arr[:left]) && slices.IsSorted(arr[right+1:]) && (left == 0 || right == len(arr)-1 || arr[right+1] >= arr[left-1]); left++ {
+//			ans = min(ans, right-left+1)
+//		}
+//	}
+//	return ans
+//}
+
+func findLengthOfShortestSubarray(arr []int) int {
+	right := len(arr) - 1
+	left := 0
+	for right > 0 && arr[right] >= arr[right-1] {
+		right--
+	}
+	if right == 0 {
+		return 0
+	}
+	ans := right
+	for ; right < len(arr); right++ {
+		for ; (left == 0 || arr[left-1] <= arr[left]) && arr[left] <= arr[right]; left++ {
+			ans = min(ans, right-left)
+		}
+	}
+	return ans
+}
+func countCompleteSubarrays(nums []int) int {
+	totalCnt := make(map[int]struct{})
+	for _, num := range nums {
+		totalCnt[num] = struct{}{}
+	}
+	subCnt := make(map[int]int)
+	var left, ans int
+	for right := 0; right < len(nums); right++ {
+		subCnt[nums[right]]++
+		for ; len(subCnt) == len(totalCnt); left++ {
+			subCnt[nums[left]]--
+			if subCnt[nums[left]] == 0 {
+				delete(subCnt, nums[left])
+			}
+			ans += len(nums) - right
+		}
+	}
+	return ans
+}
+func numSubarrayProductLessThanK(nums []int, k int) int {
+	var left, ans int
+	product := 1
+	for right := 0; right < len(nums); right++ {
+		product *= nums[right]
+		for ; product > k; left++ {
+			product /= nums[left]
+		}
+		ans += right - left + 1
+	}
+	return ans
+}
+
+func numberOfSubstrings(s string) int {
+	var aCount, bCount, cCount int
+	var left, ans int
+	for right := 0; right < len(s); right++ {
+		if s[right] == 'a' {
+			aCount++
+		} else if s[right] == 'b' {
+			bCount++
+		} else {
+			cCount++
+		}
+		for ; aCount > 0 && bCount > 0 && cCount > 0; left++ {
+			if s[left] == 'a' {
+				aCount--
+			} else if s[left] == 'b' {
+				bCount--
+			} else {
+				cCount--
+			}
+			ans += len(s) - right
+		}
+	}
+	return ans
+}

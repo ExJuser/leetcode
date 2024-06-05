@@ -1,5 +1,7 @@
 package main
 
+import "slices"
+
 func countGood(nums []int, k int) (ans int64) {
 	var left, pairCount int
 	cnt := make(map[int]int)
@@ -41,4 +43,219 @@ func continuousSubarrays(nums []int) (ans int64) {
 		ans += int64(right - left + 1)
 	}
 	return
+}
+
+// 回溯复习：电话号码的字母组合
+func letterCombinations1(digits string) (ans []string) {
+	mapping := []string{"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"}
+	var dfs func(index int, path []byte)
+	dfs = func(index int, path []byte) {
+		if index == len(digits) {
+			ans = append(ans, string(path))
+			return
+		}
+		letters := mapping[digits[index]-'0']
+		//遍历可能的选择并恢复现场
+		for _, ch := range letters {
+			path = append(path, byte(ch))
+			dfs(index+1, path)
+			path = path[:len(path)-1]
+		}
+	}
+	if len(digits) == 0 {
+		return
+	}
+	dfs(0, []byte{})
+	return
+}
+
+// 左括号的出现次数永远大于等于右括号
+func generateParenthesis(n int) (ans []string) {
+	var dfs func(left, right int, path []byte)
+	dfs = func(left, right int, path []byte) {
+		if left == n && right == n {
+			ans = append(ans, string(path))
+			return
+		}
+		//添加一个左括号
+		if left < n {
+			path = append(path, '(')
+			dfs(left+1, right, path)
+			path = path[:len(path)-1]
+		}
+		//添加一个右括号
+		if right < n && right < left {
+			path = append(path, ')')
+			dfs(left, right+1, path)
+			path = path[:len(path)-1]
+		}
+	}
+	dfs(0, 0, []byte{})
+	return
+}
+func combinationSum_(candidates []int, target int) (ans [][]int) {
+	var dfs func(index, sum int, path []int)
+	dfs = func(index, sum int, path []int) {
+		if index == len(candidates) || sum >= target {
+			if sum == target {
+				ans = append(ans, append([]int{}, path...))
+			}
+			return
+		}
+		//选
+		path = append(path, candidates[index])
+		dfs(index, sum+candidates[index], path)
+		path = path[:len(path)-1]
+
+		//不选
+		dfs(index+1, sum, path)
+	}
+	dfs(0, 0, []int{})
+	return
+}
+func combinationSum2_(candidates []int, target int) (ans [][]int) {
+	var dfs func(index, sum int, path []int)
+	dfs = func(index, sum int, path []int) {
+		if index == len(candidates) || sum >= target {
+			if sum == target {
+				ans = append(ans, append([]int{}, path...))
+			}
+			return
+		}
+		for i := index; i < len(candidates); i++ {
+			//去重操作
+			if i == index || candidates[i] != candidates[i-1] {
+				path = append(path, candidates[i])
+				dfs(i+1, sum+candidates[i], path)
+				path = path[:len(path)-1]
+			}
+		}
+	}
+	slices.Sort(candidates)
+	dfs(0, 0, []int{})
+	return
+}
+
+// 全排列
+func permute_(nums []int) (ans [][]int) {
+	visited := make([]bool, len(nums))
+	var dfs func(cnt int, path []int)
+	dfs = func(cnt int, path []int) {
+		if cnt == len(nums) {
+			ans = append(ans, append([]int{}, path...))
+			return
+		}
+		for i, num := range nums {
+			if !visited[i] {
+				visited[i] = true
+				path = append(path, num)
+				dfs(cnt+1, path)
+				visited[i] = false
+				path = path[:len(path)-1]
+			}
+		}
+	}
+	dfs(0, []int{})
+	return
+}
+func permuteUnique_(nums []int) (ans [][]int) {
+	visited := make([]bool, len(nums))
+	slices.Sort(nums)
+	var dfs func(cnt int, path []int)
+	dfs = func(cnt int, path []int) {
+		if cnt == len(nums) {
+			ans = append(ans, append([]int{}, path...))
+			return
+		}
+		for i, num := range nums {
+			//去重
+			if !visited[i] && (i == 0 || num != nums[i-1] || visited[i-1]) {
+				visited[i] = true
+				path = append(path, num)
+				dfs(cnt+1, path)
+				visited[i] = false
+				path = path[:len(path)-1]
+			}
+		}
+	}
+	dfs(0, []int{})
+	return
+}
+func subsets_(nums []int) (ans [][]int) {
+	var dfs func(index int, path []int)
+	dfs = func(index int, path []int) {
+		if index == len(nums) {
+			ans = append(ans, append([]int{}, path...))
+			return
+		}
+		//选
+		path = append(path, nums[index])
+		dfs(index+1, path)
+		path = path[:len(path)-1]
+		//不选
+		dfs(index+1, path)
+	}
+	dfs(0, []int{})
+	return
+}
+func exist(board [][]byte, word string) bool {
+	used := make([][]bool, len(board))
+	for i := 0; i < len(used); i++ {
+		used[i] = make([]bool, len(board[i]))
+	}
+	var dfs func(i, j int, path []byte) bool
+	dfs = func(i, j int, path []byte) bool {
+		if len(path) == len(word) {
+			return string(path) == word
+		}
+		if i+1 < len(board) && board[i+1][j] == word[len(path)] && !used[i+1][j] {
+			path = append(path, board[i+1][j])
+			used[i+1][j] = true
+			if dfs(i+1, j, path) {
+				return true
+			}
+			path = path[:len(path)-1]
+			used[i+1][j] = false
+		}
+		if i >= 1 && i-1 < len(board) && board[i-1][j] == word[len(path)] && !used[i-1][j] {
+			path = append(path, board[i-1][j])
+			used[i-1][j] = true
+			if dfs(i-1, j, path) {
+				return true
+			}
+			path = path[:len(path)-1]
+			used[i-1][j] = false
+		}
+		if j+1 < len(board[i]) && board[i][j+1] == word[len(path)] && !used[i][j+1] {
+			path = append(path, board[i][j+1])
+			used[i][j+1] = true
+			if dfs(i, j+1, path) {
+				return true
+			}
+			path = path[:len(path)-1]
+			used[i][j+1] = false
+		}
+		if j >= 1 && j-1 < len(board[i]) && board[i][j-1] == word[len(path)] && !used[i][j-1] {
+			used[i][j-1] = true
+			path = append(path, board[i][j-1])
+			if dfs(i, j-1, path) {
+				return true
+			}
+			path = path[:len(path)-1]
+			used[i][j-1] = false
+		}
+		return false
+	}
+	for i := 0; i < len(board); i++ {
+		for j := 0; j < len(board[i]); j++ {
+			if board[i][j] == word[0] {
+				used[i][j] = true
+				if dfs(i, j, []byte{word[0]}) {
+					return true
+				}
+				used[i][j] = false
+			}
+		}
+	}
+	return false
 }

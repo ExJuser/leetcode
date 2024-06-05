@@ -331,3 +331,46 @@ func calPoints(operations []string) int {
 	}
 	return scores
 }
+
+type BrowserHistory struct {
+	index   int
+	history []string
+}
+
+//func Constructor(homepage string) BrowserHistory {
+//	return BrowserHistory{
+//		index:   0,
+//		history: []string{homepage},
+//	}
+//}
+
+func (this *BrowserHistory) Visit(url string) {
+	this.history = append(this.history[:this.index+1], url)
+	this.index = len(this.history) - 1
+}
+
+func (this *BrowserHistory) Back(steps int) string {
+	this.index = max(this.index-steps, 0)
+	return this.history[this.index]
+}
+
+func (this *BrowserHistory) Forward(steps int) string {
+	this.index = min(len(this.history)-1, this.index+steps)
+	return this.history[this.index]
+}
+
+func numberOfPoints(nums [][]int) (ans int) {
+	slices.SortFunc(nums, func(a, b []int) int {
+		return a[0] - b[0]
+	})
+	maxRight := 0
+	for _, num := range nums {
+		if num[0] > maxRight {
+			ans += num[1] - num[0] + 1
+		} else {
+			ans += max(0, num[1]-maxRight)
+		}
+		maxRight = max(maxRight, num[1])
+	}
+	return ans
+}

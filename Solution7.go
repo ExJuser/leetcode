@@ -1,6 +1,9 @@
 package main
 
-import "slices"
+import (
+	"slices"
+	"strconv"
+)
 
 func countGood(nums []int, k int) (ans int64) {
 	var left, pairCount int
@@ -258,4 +261,73 @@ func exist(board [][]byte, word string) bool {
 		}
 	}
 	return false
+}
+func buildArray(target []int, n int) (ans []string) {
+	list := make([]int, n)
+	for i := 0; i < n; i++ {
+		list[i] = i + 1
+	}
+	for i, j := 0, 0; i < len(target); i++ {
+		if target[i] == list[j] {
+			ans = append(ans, "Push")
+			j++
+		} else {
+			cnt := 0
+			for target[i] != list[j] {
+				ans = append(ans, "Push")
+				cnt++
+				j++
+			}
+			for ; cnt > 0; cnt-- {
+				ans = append(ans, "Pop")
+			}
+		}
+	}
+	return
+}
+func backspaceCompare(s string, t string) bool {
+	stack1 := make([]byte, 0, len(s))
+	stack2 := make([]byte, 0, len(t))
+	for _, ch := range s {
+		if ch != '#' {
+			stack1 = append(stack1, byte(ch))
+		} else {
+			if len(stack1) > 0 {
+				stack1 = stack1[:len(stack1)-1]
+			}
+		}
+	}
+	for _, ch := range t {
+		if ch != '#' {
+			stack2 = append(stack2, byte(ch))
+		} else {
+			if len(stack2) > 0 {
+				stack2 = stack2[:len(stack2)-1]
+			}
+		}
+	}
+	return string(stack1) == string(stack2)
+}
+
+func calPoints(operations []string) int {
+	stack := make([]int, 0, len(operations))
+	for _, op := range operations {
+		if op == "C" {
+			stack = stack[:len(stack)-1]
+		} else if op == "D" {
+			prev := stack[len(stack)-1]
+			stack = append(stack, prev*2)
+		} else if op == "+" {
+			prev1, prev2 := stack[len(stack)-1], stack[len(stack)-2]
+			stack = append(stack, prev1+prev2)
+		} else {
+			score, _ := strconv.Atoi(op)
+			stack = append(stack, score)
+		}
+	}
+	scores := 0
+	for _, score := range stack {
+		scores += score
+	}
+	return scores
 }

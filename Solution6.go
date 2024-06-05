@@ -956,3 +956,34 @@ func numberOfSubstrings(s string) int {
 	}
 	return ans
 }
+
+// 数组的最大元素出现至少k次
+func countSubarrays(nums []int, k int) (ans int64) {
+	maxVal := slices.Max(nums)
+	var left, times int
+	for right := 0; right < len(nums); right++ {
+		if nums[right] == maxVal {
+			times++
+		}
+		for ; times >= k; left++ {
+			if nums[left] == maxVal {
+				times--
+			}
+			ans += int64(len(nums) - right)
+		}
+	}
+	return ans
+}
+
+// 得分小于k的子数组个数
+func countSubarrays1(nums []int, k int64) (ans int64) {
+	var left, sum int
+	for right := 0; right < len(nums); right++ {
+		sum += nums[right]
+		for ; int64(sum)*int64(right-left+1) >= k; left++ {
+			sum -= nums[left]
+		}
+		ans += int64(right - left + 1)
+	}
+	return
+}

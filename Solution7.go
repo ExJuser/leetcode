@@ -3,6 +3,7 @@ package main
 import (
 	"slices"
 	"strconv"
+	"strings"
 )
 
 func countGood(nums []int, k int) (ans int64) {
@@ -373,4 +374,152 @@ func numberOfPoints(nums [][]int) (ans int) {
 		maxRight = max(maxRight, num[1])
 	}
 	return ans
+}
+
+func validateStackSequences(pushed []int, popped []int) bool {
+	stack := make([]int, 0, len(pushed))
+	pushIndex := 0
+	for i := 0; i < len(popped); i++ {
+		for len(stack) == 0 || stack[len(stack)-1] != popped[i] {
+			if pushIndex >= len(pushed) {
+				return false
+			}
+			stack = append(stack, pushed[pushIndex])
+			pushIndex++
+		}
+		stack = stack[:len(stack)-1]
+	}
+	return true
+}
+func simplifyPath(path string) string {
+	splits := strings.Split(path, "/")
+	stack := make([]string, 0, len(path))
+	for _, split := range splits {
+		if split == "." || split == "" {
+			continue
+		} else if split == ".." {
+			if len(stack) > 0 {
+				stack = stack[:len(stack)-1]
+			}
+		} else {
+			stack = append(stack, split)
+		}
+	}
+	return "/" + strings.Join(stack, "/")
+}
+
+//type MinStack struct {
+//	stack, minStack []int
+//}
+
+//	func (this *MinStack) Push(val int) {
+//		this.stack = append(this.stack, val)
+//		if len(this.minStack) == 0 || this.minStack[len(this.minStack)-1] >= val {
+//			this.minStack = append(this.minStack, val)
+//		}
+//	}
+//
+//	func (this *MinStack) Pop() {
+//		if this.minStack[len(this.minStack)-1] == this.stack[len(this.stack)-1] {
+//			this.minStack = this.minStack[:len(this.minStack)-1]
+//		}
+//		this.stack = this.stack[:len(this.stack)-1]
+//	}
+//
+//	func (this *MinStack) Top() int {
+//		return this.stack[len(this.stack)-1]
+//	}
+//
+//	func (this *MinStack) GetMin() int {
+//		return this.minStack[len(this.minStack)-1]
+//	}
+type CustomStack struct {
+	stack []int
+}
+
+//func Constructor(maxSize int) CustomStack {
+//	return CustomStack{stack: make([]int, 0, maxSize)}
+//}
+
+func (this *CustomStack) Push(x int) {
+	if len(this.stack) < cap(this.stack) {
+		this.stack = append(this.stack, x)
+	}
+}
+
+func (this *CustomStack) Pop() int {
+	if len(this.stack) == 0 {
+		return -1
+	}
+	x := this.stack[len(this.stack)-1]
+	this.stack = this.stack[:len(this.stack)-1]
+	return x
+}
+
+func (this *CustomStack) Increment(k int, val int) {
+	for i := 0; i < min(k, len(this.stack)); i++ {
+		this.stack[i] += val
+	}
+}
+func exclusiveTime(n int, logs []string) []int {
+	ans := make([]int, n)
+	stack := make([]int, 0, n)
+	var cur, prev []string
+	for i, log := range logs {
+		cur = strings.Split(log, ":")
+		if i != 0 {
+			startTime, _ := strconv.Atoi(prev[2])
+			endTime, _ := strconv.Atoi(cur[2])
+			if cur[1] == "start" {
+				if len(stack) > 0 {
+					ans[stack[len(stack)-1]] += endTime - startTime
+					if prev[1] == "end" {
+						ans[stack[len(stack)-1]] -= 1
+					}
+				}
+				funcID, _ := strconv.Atoi(cur[0])
+				stack = append(stack, funcID)
+			} else {
+				ans[stack[len(stack)-1]] += endTime - startTime
+				if prev[1] == "start" {
+					ans[stack[len(stack)-1]] += 1
+				}
+				stack = stack[:len(stack)-1]
+			}
+		} else {
+			funcID, _ := strconv.Atoi(cur[0])
+			stack = append(stack, funcID)
+		}
+		prev = cur
+	}
+	return ans
+}
+
+// 即给定入栈顺序 求字典序最小的出栈顺序
+// 若栈为空 入栈
+// 若当前栈顶的字母比剩余未入栈的字母都小 出栈
+// 若当前栈顶的字母不是最小 一直入栈 直到栈顶元素最小然后出栈
+// 若当前栈顶的字母不是最小 但是已经没有元素可以入栈 直接出栈
+// 如何判断栈顶元素和未入栈的元素之间的大小？
+func robotWithString(s string) string {
+	suffix := make([]byte, len(s))
+	for i := len(s) - 1; i >= 0; i-- {
+		if i == len(s)-1 {
+			suffix[i] = s[i]
+		} else {
+			suffix[i] = min(suffix[i+1], s[i])
+		}
+	}
+	ans := make([]byte, 0, len(s))
+	stack := make([]byte, 0, len(s))
+	for i := 0; i < len(s); i++ {
+		for len(stack) > 0 && stack[len(stack)-1] <= suffix[i] {
+			ans = append(ans, stack[len(stack)-1])
+			stack = stack[:len(stack)-1]
+		}
+		stack = append(stack, s[i])
+	}
+	slices.Reverse(stack)
+	ans = append(ans, stack...)
+	return string(ans)
 }

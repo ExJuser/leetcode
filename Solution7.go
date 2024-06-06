@@ -1,9 +1,11 @@
 package main
 
 import (
+	"container/heap"
 	"slices"
 	"strconv"
 	"strings"
+	"unicode"
 )
 
 func countGood(nums []int, k int) (ans int64) {
@@ -522,4 +524,132 @@ func robotWithString(s string) string {
 	slices.Reverse(stack)
 	ans = append(ans, stack...)
 	return string(ans)
+}
+
+type FreqHeap [][3]int
+
+func (f *FreqHeap) Len() int { return len(*f) }
+
+func (f *FreqHeap) Less(i, j int) bool {
+	if (*f)[i][1] == (*f)[j][1] {
+		return (*f)[i][2] > (*f)[j][2]
+	}
+	return (*f)[i][1] > (*f)[j][1]
+}
+
+func (f *FreqHeap) Swap(i, j int) { (*f)[i], (*f)[j] = (*f)[j], (*f)[i] }
+
+func (f *FreqHeap) Push(x any) { *f = append(*f, x.([3]int)) }
+
+func (f *FreqHeap) Pop() any {
+	x := (*f)[len(*f)-1]
+	*f = (*f)[:len(*f)-1]
+	return x
+}
+
+type FreqStack struct {
+	freqHeap *FreqHeap
+	cnt      map[int]int
+	index    int
+}
+
+//func Constructor() FreqStack {
+//	return FreqStack{
+//		freqHeap: &FreqHeap{},
+//		cnt:      make(map[int]int),
+//	}
+//}
+
+func (this *FreqStack) Push(val int) {
+	this.cnt[val]++
+	this.index++
+	heap.Push(this.freqHeap, [3]int{val, this.cnt[val], this.index})
+}
+
+func (this *FreqStack) Pop() int {
+	num := heap.Pop(this.freqHeap).([3]int)[0]
+	this.cnt[num]--
+	return num
+}
+
+func minLength(s string) int {
+	stack := make([]byte, 0, len(s))
+	for _, ch := range s {
+		if ch == 'B' && len(stack) > 0 && stack[len(stack)-1] == 'A' {
+			stack = stack[:len(stack)-1]
+		} else if ch == 'D' && len(stack) > 0 && stack[len(stack)-1] == 'C' {
+			stack = stack[:len(stack)-1]
+		} else {
+			stack = append(stack, byte(ch))
+		}
+	}
+	return len(stack)
+}
+func removeDuplicates_(s string) string {
+	stack := make([]byte, 0, len(s))
+	for _, ch := range s {
+		if len(stack) > 0 && byte(ch) == stack[len(stack)-1] {
+			stack = stack[:len(stack)-1]
+		} else {
+			stack = append(stack, byte(ch))
+		}
+	}
+	return string(stack)
+}
+func makeGood(s string) string {
+	stack := make([]byte, 0, len(s))
+	for _, ch := range s {
+		if len(stack) > 0 && (unicode.IsLower(ch) && byte(ch)-stack[len(stack)-1] == 32 || (unicode.IsUpper(ch) && stack[len(stack)-1]-byte(ch) == 32)) {
+			stack = stack[:len(stack)-1]
+		} else {
+			stack = append(stack, byte(ch))
+		}
+	}
+	return string(stack)
+}
+
+//func isValid_(s string) bool {
+//	for strings.Contains(s, "abc") {
+//		s = strings.ReplaceAll(s, "abc", "")
+//	}
+//	return len(s) == 0
+//}
+
+func isValid_(s string) bool {
+	stack := make([]byte, 0, len(s))
+	for _, ch := range s {
+		if ch == 'c' && len(stack) >= 2 && string(stack[len(stack)-2:]) == "bc" {
+			stack = stack[:len(stack)-2]
+		} else {
+			stack = append(stack, byte(ch))
+		}
+	}
+	return len(stack) == 0
+}
+
+// 子数组问题中如果出现负数导致失去单调性 可以考虑使用前缀和
+func shortestSubarray(nums []int, k int) int {
+	prefix := make([]int, len(nums)+1)
+	for i := 0; i < len(nums); i++ {
+		prefix[i+1] = prefix[i] + nums[i]
+	}
+	ans := len(nums) + 1
+	queue := make([]int, 0)
+	for i := 0; i < len(prefix); i++ {
+		//维护单调队列：从队尾弹出
+		for len(queue) > 0 && prefix[queue[len(queue)-1]] >= prefix[i] {
+			queue = queue[:len(queue)-1]
+		}
+		queue = append(queue, i)
+
+		//从队首弹出 不可能组成更短的子数组
+		for len(queue) > 0 && prefix[i]-prefix[queue[0]] >= k {
+			ans = min(ans, i-queue[0])
+			queue = queue[1:]
+		}
+	}
+	if ans == len(nums)+1 {
+		return -1
+	}
+	return ans
 }

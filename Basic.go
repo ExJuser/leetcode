@@ -120,6 +120,7 @@ func merge(nums []int, left, mid, right int) {
 		nums[left+i] = temp[i]
 	}
 }
+
 func quickSort(nums []int) {
 	quickSortHelper(nums, 0, len(nums)-1)
 }

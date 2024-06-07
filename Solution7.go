@@ -653,3 +653,89 @@ func shortestSubarray(nums []int, k int) int {
 	}
 	return ans
 }
+func maxOperations(nums []int) int {
+	point := nums[0] + nums[1]
+	op := 1
+	nums = nums[2:]
+	for ; len(nums) >= 2; op++ {
+		if point == nums[0]+nums[1] {
+			nums = nums[2:]
+		} else {
+			break
+		}
+	}
+	return op
+}
+
+func minDeletion(nums []int) (ans int) {
+	stack := make([]int, 0, len(nums))
+	for _, num := range nums {
+		if len(stack)%2 == 1 && stack[len(stack)-1] == num {
+			ans++
+		} else {
+			stack = append(stack, num)
+		}
+	}
+	if (len(nums)-ans)%2 == 1 {
+		return ans + 1
+	}
+	return ans
+}
+
+func removeDuplicates__(s string, k int) string {
+	type Pair struct {
+		ch  byte
+		cnt int
+	}
+	stack := make([]Pair, 0, len(s))
+	for _, ch := range s {
+		cnt := 1
+		if len(stack) > 0 && byte(ch) == stack[len(stack)-1].ch {
+			cnt += stack[len(stack)-1].cnt
+		}
+		stack = append(stack, Pair{
+			ch:  byte(ch),
+			cnt: cnt,
+		})
+		if stack[len(stack)-1].cnt >= k {
+			stack = stack[:len(stack)-k]
+		}
+	}
+	bytes := make([]byte, 0, len(s))
+	for i := 0; i < len(stack); i++ {
+		bytes = append(bytes, stack[i].ch)
+	}
+	return string(bytes)
+}
+
+// 只有R+L、S+L、R+S会发生碰撞
+// 如果为L且栈为空 跳过
+// 如果为L且栈不为空 碰撞 两辆车都静止 如果之前存在R 则也会相撞
+// 如果为R/S 入栈
+func countCollisions(directions string) (ans int) {
+	stack := make([]byte, 0, len(directions))
+	for _, direction := range directions {
+		if direction == 'S' {
+			for len(stack) > 0 && stack[len(stack)-1] == 'R' {
+				stack = stack[:len(stack)-1]
+				ans += 1
+			}
+			stack = []byte{'S'}
+		} else if direction == 'R' {
+			stack = append(stack, 'R')
+		} else if len(stack) > 0 {
+			if stack[len(stack)-1] == 'R' {
+				ans += 2
+			} else {
+				ans += 1
+			}
+			stack = stack[:len(stack)-1]
+			for len(stack) > 0 && stack[len(stack)-1] == 'R' {
+				stack = stack[:len(stack)-1]
+				ans += 1
+			}
+			stack = []byte{'S'}
+		}
+	}
+	return
+}

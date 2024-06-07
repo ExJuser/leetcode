@@ -109,19 +109,20 @@ func reverseBits(num uint32) uint32 {
 func asteroidCollision(asteroids []int) []int {
 	stack := make([]int, 0, len(asteroids))
 	for i := 0; i < len(asteroids); i++ {
-		crash := false
+		flag := true
 		for len(stack) > 0 && stack[len(stack)-1] > 0 && asteroids[i] < 0 {
-			if Abs(stack[len(stack)-1]) < Abs(asteroids[i]) {
+			if stack[len(stack)-1]+asteroids[i] == 0 { //两个都爆炸
 				stack = stack[:len(stack)-1]
-			} else {
-				if stack[len(stack)-1]+asteroids[i] == 0 {
-					stack = stack[:len(stack)-1]
-				}
-				crash = true
+				flag = false
+				break
+			} else if Abs(stack[len(stack)-1]) < Abs(asteroids[i]) { //栈顶的爆炸
+				stack = stack[:len(stack)-1]
+			} else { //待入栈的爆炸
+				flag = false
 				break
 			}
 		}
-		if !crash {
+		if flag {
 			stack = append(stack, asteroids[i])
 		}
 	}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"container/heap"
 	"slices"
 	"strconv"
@@ -738,4 +739,200 @@ func countCollisions(directions string) (ans int) {
 		}
 	}
 	return
+}
+
+// 左括号直接入栈 右括号弹出匹配
+func isValid__(s string) bool {
+	stack := make([]byte, 0, len(s))
+	for _, ch := range s {
+		if ch == '(' || ch == '[' || ch == '{' {
+			stack = append(stack, byte(ch))
+		} else {
+			if len(stack) == 0 || ch == ')' && stack[len(stack)-1] != '(' ||
+				(ch == ']' && stack[len(stack)-1] != '[') ||
+				(ch == '}' && stack[len(stack)-1] != '{') {
+				return false
+			} else {
+				stack = stack[:len(stack)-1]
+			}
+		}
+	}
+	return len(stack) == 0
+}
+func minAddToMakeValid(s string) int {
+	stack := make([]byte, 0, len(s))
+	for _, ch := range s {
+		if ch == '(' {
+			stack = append(stack, byte(ch))
+		} else {
+			if len(stack) > 0 && stack[len(stack)-1] == '(' {
+				stack = stack[:len(stack)-1]
+			} else {
+				stack = append(stack, byte(ch))
+			}
+		}
+	}
+	return len(stack)
+}
+
+// 如何分解出每一个元语
+// 分解出原语后取出最外层的括号即可
+func removeOuterParentheses(s string) string {
+	stack := make([]byte, 0, len(s))
+	ans := make([]byte, 0, len(s))
+	start := 0
+	for i, ch := range s {
+		if ch == '(' {
+			stack = append(stack, '(')
+		} else {
+			stack = stack[:len(stack)-1]
+		}
+		if len(stack) == 0 {
+			ans = append(ans, s[start+1:i]...)
+			start = i + 1
+		}
+	}
+	return string(ans)
+}
+
+func maxDepth_(s string) (ans int) {
+	stack := make([]byte, 0, len(s))
+	for _, ch := range s {
+		if ch == '(' {
+			stack = append(stack, '(')
+			ans = max(ans, len(stack))
+		} else if ch == ')' {
+			stack = stack[:len(stack)-1]
+		}
+	}
+	return
+}
+func reverseParentheses(s string) string {
+	prevBracket := make([]int, 0, len(s))
+	stack := make([]byte, 0, len(s))
+	for _, ch := range s {
+		if ch == '(' {
+			prevBracket = append(prevBracket, len(stack))
+			stack = append(stack, '(')
+		} else if ch == ')' {
+			prevBracketLoc := prevBracket[len(prevBracket)-1]
+			prevBracket = prevBracket[:len(prevBracket)-1]
+			slices.Reverse(stack[prevBracketLoc+1:])
+			stack = append(stack[:prevBracketLoc], stack[prevBracketLoc+1:]...)
+		} else {
+			stack = append(stack, byte(ch))
+		}
+	}
+	return string(stack)
+}
+func scoreOfParentheses(s string) (ans int) {
+	prevBracket := make([]int, 0, len(s))
+	stack := make([]string, 0, len(s))
+	for _, ch := range s {
+		if ch == '(' {
+			prevBracket = append(prevBracket, len(stack))
+			stack = append(stack, "(")
+		} else {
+			prevBracketLoc := prevBracket[len(prevBracket)-1]
+			prevBracket = prevBracket[:len(prevBracket)-1]
+			if len(stack)-prevBracketLoc == 1 {
+				stack = append(stack[:len(stack)-1], "1")
+			} else {
+				for i := prevBracketLoc + 1; i < len(stack); i++ {
+					val, _ := strconv.Atoi(stack[i])
+					stack[i] = strconv.Itoa(val * 2)
+				}
+				stack = append(stack[:prevBracketLoc], stack[prevBracketLoc+1:]...)
+			}
+		}
+	}
+	for i := 0; i < len(stack); i++ {
+		val, _ := strconv.Atoi(stack[i])
+		ans += val
+	}
+	return
+}
+func minRemoveToMakeValid(s string) string {
+	stack := make([]byte, 0, len(s))
+	prevBracket := make([]byte, 0, len(s))
+	for _, ch := range s {
+		if ch == '(' {
+			stack = append(stack, '(')
+			prevBracket = append(prevBracket, '(')
+		} else if ch == ')' {
+			if len(prevBracket) != 0 && prevBracket[len(prevBracket)-1] == '(' {
+				stack = append(stack, ')')
+				prevBracket = prevBracket[:len(prevBracket)-1]
+			}
+		} else {
+			stack = append(stack, byte(ch))
+		}
+	}
+	if len(prevBracket) != 0 {
+		slices.Reverse(stack)
+		replace := bytes.Replace(stack, []byte{'('}, []byte{}, len(prevBracket))
+		slices.Reverse(replace)
+		return string(replace)
+	}
+	return string(stack)
+}
+func minSwaps_(s string) int {
+	stack := make([]byte, 0, len(s))
+	for _, ch := range s {
+		if ch == '[' {
+			stack = append(stack, '[')
+		} else {
+			if len(stack) > 0 && stack[len(stack)-1] == '[' {
+				stack = stack[:len(stack)-1]
+			} else {
+				stack = append(stack, ']')
+			}
+		}
+	}
+	return (len(stack) + 3) / 4
+}
+
+func longestValidParentheses(s string) int {
+	stack := make([]int, 0, len(s))
+	for i, ch := range s {
+		if ch == '(' {
+			stack = append(stack, i)
+		} else {
+			if len(stack) > 0 && s[stack[len(stack)-1]] == '(' {
+				stack = stack[:len(stack)-1]
+			} else {
+				stack = append(stack, i)
+			}
+		}
+	}
+	sequence := make([]int, len(s))
+	for i := 0; i < len(stack); i++ {
+		sequence[stack[i]] = 1
+	}
+	//求最长的0序列
+	ans := 0
+	length := 0
+	for i := 0; i < len(sequence); i++ {
+		if sequence[i] == 0 {
+			length++
+			ans = max(ans, length)
+		} else {
+			length = 0
+		}
+	}
+	return ans
+}
+
+// 单调栈梦开始的地方
+func dailyTemperatures(temperatures []int) []int {
+	stack := make([]int, 0, len(temperatures))
+	ans := make([]int, len(temperatures))
+	for i, temperature := range temperatures {
+		for len(stack) > 0 && temperatures[stack[len(stack)-1]] < temperature {
+			ans[stack[len(stack)-1]] = i - stack[len(stack)-1]
+			stack = stack[:len(stack)-1]
+		}
+		stack = append(stack, i)
+	}
+	return ans
 }

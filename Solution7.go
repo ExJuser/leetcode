@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"container/heap"
 	"slices"
+	"sort"
 	"strconv"
 	"strings"
 	"unicode"
@@ -935,4 +936,72 @@ func dailyTemperatures(temperatures []int) []int {
 		stack = append(stack, i)
 	}
 	return ans
+}
+
+// 得到右边第一个小于等于它的折扣 维护一个单调递增的单调栈
+func finalPrices(prices []int) []int {
+	discount := make([]int, len(prices))
+	stack := make([]int, 0, len(prices))
+	for i := 0; i < len(prices); i++ {
+		for len(stack) > 0 && prices[stack[len(stack)-1]] >= prices[i] {
+			discount[stack[len(stack)-1]] = prices[i]
+			stack = stack[:len(stack)-1]
+		}
+		stack = append(stack, i)
+	}
+	for i := 0; i < len(prices); i++ {
+		prices[i] -= discount[i]
+	}
+	return prices
+}
+func nextGreaterElement(nums1 []int, nums2 []int) []int {
+	//在nums2中找到下一个更大元素 然后用哈希表维护
+	//单调递减的单调栈
+	mp := make(map[int]int)
+	stack := make([]int, 0, len(nums2))
+	for i := 0; i < len(nums2); i++ {
+		for len(stack) > 0 && nums2[stack[len(stack)-1]] < nums2[i] {
+			mp[nums2[stack[len(stack)-1]]] = nums2[i]
+			stack = stack[:len(stack)-1]
+		}
+		stack = append(stack, i)
+	}
+	ans := make([]int, len(nums1))
+	for i := 0; i < len(nums1); i++ {
+		if v, ok := mp[nums1[i]]; ok {
+			ans[i] = v
+		} else {
+			ans[i] = -1
+		}
+	}
+	return ans
+}
+
+type PingPair struct {
+	timestamp int
+	prev      int
+}
+type RecentCounter struct {
+	queue []PingPair
+}
+
+//func Constructor() RecentCounter {
+//	return RecentCounter{
+//		queue: make([]PingPair, 0),
+//	}
+//}
+
+func (this *RecentCounter) Ping(t int) int {
+	prev := 0
+	if len(this.queue) > 0 {
+		prev = this.queue[len(this.queue)-1].prev
+	}
+	this.queue = append(this.queue, PingPair{
+		timestamp: t,
+		prev:      prev + 1,
+	})
+	search := sort.Search(len(this.queue), func(i int) bool {
+		return this.queue[i].timestamp >= t-3000
+	})
+	return prev + 2 - this.queue[search].prev
 }

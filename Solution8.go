@@ -1,5 +1,9 @@
 package main
 
+import (
+	"slices"
+)
+
 func getIntersectionNode__(headA, headB *ListNode) *ListNode {
 	mp := make(map[*ListNode]struct{})
 	for p := headA; p != nil; {
@@ -136,6 +140,52 @@ func removeNthFromEnd_(head *ListNode, n int) *ListNode {
 	slow.Next = slow.Next.Next
 	return dummy.Next
 }
-func maximumBeauty(nums []int, k int) int {
 
+// 一维差分
+//func maximumBeauty(nums []int, k int) int {
+//	left := math.MaxInt
+//	right := math.MinInt
+//	beauty := make([][]int, 0, len(nums))
+//	for _, num := range nums {
+//		beauty = append(beauty, []int{num - k, num + k})
+//		left = min(left, num-k)
+//		right = max(right, num+k)
+//	}
+//	diff := make([]int, right-left+2)
+//	for _, b := range beauty {
+//		diff[b[0]-left]++
+//		diff[b[1]-left+1]--
+//	}
+//	prefix := make([]int, len(diff))
+//	prefix[0] = diff[0]
+//	ans := prefix[0]
+//	for i := 1; i < len(prefix); i++ {
+//		prefix[i] = prefix[i-1] + diff[i]
+//		ans = max(prefix[i], ans)
+//	}
+//	return ans
+//}
+
+func maximumBeauty(nums []int, k int) int {
+	slices.Sort(nums)
+	var left, ans int
+	for right := 0; right < len(nums); right++ {
+		for nums[right]-nums[left] > k*2 {
+			left++
+		}
+		ans = max(ans, right-left+1)
+	}
+	return ans
+}
+func swapPairs_(head *ListNode) *ListNode {
+	dummy := &ListNode{Next: head}
+	for pre, cur := dummy, dummy.Next; cur != nil && cur.Next != nil; {
+		nxt := cur.Next
+		pre.Next = nxt
+		cur.Next = nxt.Next
+		nxt.Next = cur
+		pre = cur
+		cur = cur.Next
+	}
+	return dummy.Next
 }

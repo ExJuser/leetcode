@@ -553,3 +553,187 @@ func mergeKLists_(lists []*ListNode) *ListNode {
 	}
 	return dummy.Next
 }
+
+// 动态规划法：回文天生具有状态转移的性质
+func longestPalindrome(s string) string {
+	dp := make([][]bool, len(s))
+	for i := 0; i < len(s); i++ {
+		dp[i] = make([]bool, len(s))
+	}
+	ans := ""
+	for i := len(dp) - 1; i >= 0; i-- {
+		for j := i; j < len(dp); j++ {
+			if s[i] == s[j] && (j-i <= 1 || dp[i+1][j-1]) {
+				dp[i][j] = true
+				if j-i+1 > len(ans) {
+					ans = s[i : j+1]
+				}
+			}
+		}
+	}
+	return ans
+}
+
+// 用递归实现层序遍历
+func levelOrder__(root *TreeNode) [][]int {
+	levels := make([][]int, 0)
+	var dfs func(node *TreeNode, depth int)
+	dfs = func(node *TreeNode, depth int) {
+		if node == nil {
+			return
+		}
+		if depth > len(levels) {
+			levels = append(levels, make([]int, 0))
+		}
+		levels[depth-1] = append(levels[depth-1], node.Val)
+		dfs(node.Left, depth+1)
+		dfs(node.Right, depth+1)
+	}
+	dfs(root, 1)
+	return levels
+}
+
+// 搜索旋转排序数组
+func search(nums []int, target int) int {
+	left, right := 0, len(nums)-1
+	for left <= right {
+		mid := (right-left)/2 + left
+		if nums[mid] == target {
+			return mid
+		}
+		if nums[mid] >= nums[left] {
+			if target < nums[left] || target > nums[mid] {
+				left = mid + 1
+			} else {
+				right = mid - 1
+			}
+		} else {
+			if target < nums[mid] || target >= nums[left] {
+				right = mid - 1
+			} else {
+				left = mid + 1
+			}
+		}
+		//如果mid==target return
+
+		//如果mid>=left 说明mid处于第一个序列
+		//①如果target<left left=mid+1
+		//②如果left<=target<=mid right=mid-1
+		//③如果target>mid left=mid+1
+		//如果mid<left 说明mid处于第二个序列
+		//①如果target<=mid right=mid-1
+		//②如果target<=right left=mid+1
+		//③如果target>=left right=mid-1
+	}
+	return -1
+}
+func merge_(nums1 []int, m int, nums2 []int, n int) {
+	i, j := m-1, n-1
+	for i >= 0 && j >= 0 {
+		if nums1[i] >= nums2[j] {
+			nums1[i+j+2] = nums1[i]
+			i--
+		} else {
+			nums1[i+j+2] = nums2[j]
+			j--
+		}
+	}
+	if j >= 0 {
+		for k := 0; k < j; k++ {
+			nums1[k] = nums2[k]
+		}
+	}
+}
+func permute__(nums []int) (ans [][]int) {
+	used := make([]bool, len(nums))
+	var dfs func(i int, path []int)
+	dfs = func(i int, path []int) {
+		if i == len(nums) {
+			ans = append(ans, append([]int{}, path...))
+			return
+		}
+		for j := 0; j < len(nums); j++ {
+			if !used[j] {
+				path = append(path, nums[j])
+				used[j] = true
+				dfs(i+1, path)
+				path = path[:len(path)-1]
+				used[j] = false
+			}
+		}
+	}
+	dfs(0, []int{})
+	return
+}
+func isValid___(s string) bool {
+	stack := make([]byte, 0, len(s))
+	mp := map[byte]byte{')': '(', ']': '[', '}': '{'}
+	for _, ch := range s {
+		if ch == '(' || ch == '[' || ch == '{' {
+			stack = append(stack, byte(ch))
+		} else {
+			if len(stack) == 0 || stack[len(stack)-1] != mp[byte(ch)] {
+				return false
+			} else {
+				stack = stack[:len(stack)-1]
+			}
+		}
+	}
+	return len(stack) == 0
+}
+
+// 动态规划解决：注意只能买卖一次
+//func maxProfit_(prices []int) int {
+//	//dp[i][0]:不持有股票
+//	//dp[i][1]:持有股票
+//	dp := make([][2]int, len(prices))
+//	dp[0][1] = -prices[0]
+//	for i := 1; i < len(prices); i++ {
+//		dp[i][0] = max(dp[i-1][0], dp[i-1][1]+prices[i])
+//		dp[i][1] = max(-prices[i], dp[i-1][1])
+//	}
+//	return max(dp[len(prices)-1][0], dp[len(prices)-1][1])
+//}
+
+// 对于每一个price 维护其之前的最低价格
+func maxProfit_(prices []int) int {
+	curMin := prices[0]
+	ans := 0
+	for i := 1; i < len(prices); i++ {
+		curMin = min(curMin, prices[i])
+		ans = max(ans, prices[i]-curMin)
+	}
+	return ans
+}
+func addStrings(num1 string, num2 string) string {
+	byte1, byte2 := []byte(num1), []byte(num2)
+	ansByte := make([]byte, max(len(num1), len(num2)))
+	carry := 0
+	i, j := len(num1)-1, len(num2)-1
+	for i >= 0 && j >= 0 {
+		val := int(byte1[i]-'0') + int(byte2[j]-'0') + carry
+		carry = val / 10
+		val %= 10
+		ansByte[max(i, j)] = byte(val + '0')
+		i--
+		j--
+	}
+	for i >= 0 {
+		val := int(byte1[i]-'0') + carry
+		carry = val / 10
+		val %= 10
+		ansByte[i] = byte(val + '0')
+		i--
+	}
+	for j >= 0 {
+		val := int(byte2[j]-'0') + carry
+		carry = val / 10
+		val %= 10
+		ansByte[j] = byte(val + '0')
+		j--
+	}
+	if carry != 0 {
+		ansByte = append([]byte{'1'}, ansByte...)
+	}
+	return string(ansByte)
+}

@@ -660,22 +660,22 @@ func maximumProduct(nums []int, k int) int {
 }
 
 // 不定长滑动窗口
-func lengthOfLongestSubstring(s string) (ans int) {
-	left := 0
-	mp := make(map[byte]int)
-	for right := 0; right < len(s); right++ {
-		mp[s[right]]++
-		for len(mp) < right-left+1 {
-			mp[s[left]]--
-			if mp[s[left]] == 0 {
-				delete(mp, s[left])
-			}
-			left++
-		}
-		ans = max(ans, right-left+1)
-	}
-	return
-}
+//func lengthOfLongestSubstring(s string) (ans int) {
+//	left := 0
+//	mp := make(map[byte]int)
+//	for right := 0; right < len(s); right++ {
+//		mp[s[right]]++
+//		for len(mp) < right-left+1 {
+//			mp[s[left]]--
+//			if mp[s[left]] == 0 {
+//				delete(mp, s[left])
+//			}
+//			left++
+//		}
+//		ans = max(ans, right-left+1)
+//	}
+//	return
+//}
 
 // 完全背包问题：先遍历背包和物品都可以
 func combinationSum41(nums []int, target int) int {

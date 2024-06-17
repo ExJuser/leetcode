@@ -1,7 +1,10 @@
 package main
 
 import (
+	"container/heap"
+	"container/list"
 	"slices"
+	"sort"
 )
 
 func getIntersectionNode__(headA, headB *ListNode) *ListNode {
@@ -186,6 +189,367 @@ func swapPairs_(head *ListNode) *ListNode {
 		nxt.Next = cur
 		pre = cur
 		cur = cur.Next
+	}
+	return dummy.Next
+}
+func reverseKGroup(head *ListNode, k int) *ListNode {
+	n := 0
+	for p := head; p != nil; p = p.Next {
+		n++
+	}
+	dummy := &ListNode{Next: head}
+	temp := dummy
+	cur := dummy.Next
+	var pre *ListNode
+	for i := 0; i < n/k; i++ {
+		for j := 0; j < k; j++ {
+			nxt := cur.Next
+			cur.Next = pre
+			pre, cur = cur, nxt
+		}
+		temp.Next.Next = cur
+		nextTemp := temp.Next
+		temp.Next = pre
+		temp = nextTemp
+	}
+	return dummy.Next
+}
+func reverseBetween_(head *ListNode, left int, right int) *ListNode {
+	dummy := &ListNode{Next: head}
+	temp := dummy
+	for i := 1; i < left; i++ {
+		temp = temp.Next
+	}
+	cur := temp.Next
+	var pre *ListNode
+	for i := 0; i < right-left+1; i++ {
+		nxt := cur.Next
+		cur.Next = pre
+		pre, cur = cur, nxt
+	}
+	temp.Next.Next = cur
+	temp.Next = pre
+	return dummy.Next
+}
+func sortList(head *ListNode) *ListNode {
+	list := make([]*ListNode, 0, 1000)
+	for p := head; p != nil; p = p.Next {
+		list = append(list, p)
+	}
+	slices.SortFunc(list, func(a, b *ListNode) int {
+		return a.Val - b.Val
+	})
+	dummy := &ListNode{}
+	p := dummy
+	for _, node := range list {
+		p.Next = node
+		p = p.Next
+	}
+	return dummy.Next
+}
+func insert(intervals [][]int, newInterval []int) [][]int {
+	start := 0
+	for ; start < len(intervals); start++ {
+		if !(intervals[start][0] > newInterval[1] || intervals[start][1] < newInterval[0]) {
+			break
+		}
+	}
+	if start == len(intervals) {
+		index := sort.Search(len(intervals), func(i int) bool {
+			return intervals[i][0] >= newInterval[0]
+		})
+		intervals = append(intervals[:index], append([][]int{newInterval}, intervals[index:]...)...)
+		return intervals
+	}
+	ans := make([][]int, 0, len(intervals))
+	ans = append(ans, intervals[:start]...)
+	pre := []int{min(intervals[start][0], newInterval[0]), max(intervals[start][1], newInterval[1])}
+	i := start + 1
+	for ; i < len(intervals); i++ {
+		if intervals[i][0] > pre[1] || intervals[i][1] < pre[0] {
+			break
+		} else {
+			pre[0], pre[1] = min(pre[0], intervals[i][0]), max(pre[1], intervals[i][1])
+		}
+	}
+	ans = append(ans, pre)
+	ans = append(ans, intervals[i:]...)
+	return ans
+}
+func getListLen(node *ListNode) (ans int) {
+	for p := node; p != nil; {
+		ans++
+		p = p.Next
+	}
+	return ans
+}
+func rotateRight(head *ListNode, k int) *ListNode {
+	//先求出整个链表的长度
+	n := getListLen(head)
+	if n == 0 || k%n == 0 {
+		return head
+	}
+	k %= n
+	//需要找到倒数第k个节点:也就是正数第n-k+1个节点和正数第n-k个节点
+	p1 := head
+	for i := 0; i < n-k-1; i++ {
+		p1 = p1.Next
+	}
+	p2 := p1.Next
+	p1.Next = nil
+	p3 := p2
+	for p3.Next != nil {
+		p3 = p3.Next
+	}
+	p3.Next = head
+	return p2
+}
+
+// 返回第一个>=target的index
+func lowerBound(nums []int, target int) int {
+	left, right := 0, len(nums)-1
+	ans := len(nums)
+	for left <= right {
+		mid := (right-left)/2 + left
+		if nums[mid] >= target {
+			ans = mid
+			right = mid - 1
+		} else {
+			left = mid + 1
+		}
+	}
+	return ans
+}
+func searchRange(nums []int, target int) []int {
+	index := lowerBound(nums, target)
+	if index == len(nums) || nums[index] != target {
+		return []int{-1, -1}
+	} else {
+		return []int{index, lowerBound(nums, target+1) - 1}
+	}
+}
+func searchInsert(nums []int, target int) int {
+	return lowerBound(nums, target)
+}
+func search___(nums []int, target int) int {
+	index := lowerBound(nums, target)
+	if index == len(nums) || nums[index] != target {
+		return -1
+	}
+	return index
+}
+func nextGreatestLetter(letters []byte, target byte) byte {
+	left, right := 0, len(letters)-1
+	ans := 0
+	for left <= right {
+		mid := (right-left)/2 + left
+		if letters[mid] > target {
+			ans = mid
+			right = mid - 1
+		} else {
+			left = mid + 1
+		}
+	}
+	return letters[ans]
+}
+
+func maximumCount_(nums []int) int {
+	positive := len(nums) - lowerBound(nums, 1)
+	negative := lowerBound(nums, 0)
+	return max(positive, negative)
+}
+
+func findLUSlength(a string, b string) int {
+	if a == b {
+		return -1
+	}
+	return max(len(a), len(b))
+}
+func successfulPairs(spells []int, potions []int, success int64) []int {
+	ans := make([]int, len(spells))
+	slices.Sort(potions)
+	for index, spell := range spells {
+		ans[index] = len(potions) - sort.Search(len(potions), func(i int) bool {
+			return int64(spell)*int64(potions[i]) >= success
+		})
+	}
+	return ans
+}
+func answerQueries_(nums []int, queries []int) []int {
+	slices.Sort(nums)
+	ans := make([]int, len(queries))
+	prefix := make([]int, len(nums)+1)
+	for i := 0; i < len(nums); i++ {
+		prefix[i+1] = prefix[i] + nums[i]
+	}
+	for i := 0; i < len(ans); i++ {
+		ans[i] = sort.Search(len(nums), func(j int) bool {
+			return prefix[j+1] > queries[i] //第一个大于的
+		})
+	}
+	return ans
+}
+
+type LRUCache struct {
+	//放在最前面的意味着最近访问过的
+	list     *list.List
+	mp       map[int]*list.Element
+	capacity int
+}
+type entry struct {
+	key, value int
+}
+
+//func Constructor(capacity int) LRUCache {
+//	return LRUCache{mp: map[int]*list.Element{}, list: list.New(), capacity: capacity}
+//}
+
+func (this *LRUCache) Get(key int) int {
+	if element, ok := this.mp[key]; ok {
+		this.list.MoveToFront(element)
+		return element.Value.(entry).value
+	} else {
+		return -1
+	}
+}
+
+func (this *LRUCache) Put(key int, value int) {
+	if element, ok := this.mp[key]; ok { //已经存在与缓存中 直接修改数值
+		this.list.MoveToFront(element)
+		element.Value = entry{key: key, value: value}
+	} else {
+		if this.list.Len() >= this.capacity { //需要移除最久未使用的关键字
+			delete(this.mp, this.list.Remove(this.list.Back()).(entry).key)
+		}
+		this.mp[key] = this.list.PushFront(entry{key: key, value: value})
+	}
+}
+
+func reverseList_(head *ListNode) *ListNode {
+	var dfs func(node *ListNode) *ListNode
+	dfs = func(node *ListNode) *ListNode {
+		if node == nil || node.Next == nil {
+			return node
+		}
+		newHead := dfs(node.Next)
+		node.Next.Next = node
+		node.Next = nil
+		return newHead
+	}
+	return dfs(head)
+}
+
+func findKthLargest(nums []int, k int) int {
+	hp := &IntHeap{}
+	for _, num := range nums {
+		heap.Push(hp, num)
+		if hp.Len() > k {
+			heap.Pop(hp)
+		}
+	}
+	return (*hp)[0]
+}
+func reverseKGroup2(head *ListNode, k int) *ListNode {
+	n := 0
+	for p := head; p != nil; p = p.Next {
+		n++
+	}
+	dummy := &ListNode{Next: head}
+	temp := dummy
+	cur := dummy.Next
+	var pre *ListNode
+	for i := 0; i < n/k; i++ {
+		for j := 0; j < k; j++ {
+			nxt := cur.Next
+			cur.Next = pre
+			pre, cur = cur, nxt
+		}
+		temp.Next.Next = cur
+		newTemp := temp.Next
+		temp.Next = pre
+		temp = newTemp
+	}
+	return dummy.Next
+}
+
+func maxSubArray_(nums []int) int {
+	ans := nums[0]
+	for i := 1; i < len(nums); i++ {
+		nums[i] = max(nums[i-1]+nums[i], nums[i])
+		ans = max(ans, nums[i])
+	}
+	return ans
+}
+
+// 三数之和：双指针+两次去重
+func threeSum2(nums []int) (ans [][]int) {
+	slices.Sort(nums)
+	for i := 0; i < len(nums); i++ {
+		n1 := nums[i]
+		if (i == 0 || n1 != nums[i-1]) && n1 <= 0 {
+			left, right := i+1, len(nums)-1
+			for left < right {
+				n2, n3 := nums[left], nums[right]
+				sum := n1 + n2 + n3
+				if sum == 0 {
+					ans = append(ans, []int{n1, n2, n3})
+					for left < right && nums[left] == n2 {
+						left++
+					}
+					for left < right && nums[right] == n3 {
+						right--
+					}
+				} else if sum > 0 {
+					right--
+				} else {
+					left++
+				}
+			}
+		}
+	}
+	return
+}
+
+type ListHeap []*ListNode
+
+func (l *ListHeap) Len() int {
+	return len(*l)
+}
+
+func (l *ListHeap) Less(i, j int) bool {
+	return (*l)[i].Val < (*l)[j].Val
+}
+
+func (l *ListHeap) Swap(i, j int) {
+	(*l)[i], (*l)[j] = (*l)[j], (*l)[i]
+}
+
+func (l *ListHeap) Push(x any) {
+	*l = append(*l, x.(*ListNode))
+}
+
+func (l *ListHeap) Pop() any {
+	x := (*l)[(*l).Len()-1]
+	*l = (*l)[:(*l).Len()-1]
+	return x
+}
+
+func mergeKLists_(lists []*ListNode) *ListNode {
+	dummy := &ListNode{}
+	p := dummy
+	hp := &ListHeap{}
+	for _, l := range lists {
+		if l != nil {
+			heap.Push(hp, l)
+		}
+	}
+	for hp.Len() > 0 {
+		x := heap.Pop(hp).(*ListNode)
+		if x.Next != nil {
+			heap.Push(hp, x.Next)
+		}
+		p.Next = &ListNode{Val: x.Val}
+		p = p.Next
 	}
 	return dummy.Next
 }

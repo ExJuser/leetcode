@@ -737,3 +737,75 @@ func addStrings(num1 string, num2 string) string {
 	}
 	return string(ansByte)
 }
+func getIntersectionNode_(headA, headB *ListNode) *ListNode {
+	mp := make(map[*ListNode]struct{})
+	for p := headA; p != nil; p = p.Next {
+		mp[p] = struct{}{}
+	}
+	for p := headB; p != nil; p = p.Next {
+		if _, ok := mp[p]; ok {
+			return p
+		}
+	}
+	return nil
+}
+func lowestCommonAncestor_(root, p, q *TreeNode) *TreeNode {
+	var dfs func(node *TreeNode) *TreeNode
+	dfs = func(node *TreeNode) *TreeNode {
+		if node == nil {
+			return node
+		}
+		if node == p || node == q {
+			return node
+		}
+		left := dfs(node.Left)
+		right := dfs(node.Right)
+		if left != nil && right != nil {
+			return node
+		}
+		if left != nil {
+			return left
+		} else {
+			return right
+		}
+	}
+	return dfs(root)
+}
+
+func reorderList(head *ListNode) {
+	slow, fast := head, head
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+	}
+	reversed := reverseList(slow.Next)
+	slow.Next = nil
+	for p1, p2 := head, reversed; p2 != nil; {
+		nxt := p2.Next
+		p2.Next = p1.Next
+		p1.Next = p2
+		p1 = p2.Next
+		p2 = nxt
+	}
+}
+func detectCycle_(head *ListNode) *ListNode {
+	slow, fast := head, head
+	hasCycle := false
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+		if slow == fast {
+			hasCycle = true
+			break
+		}
+	}
+	if !hasCycle {
+		return nil
+	} else {
+		for p := head; p != slow; {
+			p = p.Next
+			slow = slow.Next
+		}
+		return slow
+	}
+}

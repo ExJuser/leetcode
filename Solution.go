@@ -56,18 +56,18 @@ func twoSum(nums []int, target int) []int {
 	return nil
 }
 
-func groupAnagrams(strs []string) (ans [][]string) {
-	mp := make(map[string][]string)
-	for _, str := range strs {
-		bytes := []byte(str)
-		slices.Sort(bytes)
-		mp[string(bytes)] = append(mp[string(bytes)], str)
-	}
-	for _, v := range mp {
-		ans = append(ans, v)
-	}
-	return
-}
+//func groupAnagrams(strs []string) (ans [][]string) {
+//	mp := make(map[string][]string)
+//	for _, str := range strs {
+//		bytes := []byte(str)
+//		slices.Sort(bytes)
+//		mp[string(bytes)] = append(mp[string(bytes)], str)
+//	}
+//	for _, v := range mp {
+//		ans = append(ans, v)
+//	}
+//	return
+//}
 
 func longestConsecutive(nums []int) int {
 	mp := make(map[int]bool)
@@ -646,19 +646,19 @@ func topKFrequent(nums []int, k int) (ans []int) {
 }
 
 // 翻转二叉树
-func invertTree(root *TreeNode) *TreeNode {
-	var dfs func(node *TreeNode)
-	dfs = func(node *TreeNode) {
-		if node == nil {
-			return
-		}
-		node.Left, node.Right = node.Right, node.Left
-		dfs(node.Left)
-		dfs(node.Right)
-	}
-	dfs(root)
-	return root
-}
+//func invertTree(root *TreeNode) *TreeNode {
+//	var dfs func(node *TreeNode)
+//	dfs = func(node *TreeNode) {
+//		if node == nil {
+//			return
+//		}
+//		node.Left, node.Right = node.Right, node.Left
+//		dfs(node.Left)
+//		dfs(node.Right)
+//	}
+//	dfs(root)
+//	return root
+//}
 
 // 对称二叉树
 func isSymmetric(root *TreeNode) bool {

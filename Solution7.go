@@ -925,18 +925,18 @@ func longestValidParentheses(s string) int {
 }
 
 // 单调栈梦开始的地方
-func dailyTemperatures(temperatures []int) []int {
-	stack := make([]int, 0, len(temperatures))
-	ans := make([]int, len(temperatures))
-	for i, temperature := range temperatures {
-		for len(stack) > 0 && temperatures[stack[len(stack)-1]] < temperature {
-			ans[stack[len(stack)-1]] = i - stack[len(stack)-1]
-			stack = stack[:len(stack)-1]
-		}
-		stack = append(stack, i)
-	}
-	return ans
-}
+//func dailyTemperatures(temperatures []int) []int {
+//	stack := make([]int, 0, len(temperatures))
+//	ans := make([]int, len(temperatures))
+//	for i, temperature := range temperatures {
+//		for len(stack) > 0 && temperatures[stack[len(stack)-1]] < temperature {
+//			ans[stack[len(stack)-1]] = i - stack[len(stack)-1]
+//			stack = stack[:len(stack)-1]
+//		}
+//		stack = append(stack, i)
+//	}
+//	return ans
+//}
 
 // 得到右边第一个小于等于它的折扣 维护一个单调递增的单调栈
 func finalPrices(prices []int) []int {

@@ -448,14 +448,14 @@ func subsets(nums []int) (ans [][]int) {
 	return
 }
 
-func isPalindrome(str string) bool {
-	for i := 0; i < len(str)/2; i++ {
-		if str[i] != str[len(str)-i-1] {
-			return false
-		}
-	}
-	return true
-}
+//func isPalindrome(str string) bool {
+//	for i := 0; i < len(str)/2; i++ {
+//		if str[i] != str[len(str)-i-1] {
+//			return false
+//		}
+//	}
+//	return true
+//}
 
 // 分割回文串
 // 每一个位置都有切割或者不切割两种选择
@@ -483,26 +483,26 @@ func partition2(s string) (ans [][]string) {
 }
 
 // 枚举每一个切割的位置
-func partition3(s string) (ans [][]string) {
-	var dfs func(start int, path []string)
-	dfs = func(start int, path []string) {
-		if start == len(s) {
-			ans = append(ans, append([]string{}, path...))
-			return
-		}
-		//枚举每一个切割的位置
-		for i := start; i < len(s); i++ {
-			t := s[start : i+1]
-			if isPalindrome(t) {
-				path = append(path, t)
-				dfs(i+1, path)
-				path = path[:len(path)-1]
-			}
-		}
-	}
-	dfs(0, []string{})
-	return
-}
+//func partition3(s string) (ans [][]string) {
+//	var dfs func(start int, path []string)
+//	dfs = func(start int, path []string) {
+//		if start == len(s) {
+//			ans = append(ans, append([]string{}, path...))
+//			return
+//		}
+//		//枚举每一个切割的位置
+//		for i := start; i < len(s); i++ {
+//			t := s[start : i+1]
+//			if isPalindrome(t) {
+//				path = append(path, t)
+//				dfs(i+1, path)
+//				path = path[:len(path)-1]
+//			}
+//		}
+//	}
+//	dfs(0, []string{})
+//	return
+//}
 
 // 组合总和3
 // k个数相加和为n

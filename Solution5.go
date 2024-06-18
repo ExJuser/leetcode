@@ -418,19 +418,20 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
 //		}
 //		return pre
 //	}
-func isPalindrome1(head *ListNode) bool {
-	slow, fast := head, head
-	for fast != nil && fast.Next != nil {
-		slow = slow.Next
-		fast = fast.Next.Next
-	}
-	for p, q := head, reverseList(slow); p != nil && q != nil; p, q = p.Next, q.Next {
-		if p.Val != q.Val {
-			return false
-		}
-	}
-	return true
-}
+//
+//	func isPalindrome1(head *ListNode) bool {
+//		slow, fast := head, head
+//		for fast != nil && fast.Next != nil {
+//			slow = slow.Next
+//			fast = fast.Next.Next
+//		}
+//		for p, q := head, reverseList(slow); p != nil && q != nil; p, q = p.Next, q.Next {
+//			if p.Val != q.Val {
+//				return false
+//			}
+//		}
+//		return true
+//	}
 func hasCycle(head *ListNode) bool {
 	slow, fast := head, head
 	for fast != nil && fast.Next != nil {

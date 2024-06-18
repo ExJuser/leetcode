@@ -36,22 +36,23 @@ func getIntersectionNode__(headA, headB *ListNode) *ListNode {
 //}
 
 // 先找到链表的中点 反转
-func isPalindrome__(head *ListNode) bool {
-	slow, fast := head, head
-	for fast != nil && fast.Next != nil {
-		slow = slow.Next
-		fast = fast.Next.Next
-	}
-	reversedHead := reverseList(slow)
-	for head != nil && reversedHead != nil {
-		if head.Val != reversedHead.Val {
-			return false
-		}
-		head = head.Next
-		reversedHead = reversedHead.Next
-	}
-	return true
-}
+//
+//	func isPalindrome__(head *ListNode) bool {
+//		slow, fast := head, head
+//		for fast != nil && fast.Next != nil {
+//			slow = slow.Next
+//			fast = fast.Next.Next
+//		}
+//		reversedHead := reverseList(slow)
+//		for head != nil && reversedHead != nil {
+//			if head.Val != reversedHead.Val {
+//				return false
+//			}
+//			head = head.Next
+//			reversedHead = reversedHead.Next
+//		}
+//		return true
+//	}
 func hasCycle__(head *ListNode) bool {
 	slow, fast := head, head
 	for fast != nil && fast.Next != nil {
@@ -894,4 +895,86 @@ func reorderList(head *ListNode) {
 		p1 = p2.Next
 		p2 = nxt
 	}
+}
+func groupAnagrams(strs []string) [][]string {
+	mp := make(map[string]int)
+	ans := make([][]string, 0, len(strs))
+	for _, str := range strs {
+		b := []byte(str)
+		slices.Sort(b)
+		sorted := string(b)
+		if i, ok := mp[sorted]; ok {
+			ans[i] = append(ans[i], str)
+		} else {
+			mp[sorted] = len(ans)
+			ans = append(ans, []string{str})
+		}
+	}
+	return ans
+}
+func isPalindrome(head *ListNode) bool {
+	slow, fast := head, head
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+	}
+	reversed := reverseList(slow)
+	for p1, p2 := head, reversed; p1 != nil && p2 != nil; p1, p2 = p1.Next, p2.Next {
+		if p1.Val != p2.Val {
+			return false
+		}
+	}
+	return true
+}
+
+// 单调栈寻找下一个更大的：单调递减的单调栈
+func dailyTemperatures(temperatures []int) []int {
+	stack := make([]int, 0, len(temperatures))
+	ans := make([]int, len(temperatures))
+	for i, t := range temperatures {
+		for len(stack) > 0 && temperatures[stack[len(stack)-1]] < t {
+			ans[stack[len(stack)-1]] = i - stack[len(stack)-1]
+			stack = stack[:len(stack)-1]
+		}
+		stack = append(stack, i)
+	}
+	return ans
+}
+
+//func invertTree(root *TreeNode) *TreeNode {
+//	var dfs func(node *TreeNode)
+//	dfs = func(node *TreeNode) {
+//		if node == nil {
+//			return
+//		}
+//		node.Left, node.Right = node.Right, node.Left
+//		dfs(node.Left)
+//		dfs(node.Right)
+//	}
+//	dfs(root)
+//	return root
+//}
+
+// 层序遍历实现
+func invertTree(root *TreeNode) *TreeNode {
+	if root == nil {
+		return root
+	}
+	queue := make([]*TreeNode, 0, 1000)
+	queue = append(queue, root)
+	for len(queue) > 0 {
+		size := len(queue)
+		for i := 0; i < size; i++ {
+			temp := queue[0]
+			temp.Left, temp.Right = temp.Right, temp.Left
+			queue = queue[1:]
+			if temp.Left != nil {
+				queue = append(queue, temp.Left)
+			}
+			if temp.Right != nil {
+				queue = append(queue, temp.Right)
+			}
+		}
+	}
+	return root
 }

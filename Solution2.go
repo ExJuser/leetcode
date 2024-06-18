@@ -1,7 +1,6 @@
 package main
 
 import (
-	"container/heap"
 	"math"
 	"slices"
 	"strconv"
@@ -360,25 +359,25 @@ func (n *NodeHeap) Pop() any {
 }
 
 // 堆排序解法
-func mergeKLists(lists []*ListNode) *ListNode {
-	dummy := &ListNode{}
-	cur := dummy
-	hp := &NodeHeap{}
-	for _, list := range lists {
-		if list != nil {
-			heap.Push(hp, list)
-		}
-	}
-	for hp.Len() > 0 {
-		popNode := heap.Pop(hp).(*ListNode)
-		cur.Next = &ListNode{Val: popNode.Val}
-		if popNode.Next != nil {
-			heap.Push(hp, popNode.Next)
-		}
-		cur = cur.Next
-	}
-	return dummy.Next
-}
+//func mergeKLists(lists []*ListNode) *ListNode {
+//	dummy := &ListNode{}
+//	cur := dummy
+//	hp := &NodeHeap{}
+//	for _, list := range lists {
+//		if list != nil {
+//			heap.Push(hp, list)
+//		}
+//	}
+//	for hp.Len() > 0 {
+//		popNode := heap.Pop(hp).(*ListNode)
+//		cur.Next = &ListNode{Val: popNode.Val}
+//		if popNode.Next != nil {
+//			heap.Push(hp, popNode.Next)
+//		}
+//		cur = cur.Next
+//	}
+//	return dummy.Next
+//}
 
 // 电话号码的字母组合
 func letterCombinations(digits string) (ans []string) {

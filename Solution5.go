@@ -409,15 +409,15 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
 	return nil
 }
 
-func reverseList(head *ListNode) *ListNode {
-	var pre *ListNode
-	for cur := head; cur != nil; {
-		nxt := cur.Next
-		cur.Next = pre
-		pre, cur = cur, nxt
-	}
-	return pre
-}
+//	func reverseList(head *ListNode) *ListNode {
+//		var pre *ListNode
+//		for cur := head; cur != nil; {
+//			nxt := cur.Next
+//			cur.Next = pre
+//			pre, cur = cur, nxt
+//		}
+//		return pre
+//	}
 func isPalindrome1(head *ListNode) bool {
 	slow, fast := head, head
 	for fast != nil && fast.Next != nil {

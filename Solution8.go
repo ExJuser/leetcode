@@ -3,8 +3,11 @@ package main
 import (
 	"container/heap"
 	"container/list"
+	"fmt"
 	"slices"
 	"sort"
+	"strconv"
+	"strings"
 )
 
 func getIntersectionNode__(headA, headB *ListNode) *ListNode {
@@ -22,15 +25,15 @@ func getIntersectionNode__(headA, headB *ListNode) *ListNode {
 	return nil
 }
 
-func reverseList__(head *ListNode) *ListNode {
-	var pre *ListNode
-	for cur := head; cur != nil; {
-		nxt := cur.Next
-		cur.Next = pre
-		pre, cur = cur, nxt
-	}
-	return pre
-}
+//func reverseList__(head *ListNode) *ListNode {
+//	var pre *ListNode
+//	for cur := head; cur != nil; {
+//		nxt := cur.Next
+//		cur.Next = pre
+//		pre, cur = cur, nxt
+//	}
+//	return pre
+//}
 
 // 先找到链表的中点 反转
 func isPalindrome__(head *ListNode) bool {
@@ -425,19 +428,19 @@ func (this *LRUCache) Put(key int, value int) {
 	}
 }
 
-func reverseList_(head *ListNode) *ListNode {
-	var dfs func(node *ListNode) *ListNode
-	dfs = func(node *ListNode) *ListNode {
-		if node == nil || node.Next == nil {
-			return node
-		}
-		newHead := dfs(node.Next)
-		node.Next.Next = node
-		node.Next = nil
-		return newHead
-	}
-	return dfs(head)
-}
+//func reverseList_(head *ListNode) *ListNode {
+//	var dfs func(node *ListNode) *ListNode
+//	dfs = func(node *ListNode) *ListNode {
+//		if node == nil || node.Next == nil {
+//			return node
+//		}
+//		newHead := dfs(node.Next)
+//		node.Next.Next = node
+//		node.Next = nil
+//		return newHead
+//	}
+//	return dfs(head)
+//}
 
 func findKthLargest(nums []int, k int) int {
 	hp := &IntHeap{}
@@ -510,49 +513,49 @@ func threeSum2(nums []int) (ans [][]int) {
 	return
 }
 
-type ListHeap []*ListNode
+//type ListHeap []*ListNode
+//
+//func (l *ListHeap) Len() int {
+//	return len(*l)
+//}
+//
+//func (l *ListHeap) Less(i, j int) bool {
+//	return (*l)[i].Val < (*l)[j].Val
+//}
+//
+//func (l *ListHeap) Swap(i, j int) {
+//	(*l)[i], (*l)[j] = (*l)[j], (*l)[i]
+//}
+//
+//func (l *ListHeap) Push(x any) {
+//	*l = append(*l, x.(*ListNode))
+//}
+//
+//func (l *ListHeap) Pop() any {
+//	x := (*l)[(*l).Len()-1]
+//	*l = (*l)[:(*l).Len()-1]
+//	return x
+//}
 
-func (l *ListHeap) Len() int {
-	return len(*l)
-}
-
-func (l *ListHeap) Less(i, j int) bool {
-	return (*l)[i].Val < (*l)[j].Val
-}
-
-func (l *ListHeap) Swap(i, j int) {
-	(*l)[i], (*l)[j] = (*l)[j], (*l)[i]
-}
-
-func (l *ListHeap) Push(x any) {
-	*l = append(*l, x.(*ListNode))
-}
-
-func (l *ListHeap) Pop() any {
-	x := (*l)[(*l).Len()-1]
-	*l = (*l)[:(*l).Len()-1]
-	return x
-}
-
-func mergeKLists_(lists []*ListNode) *ListNode {
-	dummy := &ListNode{}
-	p := dummy
-	hp := &ListHeap{}
-	for _, l := range lists {
-		if l != nil {
-			heap.Push(hp, l)
-		}
-	}
-	for hp.Len() > 0 {
-		x := heap.Pop(hp).(*ListNode)
-		if x.Next != nil {
-			heap.Push(hp, x.Next)
-		}
-		p.Next = &ListNode{Val: x.Val}
-		p = p.Next
-	}
-	return dummy.Next
-}
+//func mergeKLists_(lists []*ListNode) *ListNode {
+//	dummy := &ListNode{}
+//	p := dummy
+//	hp := &ListHeap{}
+//	for _, l := range lists {
+//		if l != nil {
+//			heap.Push(hp, l)
+//		}
+//	}
+//	for hp.Len() > 0 {
+//		x := heap.Pop(hp).(*ListNode)
+//		if x.Next != nil {
+//			heap.Push(hp, x.Next)
+//		}
+//		p.Next = &ListNode{Val: x.Val}
+//		p = p.Next
+//	}
+//	return dummy.Next
+//}
 
 // 动态规划法：回文天生具有状态转移的性质
 func longestPalindrome(s string) string {
@@ -772,22 +775,22 @@ func lowestCommonAncestor_(root, p, q *TreeNode) *TreeNode {
 	return dfs(root)
 }
 
-func reorderList(head *ListNode) {
-	slow, fast := head, head
-	for fast != nil && fast.Next != nil {
-		slow = slow.Next
-		fast = fast.Next.Next
-	}
-	reversed := reverseList(slow.Next)
-	slow.Next = nil
-	for p1, p2 := head, reversed; p2 != nil; {
-		nxt := p2.Next
-		p2.Next = p1.Next
-		p1.Next = p2
-		p1 = p2.Next
-		p2 = nxt
-	}
-}
+//	func reorderList(head *ListNode) {
+//		slow, fast := head, head
+//		for fast != nil && fast.Next != nil {
+//			slow = slow.Next
+//			fast = fast.Next.Next
+//		}
+//		reversed := reverseList(slow.Next)
+//		slow.Next = nil
+//		for p1, p2 := head, reversed; p2 != nil; {
+//			nxt := p2.Next
+//			p2.Next = p1.Next
+//			p1.Next = p2
+//			p1 = p2.Next
+//			p2 = nxt
+//		}
+//	}
 func detectCycle_(head *ListNode) *ListNode {
 	slow, fast := head, head
 	hasCycle := false
@@ -807,5 +810,88 @@ func detectCycle_(head *ListNode) *ListNode {
 			slow = slow.Next
 		}
 		return slow
+	}
+}
+func discountPrices(sentence string, discount int) string {
+	splits := strings.Split(sentence, " ")
+	dis := 1 - float64(discount)/100
+	for i, split := range splits {
+		if split[0] == '$' {
+			if val, _ := strconv.Atoi(split[1:]); val > 0 {
+				splits[i] = fmt.Sprintf("$%.2f", float64(val)*dis)
+			}
+		}
+	}
+	return strings.Join(splits, " ")
+}
+
+type ListHeap []*ListNode
+
+func (l *ListHeap) Len() int {
+	return len(*l)
+}
+
+func (l *ListHeap) Less(i, j int) bool {
+	return (*l)[i].Val < (*l)[j].Val
+}
+
+func (l *ListHeap) Swap(i, j int) {
+	(*l)[i], (*l)[j] = (*l)[j], (*l)[i]
+}
+
+func (l *ListHeap) Push(x any) {
+	*l = append(*l, x.(*ListNode))
+}
+
+func (l *ListHeap) Pop() any {
+	x := (*l)[len(*l)-1]
+	*l = (*l)[:len(*l)-1]
+	return x
+}
+
+// 合并K个升序链表 0618
+func mergeKLists(lists []*ListNode) *ListNode {
+	hp := &ListHeap{}
+	for _, l := range lists {
+		if l != nil {
+			heap.Push(hp, l)
+		}
+	}
+	dummy := &ListNode{}
+	p := dummy
+	for hp.Len() > 0 {
+		x := heap.Pop(hp).(*ListNode)
+		if x.Next != nil {
+			heap.Push(hp, x.Next)
+		}
+		p.Next = x
+		p = p.Next
+	}
+	return dummy.Next
+}
+func reverseList(head *ListNode) *ListNode {
+	var pre *ListNode
+	for cur := head; cur != nil; {
+		nxt := cur.Next
+		cur.Next = pre
+		pre, cur = cur, nxt
+	}
+	return pre
+}
+func reorderList(head *ListNode) {
+	slow, fast := head, head
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+	}
+	reversed := reverseList(slow.Next)
+	slow.Next = nil
+	p1, p2 := head, reversed
+	for p1 != nil && p2 != nil {
+		nxt := p2.Next
+		p2.Next = p1.Next
+		p1.Next = p2
+		p1 = p2.Next
+		p2 = nxt
 	}
 }

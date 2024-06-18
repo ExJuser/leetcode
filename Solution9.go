@@ -70,32 +70,32 @@ func quickSort(nums []int) {
 	helper(0, len(nums)-1)
 }
 
-//func quickSort_(nums []int) {
-//	var helper func(left, right int)
-//	helper = func(left, right int) {
-//		if left >= right {
-//			return
+//	func quickSort_(nums []int) {
+//		var helper func(left, right int)
+//		helper = func(left, right int) {
+//			if left >= right {
+//				return
+//			}
+//			pivot := nums[rand.Intn(right-left+1)+left]
+//			i, j := left, right
+//			for i <= j {
+//				for nums[i] < pivot {
+//					i++
+//				}
+//				for nums[j] > pivot {
+//					j--
+//				}
+//				if i <= j {
+//					nums[i], nums[j] = nums[j], nums[i]
+//					i++
+//					j--
+//				}
+//				helper(left, j)
+//				helper(i, right)
+//			}
 //		}
-//		pivot := nums[rand.Intn(right-left+1)+left]
-//		i, j := left, right
-//		for i <= j {
-//			for nums[i] < pivot {
-//				i++
-//			}
-//			for nums[j] > pivot {
-//				j--
-//			}
-//			if i <= j {
-//				nums[i], nums[j] = nums[j], nums[i]
-//				i++
-//				j--
-//			}
-//			helper(left, j)
-//			helper(i, right)
-//		}
+//		helper(0, len(nums)-1)
 //	}
-//	helper(0, len(nums)-1)
-//}
 func findKthLargest(nums []int, k int) int {
 	var helper func(left, right, k int) int
 	helper = func(left, right, k int) int {

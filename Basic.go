@@ -121,7 +121,7 @@ func merge(nums []int, left, mid, right int) {
 	}
 }
 
-func quickSort(nums []int) {
+func QuickSort(nums []int) {
 	quickSortHelper(nums, 0, len(nums)-1)
 }
 func quickSortHelper(nums []int, left, right int) {

@@ -443,16 +443,16 @@ func (this *LRUCache) Put(key int, value int) {
 //	return dfs(head)
 //}
 
-func findKthLargest(nums []int, k int) int {
-	hp := &IntHeap{}
-	for _, num := range nums {
-		heap.Push(hp, num)
-		if hp.Len() > k {
-			heap.Pop(hp)
-		}
-	}
-	return (*hp)[0]
-}
+//	func findKthLargest(nums []int, k int) int {
+//		hp := &IntHeap{}
+//		for _, num := range nums {
+//			heap.Push(hp, num)
+//			if hp.Len() > k {
+//				heap.Pop(hp)
+//			}
+//		}
+//		return (*hp)[0]
+//	}
 func reverseKGroup2(head *ListNode, k int) *ListNode {
 	n := 0
 	for p := head; p != nil; p = p.Next {

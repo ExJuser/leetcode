@@ -2,6 +2,7 @@ package main
 
 import (
 	"math"
+	"math/rand"
 )
 
 func maximalSquare(matrix [][]byte) int {
@@ -28,4 +29,65 @@ func maximalSquare(matrix [][]byte) int {
 		}
 	}
 	return ans
+}
+func countSquares(matrix [][]int) (ans int) {
+	for i := 0; i < len(matrix); i++ {
+		for j := 0; j < len(matrix[i]); j++ {
+			if i != 0 && j != 0 && matrix[i][j] == 1 {
+				matrix[i][j] = min(matrix[i-1][j], matrix[i-1][j-1], matrix[i][j-1]) + 1
+			}
+			ans += matrix[i][j]
+		}
+	}
+	return
+}
+
+// 快速排序
+func quickSort(nums []int) {
+	var helper func(int, int)
+	helper = func(left, right int) {
+		if left >= right {
+			return
+		}
+		pivot := nums[rand.Intn(right-left+1)+left]
+		i, j := left, right
+		for i <= j {
+			for nums[i] < pivot {
+				i++
+			}
+			for nums[j] > pivot {
+				j--
+			}
+			if i <= j {
+				nums[i], nums[j] = nums[j], nums[i]
+				i++
+				j--
+			}
+		}
+		helper(left, j)
+		helper(i, right)
+	}
+	helper(0, len(nums)-1)
+}
+
+// 冒泡排序
+func bubbleSort(nums []int) {
+	for i := 0; i < len(nums); i++ {
+		for j := 0; j < len(nums)-i-1; j++ {
+			if nums[j] > nums[j+1] {
+				nums[j], nums[j+1] = nums[j+1], nums[j]
+			}
+		}
+	}
+}
+func selectSort(nums []int) {
+	for i := 0; i < len(nums); i++ {
+		minIndex := i
+		for j := i + 1; j < len(nums); j++ {
+			if nums[j] < nums[minIndex] {
+				minIndex = j
+			}
+		}
+		nums[i], nums[minIndex] = nums[minIndex], nums[i]
+	}
 }

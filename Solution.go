@@ -308,46 +308,46 @@ void pop() 删除堆栈顶部的元素。
 int top() 获取堆栈顶部的元素。
 int getMin() 获取堆栈中的最小元素。
 */
-type MinStack struct {
-	stack []int
-	//额外用一个栈时刻维护当前时刻的最小值
-	//即使伴随着主栈元素出栈
-	minStack []int
-}
-
-func Constructor() MinStack {
-	return MinStack{
-		stack:    make([]int, 0),
-		minStack: make([]int, 0),
-	}
-}
-
-func (this *MinStack) Push(val int) {
-	this.stack = append(this.stack, val)
-	if len(this.minStack) == 0 || val < this.minStack[len(this.minStack)-1] {
-		this.minStack = append(this.minStack, val)
-	} else {
-		this.minStack = append(this.minStack, this.minStack[len(this.minStack)-1])
-	}
-}
-
-func (this *MinStack) Pop() {
-	this.stack = this.stack[:len(this.stack)-1]
-	this.minStack = this.minStack[:len(this.minStack)-1]
-}
-
-func (this *MinStack) Top() int {
-	return this.stack[len(this.stack)-1]
-}
-
-func (this *MinStack) GetMin() int {
-	return this.minStack[len(this.minStack)-1]
-}
-
-type TreeNode struct {
-	Left, Right *TreeNode
-	Val         int
-}
+//type MinStack struct {
+//	stack []int
+//	//额外用一个栈时刻维护当前时刻的最小值
+//	//即使伴随着主栈元素出栈
+//	minStack []int
+//}
+//
+//func Constructor() MinStack {
+//	return MinStack{
+//		stack:    make([]int, 0),
+//		minStack: make([]int, 0),
+//	}
+//}
+//
+//func (this *MinStack) Push(val int) {
+//	this.stack = append(this.stack, val)
+//	if len(this.minStack) == 0 || val < this.minStack[len(this.minStack)-1] {
+//		this.minStack = append(this.minStack, val)
+//	} else {
+//		this.minStack = append(this.minStack, this.minStack[len(this.minStack)-1])
+//	}
+//}
+//
+//func (this *MinStack) Pop() {
+//	this.stack = this.stack[:len(this.stack)-1]
+//	this.minStack = this.minStack[:len(this.minStack)-1]
+//}
+//
+//func (this *MinStack) Top() int {
+//	return this.stack[len(this.stack)-1]
+//}
+//
+//func (this *MinStack) GetMin() int {
+//	return this.minStack[len(this.minStack)-1]
+//}
+//
+//type TreeNode struct {
+//	Left, Right *TreeNode
+//	Val         int
+//}
 
 /*
 *

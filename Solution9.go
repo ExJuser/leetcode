@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 	"math/rand"
 )
@@ -70,32 +71,31 @@ func quickSort(nums []int) {
 	helper(0, len(nums)-1)
 }
 
-//	func quickSort_(nums []int) {
-//		var helper func(left, right int)
-//		helper = func(left, right int) {
-//			if left >= right {
-//				return
-//			}
-//			pivot := nums[rand.Intn(right-left+1)+left]
-//			i, j := left, right
-//			for i <= j {
-//				for nums[i] < pivot {
-//					i++
-//				}
-//				for nums[j] > pivot {
-//					j--
-//				}
-//				if i <= j {
-//					nums[i], nums[j] = nums[j], nums[i]
-//					i++
-//					j--
-//				}
-//				helper(left, j)
-//				helper(i, right)
-//			}
-//		}
-//		helper(0, len(nums)-1)
-//	}
+func quickSort_(nums []int) {
+	var helper func(left, right int)
+	helper = func(left, right int) {
+		if left >= right {
+			return
+		}
+		pivot := nums[rand.Intn(right-left+1)+left]
+		i, j := left, right
+		for i <= j {
+			for nums[i] < pivot {
+				i++
+			}
+			for nums[j] > pivot {
+				j--
+			}
+			if i <= j {
+				nums[i], nums[j] = nums[j], nums[i]
+				i++
+				j--
+			}
+		}
+		helper(left, j)
+		helper(i, right)
+	}
+}
 func findKthLargest(nums []int, k int) int {
 	var helper func(left, right, k int) int
 	helper = func(left, right, k int) int {
@@ -126,7 +126,7 @@ func findKthLargest(nums []int, k int) int {
 	return helper(0, len(nums)-1, len(nums)-k)
 }
 
-// 冒泡排序
+// 冒泡排序：每一轮确定一个最大值冒泡冒到最后一个为止
 func bubbleSort(nums []int) {
 	for i := 0; i < len(nums); i++ {
 		for j := 0; j < len(nums)-i-1; j++ {
@@ -136,6 +136,8 @@ func bubbleSort(nums []int) {
 		}
 	}
 }
+
+// 选择排序：每一轮确定一个最小值与对应位置元素交换
 func selectSort(nums []int) {
 	for i := 0; i < len(nums); i++ {
 		minIndex := i
@@ -146,4 +148,54 @@ func selectSort(nums []int) {
 		}
 		nums[i], nums[minIndex] = nums[minIndex], nums[i]
 	}
+}
+
+// 其实就是选出第len(nums)/2大的数
+func majorityElement(nums []int) int {
+	return findKthLargest(nums, len(nums)/2+1)
+}
+
+// 前缀积和后缀积
+func productExceptSelf(nums []int) []int {
+	prefix := make([]int, len(nums)+1)
+	suffix := make([]int, len(nums)+1)
+	prefix[0] = 1
+	for i := 0; i < len(nums); i++ {
+		prefix[i+1] = prefix[i] * nums[i]
+	}
+	suffix[len(nums)] = 1
+	for i := len(nums) - 1; i >= 0; i-- {
+		suffix[i] = suffix[i+1] * nums[i]
+	}
+	fmt.Println(prefix)
+	fmt.Println(suffix)
+	for i := 0; i < len(nums); i++ {
+		nums[i] = prefix[i] * suffix[i+1]
+	}
+	return nums
+}
+
+// MinStack 双栈解法
+type MinStack struct {
+}
+
+//
+//func Constructor() MinStack {
+//
+//}
+
+func (this *MinStack) Push(val int) {
+
+}
+
+func (this *MinStack) Pop() {
+
+}
+
+func (this *MinStack) Top() int {
+
+}
+
+func (this *MinStack) GetMin() int {
+
 }

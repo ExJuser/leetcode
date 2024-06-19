@@ -260,99 +260,41 @@ func partitionNode(head *ListNode, x int) *ListNode {
 }
 
 // 自顶向下的归并排序
-//func sortList(head *ListNode) *ListNode {
-//	var dfs func(node *ListNode) *ListNode
-//	dfs = func(node *ListNode) *ListNode {
-//		if node == nil || node.Next == nil {
-//			return node
-//		}
-//		slow, fast := node, node
-//		var preSlow *ListNode
-//		for fast != nil && fast.Next != nil {
-//			preSlow = slow
-//			slow = slow.Next
-//			fast = fast.Next.Next
-//		}
-//		preSlow.Next = nil
-//		left, right := dfs(node), dfs(slow)
-//		dummy := &ListNode{}
-//		p := dummy
-//		for left != nil && right != nil {
-//			if left.Val <= right.Val {
-//				p.Next = &ListNode{Val: left.Val}
-//				left = left.Next
-//			} else {
-//				p.Next = &ListNode{Val: right.Val}
-//				right = right.Next
-//			}
-//			p = p.Next
-//		}
-//		if left != nil {
-//			p.Next = left
-//		} else {
-//			p.Next = right
-//		}
-//		return dummy.Next
-//	}
-//	return dfs(head)
-//}
-
-func merge(head1, head2 *ListNode) *ListNode {
-	dummyHead := &ListNode{}
-	temp, temp1, temp2 := dummyHead, head1, head2
-	for temp1 != nil && temp2 != nil {
-		if temp1.Val <= temp2.Val {
-			temp.Next = temp1
-			temp1 = temp1.Next
-		} else {
-			temp.Next = temp2
-			temp2 = temp2.Next
-		}
-		temp = temp.Next
-	}
-	if temp1 != nil {
-		temp.Next = temp1
-	} else if temp2 != nil {
-		temp.Next = temp2
-	}
-	return dummyHead.Next
-}
-
 func sortList(head *ListNode) *ListNode {
-	if head == nil {
-		return head
-	}
-	length := 0
-	for node := head; node != nil; node = node.Next {
-		length++
-	}
-	dummyHead := &ListNode{Next: head}
-	for subLength := 1; subLength < length; subLength <<= 1 {
-		prev, cur := dummyHead, dummyHead.Next
-		for cur != nil {
-			head1 := cur
-			for i := 1; i < subLength && cur.Next != nil; i++ {
-				cur = cur.Next
-			}
-			head2 := cur.Next
-			cur.Next = nil
-			cur = head2
-			for i := 1; i < subLength && cur != nil && cur.Next != nil; i++ {
-				cur = cur.Next
-			}
-			var next *ListNode
-			if cur != nil {
-				next = cur.Next
-				cur.Next = nil
-			}
-			prev.Next = merge(head1, head2)
-			for prev.Next != nil {
-				prev = prev.Next
-			}
-			cur = next
+	var dfs func(node *ListNode) *ListNode
+	dfs = func(node *ListNode) *ListNode {
+		if node == nil || node.Next == nil {
+			return node
 		}
+		slow, fast := node, node
+		var preSlow *ListNode
+		for fast != nil && fast.Next != nil {
+			preSlow = slow
+			slow = slow.Next
+			fast = fast.Next.Next
+		}
+		preSlow.Next = nil
+		left, right := dfs(node), dfs(slow)
+		dummy := &ListNode{}
+		p := dummy
+		for left != nil && right != nil {
+			if left.Val <= right.Val {
+				p.Next = &ListNode{Val: left.Val}
+				left = left.Next
+			} else {
+				p.Next = &ListNode{Val: right.Val}
+				right = right.Next
+			}
+			p = p.Next
+		}
+		if left != nil {
+			p.Next = left
+		} else {
+			p.Next = right
+		}
+		return dummy.Next
 	}
-	return dummyHead.Next
+	return dfs(head)
 }
 
 // 链表的插入排序

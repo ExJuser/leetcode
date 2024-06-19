@@ -235,22 +235,23 @@ func reverseBetween_(head *ListNode, left int, right int) *ListNode {
 	temp.Next = pre
 	return dummy.Next
 }
-func sortList(head *ListNode) *ListNode {
-	list := make([]*ListNode, 0, 1000)
-	for p := head; p != nil; p = p.Next {
-		list = append(list, p)
-	}
-	slices.SortFunc(list, func(a, b *ListNode) int {
-		return a.Val - b.Val
-	})
-	dummy := &ListNode{}
-	p := dummy
-	for _, node := range list {
-		p.Next = node
-		p = p.Next
-	}
-	return dummy.Next
-}
+
+//	func sortList(head *ListNode) *ListNode {
+//		list := make([]*ListNode, 0, 1000)
+//		for p := head; p != nil; p = p.Next {
+//			list = append(list, p)
+//		}
+//		slices.SortFunc(list, func(a, b *ListNode) int {
+//			return a.Val - b.Val
+//		})
+//		dummy := &ListNode{}
+//		p := dummy
+//		for _, node := range list {
+//			p.Next = node
+//			p = p.Next
+//		}
+//		return dummy.Next
+//	}
 func insert(intervals [][]int, newInterval []int) [][]int {
 	start := 0
 	for ; start < len(intervals); start++ {

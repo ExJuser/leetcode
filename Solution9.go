@@ -71,31 +71,31 @@ func quickSort(nums []int) {
 	helper(0, len(nums)-1)
 }
 
-func quickSort_(nums []int) {
-	var helper func(left, right int)
-	helper = func(left, right int) {
-		if left >= right {
-			return
-		}
-		pivot := nums[rand.Intn(right-left+1)+left]
-		i, j := left, right
-		for i <= j {
-			for nums[i] < pivot {
-				i++
-			}
-			for nums[j] > pivot {
-				j--
-			}
-			if i <= j {
-				nums[i], nums[j] = nums[j], nums[i]
-				i++
-				j--
-			}
-		}
-		helper(left, j)
-		helper(i, right)
-	}
-}
+//	func quickSort_(nums []int) {
+//		var helper func(left, right int)
+//		helper = func(left, right int) {
+//			if left >= right {
+//				return
+//			}
+//			pivot := nums[rand.Intn(right-left+1)+left]
+//			i, j := left, right
+//			for i <= j {
+//				for nums[i] < pivot {
+//					i++
+//				}
+//				for nums[j] > pivot {
+//					j--
+//				}
+//				if i <= j {
+//					nums[i], nums[j] = nums[j], nums[i]
+//					i++
+//					j--
+//				}
+//			}
+//			helper(left, j)
+//			helper(i, right)
+//		}
+//	}
 func findKthLargest(nums []int, k int) int {
 	var helper func(left, right, k int) int
 	helper = func(left, right, k int) int {
@@ -176,26 +176,204 @@ func productExceptSelf(nums []int) []int {
 }
 
 // MinStack 双栈解法
-type MinStack struct {
-}
-
+//type MinStack struct {
+//	stack, minStack []int
+//}
 //
 //func Constructor() MinStack {
+//	return MinStack{
+//		stack:    make([]int, 0, 1000),
+//		minStack: make([]int, 0, 1000),
+//	}
+//}
 //
+//func (this *MinStack) Push(val int) {
+//	this.stack = append(this.stack, val)
+//	if len(this.minStack) == 0 || val < this.minStack[len(this.minStack)-1] {
+//		this.minStack = append(this.minStack, val)
+//	} else {
+//		this.minStack = append(this.minStack, this.minStack[len(this.minStack)-1])
+//	}
+//}
+//
+//func (this *MinStack) Pop() {
+//	this.stack = this.stack[:len(this.stack)-1]
+//	this.minStack = this.minStack[:len(this.minStack)-1]
+//}
+//
+//func (this *MinStack) Top() int {
+//	return this.stack[len(this.stack)-1]
+//}
+//
+//func (this *MinStack) GetMin() int {
+//	return this.minStack[len(this.minStack)-1]
 //}
 
-func (this *MinStack) Push(val int) {
-
+func maxProduct(nums []int) int {
+	minDP := make([]float64, len(nums))
+	maxDP := make([]float64, len(nums))
+	minDP[0], maxDP[0] = float64(nums[0]), float64(nums[0])
+	ans := float64(nums[0])
+	for i := 1; i < len(nums); i++ {
+		minDP[i] = min(minDP[i-1]*float64(nums[i]), maxDP[i-1]*float64(nums[i]), float64(nums[i]))
+		maxDP[i] = max(minDP[i-1]*float64(nums[i]), maxDP[i-1]*float64(nums[i]), float64(nums[i]))
+		ans = max(ans, maxDP[i], minDP[i])
+	}
+	return int(ans)
 }
 
-func (this *MinStack) Pop() {
-
+//	func partitionNode(head *ListNode, x int) *ListNode {
+//		leftDummy := &ListNode{}
+//		rightDummy := &ListNode{}
+//		p, q := leftDummy, rightDummy
+//		for cur := head; cur != nil; cur = cur.Next {
+//			if cur.Val < x {
+//				p.Next = &ListNode{Val: cur.Val}
+//				p = p.Next
+//			} else {
+//				q.Next = &ListNode{Val: cur.Val}
+//				q = q.Next
+//			}
+//		}
+//		p.Next = rightDummy.Next
+//		return leftDummy.Next
+//	}
+func partitionNode(head *ListNode, x int) *ListNode {
+	dummy := &ListNode{Next: head}
+	slow := dummy
+	for slow != nil && slow.Next != nil && slow.Next.Val < x {
+		slow = slow.Next
+	}
+	fast := slow
+	for fast != nil && fast.Next != nil {
+		if fast.Next.Val < x {
+			temp := fast.Next
+			fast.Next = temp.Next
+			temp.Next = slow.Next
+			slow.Next = temp
+			slow = slow.Next
+		} else {
+			fast = fast.Next
+		}
+	}
+	return dummy.Next
 }
 
-func (this *MinStack) Top() int {
+// 自顶向下的归并排序
+//func sortList(head *ListNode) *ListNode {
+//	var dfs func(node *ListNode) *ListNode
+//	dfs = func(node *ListNode) *ListNode {
+//		if node == nil || node.Next == nil {
+//			return node
+//		}
+//		slow, fast := node, node
+//		var preSlow *ListNode
+//		for fast != nil && fast.Next != nil {
+//			preSlow = slow
+//			slow = slow.Next
+//			fast = fast.Next.Next
+//		}
+//		preSlow.Next = nil
+//		left, right := dfs(node), dfs(slow)
+//		dummy := &ListNode{}
+//		p := dummy
+//		for left != nil && right != nil {
+//			if left.Val <= right.Val {
+//				p.Next = &ListNode{Val: left.Val}
+//				left = left.Next
+//			} else {
+//				p.Next = &ListNode{Val: right.Val}
+//				right = right.Next
+//			}
+//			p = p.Next
+//		}
+//		if left != nil {
+//			p.Next = left
+//		} else {
+//			p.Next = right
+//		}
+//		return dummy.Next
+//	}
+//	return dfs(head)
+//}
 
+func merge(head1, head2 *ListNode) *ListNode {
+	dummyHead := &ListNode{}
+	temp, temp1, temp2 := dummyHead, head1, head2
+	for temp1 != nil && temp2 != nil {
+		if temp1.Val <= temp2.Val {
+			temp.Next = temp1
+			temp1 = temp1.Next
+		} else {
+			temp.Next = temp2
+			temp2 = temp2.Next
+		}
+		temp = temp.Next
+	}
+	if temp1 != nil {
+		temp.Next = temp1
+	} else if temp2 != nil {
+		temp.Next = temp2
+	}
+	return dummyHead.Next
 }
 
-func (this *MinStack) GetMin() int {
+func sortList(head *ListNode) *ListNode {
+	if head == nil {
+		return head
+	}
+	length := 0
+	for node := head; node != nil; node = node.Next {
+		length++
+	}
+	dummyHead := &ListNode{Next: head}
+	for subLength := 1; subLength < length; subLength <<= 1 {
+		prev, cur := dummyHead, dummyHead.Next
+		for cur != nil {
+			head1 := cur
+			for i := 1; i < subLength && cur.Next != nil; i++ {
+				cur = cur.Next
+			}
+			head2 := cur.Next
+			cur.Next = nil
+			cur = head2
+			for i := 1; i < subLength && cur != nil && cur.Next != nil; i++ {
+				cur = cur.Next
+			}
+			var next *ListNode
+			if cur != nil {
+				next = cur.Next
+				cur.Next = nil
+			}
+			prev.Next = merge(head1, head2)
+			for prev.Next != nil {
+				prev = prev.Next
+			}
+			cur = next
+		}
+	}
+	return dummyHead.Next
+}
 
+// 链表的插入排序
+func insertionSortList(head *ListNode) *ListNode {
+	dummy := &ListNode{Next: head}
+	pre := dummy
+	for cur := head; cur != nil; {
+		p := dummy
+		for p.Next.Val <= cur.Val && p.Next != cur {
+			p = p.Next
+		}
+		if p.Next != cur {
+			temp := cur.Next
+			pre.Next = temp
+			cur.Next = p.Next
+			p.Next = cur
+			cur = temp
+		} else {
+			pre = cur
+			cur = cur.Next
+		}
+	}
+	return dummy.Next
 }

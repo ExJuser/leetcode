@@ -160,29 +160,30 @@ func distributeCandies(n int, limit int) int {
 }
 
 // 二叉树最大宽度
-func widthOfBinaryTree(root *TreeNode) (ans int) {
-	type Pair struct {
-		index int
-		node  *TreeNode
-	}
-	queue := make([]Pair, 0)
-	queue = append(queue, Pair{index: 1, node: root})
-	for len(queue) > 0 {
-		size := len(queue)
-		ans = max(ans, queue[size-1].index-queue[0].index+1)
-		for i := 0; i < size; i++ {
-			temp := queue[0]
-			queue = queue[1:]
-			if temp.node.Left != nil {
-				queue = append(queue, Pair{index: temp.index * 2, node: temp.node.Left})
-			}
-			if temp.node.Right != nil {
-				queue = append(queue, Pair{index: temp.index*2 + 1, node: temp.node.Right})
-			}
-		}
-	}
-	return
-}
+//
+//	func widthOfBinaryTree(root *TreeNode) (ans int) {
+//		type Pair struct {
+//			index int
+//			node  *TreeNode
+//		}
+//		queue := make([]Pair, 0)
+//		queue = append(queue, Pair{index: 1, node: root})
+//		for len(queue) > 0 {
+//			size := len(queue)
+//			ans = max(ans, queue[size-1].index-queue[0].index+1)
+//			for i := 0; i < size; i++ {
+//				temp := queue[0]
+//				queue = queue[1:]
+//				if temp.node.Left != nil {
+//					queue = append(queue, Pair{index: temp.index * 2, node: temp.node.Left})
+//				}
+//				if temp.node.Right != nil {
+//					queue = append(queue, Pair{index: temp.index*2 + 1, node: temp.node.Right})
+//				}
+//			}
+//		}
+//		return
+//	}
 func maxPathSum1(root *TreeNode) int {
 	//每一个节点的最大路径和为左子树+右子树
 	//但是返回给上层节点的是两者中的最大值

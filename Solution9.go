@@ -319,3 +319,46 @@ func insertionSortList(head *ListNode) *ListNode {
 	}
 	return dummy.Next
 }
+func deleteDuplicates(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+	for cur := head; cur.Next != nil; {
+		if cur.Next.Val == cur.Val {
+			cur.Next = cur.Next.Next
+		} else {
+			cur = cur.Next
+		}
+	}
+	return head
+}
+
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+func widthOfBinaryTree(root *TreeNode) (ans int) {
+	type Pair struct {
+		node  *TreeNode
+		index int
+	}
+	queue := make([]Pair, 0)
+	queue = append(queue, Pair{node: root, index: 1})
+	for len(queue) > 0 {
+		size := len(queue)
+		ans = max(ans, queue[size-1].index-queue[0].index+1)
+		for i := 0; i < size; i++ {
+			temp := queue[0]
+			queue = queue[1:]
+			if temp.node.Left != nil {
+				queue = append(queue, Pair{node: temp.node.Left, index: temp.index * 2})
+			}
+			if temp.node.Right != nil {
+				queue = append(queue, Pair{node: temp.node.Right, index: temp.index*2 + 1})
+			}
+		}
+	}
+	return
+}

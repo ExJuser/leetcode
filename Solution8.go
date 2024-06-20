@@ -710,38 +710,39 @@ func maxProfit_(prices []int) int {
 	}
 	return ans
 }
-func addStrings(num1 string, num2 string) string {
-	byte1, byte2 := []byte(num1), []byte(num2)
-	ansByte := make([]byte, max(len(num1), len(num2)))
-	carry := 0
-	i, j := len(num1)-1, len(num2)-1
-	for i >= 0 && j >= 0 {
-		val := int(byte1[i]-'0') + int(byte2[j]-'0') + carry
-		carry = val / 10
-		val %= 10
-		ansByte[max(i, j)] = byte(val + '0')
-		i--
-		j--
-	}
-	for i >= 0 {
-		val := int(byte1[i]-'0') + carry
-		carry = val / 10
-		val %= 10
-		ansByte[i] = byte(val + '0')
-		i--
-	}
-	for j >= 0 {
-		val := int(byte2[j]-'0') + carry
-		carry = val / 10
-		val %= 10
-		ansByte[j] = byte(val + '0')
-		j--
-	}
-	if carry != 0 {
-		ansByte = append([]byte{'1'}, ansByte...)
-	}
-	return string(ansByte)
-}
+
+//	func addStrings(num1 string, num2 string) string {
+//		byte1, byte2 := []byte(num1), []byte(num2)
+//		ansByte := make([]byte, max(len(num1), len(num2)))
+//		carry := 0
+//		i, j := len(num1)-1, len(num2)-1
+//		for i >= 0 && j >= 0 {
+//			val := int(byte1[i]-'0') + int(byte2[j]-'0') + carry
+//			carry = val / 10
+//			val %= 10
+//			ansByte[max(i, j)] = byte(val + '0')
+//			i--
+//			j--
+//		}
+//		for i >= 0 {
+//			val := int(byte1[i]-'0') + carry
+//			carry = val / 10
+//			val %= 10
+//			ansByte[i] = byte(val + '0')
+//			i--
+//		}
+//		for j >= 0 {
+//			val := int(byte2[j]-'0') + carry
+//			carry = val / 10
+//			val %= 10
+//			ansByte[j] = byte(val + '0')
+//			j--
+//		}
+//		if carry != 0 {
+//			ansByte = append([]byte{'1'}, ansByte...)
+//		}
+//		return string(ansByte)
+//	}
 func getIntersectionNode_(headA, headB *ListNode) *ListNode {
 	mp := make(map[*ListNode]struct{})
 	for p := headA; p != nil; p = p.Next {

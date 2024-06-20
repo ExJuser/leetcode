@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"slices"
+	"strings"
 )
 
 func maximalSquare(matrix [][]byte) int {
@@ -71,31 +73,32 @@ func quickSort(nums []int) {
 	helper(0, len(nums)-1)
 }
 
-//	func quickSort_(nums []int) {
-//		var helper func(left, right int)
-//		helper = func(left, right int) {
-//			if left >= right {
-//				return
-//			}
-//			pivot := nums[rand.Intn(right-left+1)+left]
-//			i, j := left, right
-//			for i <= j {
-//				for nums[i] < pivot {
-//					i++
-//				}
-//				for nums[j] > pivot {
-//					j--
-//				}
-//				if i <= j {
-//					nums[i], nums[j] = nums[j], nums[i]
-//					i++
-//					j--
-//				}
-//			}
-//			helper(left, j)
-//			helper(i, right)
-//		}
-//	}
+func quickSort_(nums []int) {
+	var helper func(left, right int)
+	helper = func(left, right int) {
+		if left >= right {
+			return
+		}
+		pivot := nums[rand.Intn(right-left+1)+left]
+		i, j := left, right
+		for i <= j {
+			for nums[i] < pivot {
+				i++
+			}
+			for nums[j] > pivot {
+				j--
+			}
+			if i <= j {
+				nums[i], nums[j] = nums[j], nums[i]
+				i++
+				j--
+			}
+		}
+		helper(left, j)
+		helper(i, right)
+	}
+	helper(0, len(nums)-1)
+}
 func findKthLargest(nums []int, k int) int {
 	var helper func(left, right, k int) int
 	helper = func(left, right, k int) int {
@@ -361,4 +364,99 @@ func widthOfBinaryTree(root *TreeNode) (ans int) {
 		}
 	}
 	return
+}
+func countBeautifulPairs(nums []int) (ans int) {
+	var gcd func(a, b int) int
+	var getFirstDigit func(a int) int
+	gcd = func(a, b int) int {
+		for b > 0 {
+			a, b = b, a%b
+		}
+		return a
+	}
+	getFirstDigit = func(a int) int {
+		for a > 0 {
+			if a/10 == 0 {
+				return a
+			}
+			a = a / 10
+		}
+		return -1
+	}
+	for i := 0; i < len(nums); i++ {
+		for j := i + 1; j < len(nums); j++ {
+			if gcd(getFirstDigit(nums[i]), nums[j]%10) == 1 {
+				ans++
+			}
+		}
+	}
+	return
+}
+func addStrings(num1 string, num2 string) string {
+	num1Bytes, num2Bytes := []byte(num1), []byte(num2)
+	resBytes := make([]byte, max(len(num1), len(num2))+1)
+	i, j := len(num1)-1, len(num2)-1
+	carry := 0
+	for i >= 0 && j >= 0 {
+		val := int(num1Bytes[i]-'0') + int(num2Bytes[j]) - '0' + carry
+		carry = val / 10
+		val = val % 10
+		resBytes[max(i, j)+1] = byte(val + '0')
+		i--
+		j--
+	}
+	for i >= 0 {
+		val := int(num1Bytes[i]-'0') + carry
+		carry = val / 10
+		val = val % 10
+		resBytes[i+1] = byte(val + '0')
+		i--
+	}
+	for j >= 0 {
+		val := int(num2Bytes[j]-'0') + carry
+		carry = val / 10
+		val = val % 10
+		resBytes[j+1] = byte(val + '0')
+		j--
+	}
+	if carry > 0 {
+		resBytes[0] = '1'
+	} else {
+		resBytes = resBytes[1:]
+	}
+	return string(resBytes)
+}
+func reverseMessage(message string) string {
+	messages := make([]string, 0, len(message))
+	for i := 0; i < len(message); {
+		if message[i] == ' ' {
+			i++
+		} else {
+			j := i
+			for j < len(message) && message[j] != ' ' {
+				j++
+			}
+			messages = append(messages, message[i:j])
+			i = j
+		}
+	}
+	slices.Reverse(messages)
+	return strings.Join(messages, " ")
+}
+
+func lengthOfLongestSubstring(s string) int {
+	mp := make(map[byte]int)
+	var ans, left int
+	for right := 0; right < len(s); right++ {
+		mp[s[right]]++
+		for len(mp) < right-left+1 {
+			mp[s[left]]--
+			if mp[s[left]] == 0 {
+				delete(mp, s[left])
+			}
+			left++
+		}
+		ans = max(ans, right-left+1)
+	}
+	return ans
 }

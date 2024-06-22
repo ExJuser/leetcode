@@ -460,18 +460,19 @@ func lengthOfLongestSubstring(s string) int {
 	}
 	return ans
 }
-func temperatureTrend(temperatureA []int, temperatureB []int) int {
-	ans := 1
-	length := 1
-	for i := 1; i < len(temperatureA); i++ {
-		if (temperatureA[i]-temperatureA[i-1])*(temperatureB[i]-temperatureB[i-1]) > 0 {
-			length++
-		} else if temperatureA[i] == temperatureA[i-1] && temperatureB[i] == temperatureB[i-1] {
-			length++
-		} else {
-			length = 1
-		}
-		ans = max(ans, length)
-	}
-	return ans
-}
+
+//func temperatureTrend(temperatureA []int, temperatureB []int) int {
+//	ans := 1
+//	length := 1
+//	for i := 1; i < len(temperatureA); i++ {
+//		if (temperatureA[i]-temperatureA[i-1])*(temperatureB[i]-temperatureB[i-1]) > 0 {
+//			length++
+//		} else if temperatureA[i] == temperatureA[i-1] && temperatureB[i] == temperatureB[i-1] {
+//			length++
+//		} else {
+//			length = 1
+//		}
+//		ans = max(ans, length)
+//	}
+//	return ans
+//}

@@ -485,3 +485,24 @@ func detectCapitalUse(word string) bool {
 	}
 	return false
 }
+
+func nextGreaterElements(nums []int) []int {
+	ans := make([]int, 0, len(nums))
+	for i := 0; i < len(ans); i++ {
+		ans[i] = -1
+	}
+	nums = append(nums, nums...)
+	stack := make([]int, 0, len(nums))
+	for i := 0; i < len(nums); i++ {
+		for len(stack) > 0 && nums[stack[len(stack)-1]] < nums[i] {
+			ans[stack[len(stack)-1]] = nums[i]
+			stack = stack[:len(stack)-1]
+		}
+		index := i
+		if index >= len(ans) {
+			index -= len(ans)
+		}
+		stack = append(stack, index)
+	}
+	return ans
+}

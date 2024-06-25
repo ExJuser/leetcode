@@ -506,3 +506,131 @@ func nextGreaterElements(nums []int) []int {
 	}
 	return ans
 }
+
+// 图论入门 797.所有可能的路径
+func allPathsSourceTarget(graph [][]int) (ans [][]int) {
+	used := make([]bool, len(graph))
+	var dfs func(start int, path []int)
+	dfs = func(start int, path []int) {
+		if start == len(graph)-1 {
+			ans = append(ans, append([]int{}, path...))
+			return
+		}
+		if len(path) >= len(graph) {
+			return
+		}
+		for _, node := range graph[start] {
+			if !used[node] {
+				used[node] = true
+				path = append(path, node)
+				dfs(node, path)
+				path = path[:len(path)-1]
+				used[node] = false
+			}
+		}
+	}
+	dfs(0, []int{0})
+	return
+}
+
+// 图论之梦开始的地方 200.岛屿数量
+// 答案好像对了 但是居然是超出内存限制
+// 问题出在标记一个地方走过不应该在出队列的时候标记 而是应该在加入队列的时候就标记
+//func numIslands(grid [][]byte) (ans int) {
+//	//经过每一个节点 都标记它已经经过
+//	//遇到每一个没有经过的节点 答案+1 并开始广度优先搜索向四周扩散
+//	used := make([][]bool, len(grid))
+//	for i := 0; i < len(grid); i++ {
+//		used[i] = make([]bool, len(grid[0]))
+//	}
+//	queue := make([][2]int, 0)
+//	for i := 0; i < len(grid); i++ {
+//		for j := 0; j < len(grid[i]); j++ {
+//			if grid[i][j] == '1' && !used[i][j] {
+//				ans++
+//				queue = append(queue, [2]int{i, j})
+//				used[i][j] = true
+//				for len(queue) > 0 {
+//					i, j := queue[0][0], queue[0][1]
+//					queue = queue[1:]
+//					if i-1 >= 0 && grid[i-1][j] == '1' && !used[i-1][j] {
+//						queue = append(queue, [2]int{i - 1, j})
+//						used[i-1][j] = true
+//					}
+//					if i+1 < len(grid) && grid[i+1][j] == '1' && !used[i+1][j] {
+//						queue = append(queue, [2]int{i + 1, j})
+//						used[i+1][j] = true
+//					}
+//					if j-1 >= 0 && grid[i][j-1] == '1' && !used[i][j-1] {
+//						queue = append(queue, [2]int{i, j - 1})
+//						used[i][j-1] = true
+//					}
+//					if j+1 < len(grid[i]) && grid[i][j+1] == '1' && !used[i][j+1] {
+//						queue = append(queue, [2]int{i, j + 1})
+//						used[i][j+1] = true
+//					}
+//				}
+//			}
+//		}
+//	}
+//	return ans
+//}
+
+// 代码就是从抄开始学的
+func numIslands(grid [][]byte) (ans int) {
+	var dfs func(i, j int)
+	dfs = func(i, j int) {
+		if i < 0 || j < 0 || i >= len(grid) || j >= len(grid[i]) {
+			return
+		}
+		if grid[i][j] == '0' {
+			return
+		}
+		grid[i][j] = '0'
+		dfs(i-1, j)
+		dfs(i+1, j)
+		dfs(i, j-1)
+		dfs(i, j+1)
+	}
+	for i := 0; i < len(grid); i++ {
+		for j := 0; j < len(grid[i]); j++ {
+			if grid[i][j] == '1' {
+				ans++
+				dfs(i, j)
+			}
+		}
+	}
+	return
+}
+
+// BFS版本的优化版
+func numIslandsBFS(grid [][]byte) (ans int) {
+	var bfs func(i, j int)
+	bfs = func(i, j int) {
+		if i < 0 || j < 0 || i >= len(grid) || j >= len(grid[i]) {
+			return
+		}
+		if grid[i][j] == '0' {
+			return
+		}
+		queue := [][2]int{{i, j}}
+		grid[i][j] = '0'
+		for len(queue) > 0 {
+			x, y := queue[0][0], queue[0][1]
+			queue = queue[1:]
+			bfs(x-1, y)
+			bfs(x+1, y)
+			bfs(x, y-1)
+			bfs(x, y+1)
+		}
+	}
+	for i := 0; i < len(grid); i++ {
+		for j := 0; j < len(grid[i]); j++ {
+			if grid[i][j] != '0' {
+				ans++
+				bfs(i, j)
+			}
+		}
+	}
+	return
+}

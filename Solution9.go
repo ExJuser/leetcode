@@ -713,3 +713,6 @@ func findCircleNum(isConnected [][]int) (ans int) {
 	}
 	return
 }
+func removeTrailingZeros(num string) string {
+	return strings.TrimRight(num, "0")
+}

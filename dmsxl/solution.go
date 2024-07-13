@@ -82,3 +82,60 @@ func isPerfectSquare(num int) bool {
 	}
 	return false
 }
+
+// 27. 移除元素
+func removeElement(nums []int, val int) int {
+	end := len(nums) - 1
+	for i := 0; i <= end; {
+		if nums[i] == val {
+			nums[i], nums[end] = nums[end], nums[i]
+			end--
+		} else {
+			i++
+		}
+	}
+	return end + 1
+}
+
+// 26. 删除有序数组中的重复项
+func removeDuplicates(nums []int) int {
+	var count int
+	for i := 0; i < len(nums); i++ {
+		if i == 0 || nums[i] != nums[i-1] {
+			nums[count] = nums[i]
+			count++
+		}
+	}
+	return count
+}
+
+// 283. 移动零
+func moveZeroes(nums []int) {
+	index := 0
+	for i := 0; i < len(nums); i++ {
+		if nums[i] != 0 {
+			nums[index] = nums[i]
+			index++
+		}
+	}
+	nums = append(nums[:index], make([]int, len(nums)-index)...)
+}
+
+// 844. 比较含退格的字符串
+func backspaceCompare(s string, t string) bool {
+	var help func(str string) string
+	help = func(str string) string {
+		bytes := []byte(str)
+		index := 0
+		for i := 0; i < len(bytes); i++ {
+			if bytes[i] == '#' {
+				index = max(index-1, 0)
+			} else {
+				bytes[index] = bytes[i]
+				index++
+			}
+		}
+		return string(bytes[:index])
+	}
+	return help(s) == help(t)
+}

@@ -1,5 +1,7 @@
 package dmsxl
 
+import "math"
+
 // 704. 二分查找
 func search(nums []int, target int) int {
 	left, right := 0, len(nums)-1
@@ -138,4 +140,39 @@ func backspaceCompare(s string, t string) bool {
 		return string(bytes[:index])
 	}
 	return help(s) == help(t)
+}
+
+// 977. 有序数组的平方
+func sortedSquares(nums []int) []int {
+	newNums := make([]int, len(nums))
+	insLoc := len(nums) - 1
+	left, right := 0, len(nums)-1
+	for left <= right {
+		if nums[left]*nums[left] <= nums[right]*nums[right] {
+			newNums[insLoc] = nums[right] * nums[right]
+			right--
+		} else {
+			newNums[insLoc] = nums[left] * nums[left]
+			left++
+		}
+		insLoc--
+	}
+	return newNums
+}
+
+// 209. 长度最小的子数组
+func minSubArrayLen(target int, nums []int) int {
+	var left, sum int
+	ans := math.MaxInt
+	for right := 0; right < len(nums); right++ {
+		sum += nums[right]
+		for ; sum >= target; left++ {
+			sum -= nums[left]
+			ans = min(ans, right-left+1)
+		}
+	}
+	if ans == math.MaxInt {
+		return 0
+	}
+	return ans
 }

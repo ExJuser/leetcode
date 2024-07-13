@@ -1,4 +1,4 @@
-package main
+package solution
 
 // SelectionSort 选择排序
 // 每一轮都找到一个最小的数

@@ -1,6 +1,8 @@
 package dmsxl
 
-import "math"
+import (
+	"math"
+)
 
 // 704. 二分查找
 func search(nums []int, target int) int {
@@ -176,3 +178,152 @@ func minSubArrayLen(target int, nums []int) int {
 	}
 	return ans
 }
+
+// 904. 水果成篮
+func totalFruit(fruits []int) int {
+	mp := make(map[int]int)
+	var left, ans int
+	for right := 0; right < len(fruits); right++ {
+		mp[fruits[right]]++
+		for ; len(mp) > 2; left++ {
+			mp[fruits[left]]--
+			if mp[fruits[left]] == 0 {
+				delete(mp, fruits[left])
+			}
+		}
+		ans = max(ans, right-left+1)
+	}
+	return ans
+}
+
+// 76. 最小覆盖子串
+//func minWindow(s string, t string) string {
+//	var check func(mp map[byte]int) bool
+//	check = func(mp map[byte]int) bool {
+//		for _, v := range mp {
+//			if v > 0 {
+//				return false
+//			}
+//		}
+//		return true
+//	}
+//	mp := make(map[byte]int)
+//	left, length := 0, len(s)+1
+//	ans := ""
+//	for _, ch := range t {
+//		mp[byte(ch)]++
+//	}
+//	for right := 0; right < len(s); right++ {
+//		mp[s[right]]--
+//		for ; check(mp); left++ {
+//			if right-left+1 < length {
+//				length = right - left + 1
+//				ans = s[left : right+1]
+//			}
+//			mp[s[left]]++
+//		}
+//	}
+//	return ans
+//}
+
+// 76. 最小覆盖子串的优化版本 额外使用一个变量维护当前已经满足要求的字符个数
+func minWindow(s string, t string) string {
+	var cur, left int
+	length, ans := len(s)+1, ""
+	target := make(map[byte]int)
+	exist := make(map[byte]struct{})
+	for _, ch := range t {
+		target[byte(ch)]++
+		exist[byte(ch)] = struct{}{}
+	}
+	for right := 0; right < len(s); right++ {
+		target[s[right]]--
+		if _, ok := exist[s[right]]; ok && target[s[right]] == 0 {
+			cur++
+		}
+		for ; cur == len(exist); left++ {
+			target[s[left]]++
+			if length > right-left+1 {
+				length = right - left + 1
+				ans = s[left : right+1]
+			}
+			if _, ok := exist[s[left]]; ok && target[s[left]] == 1 {
+				cur--
+			}
+		}
+	}
+	return ans
+}
+
+// 203. 移除链表元素
+func removeElements(head *ListNode, val int) *ListNode {
+	dummy := &ListNode{Next: head}
+	for p := dummy; p != nil && p.Next != nil; {
+		if p.Next.Val == val {
+			p.Next = p.Next.Next
+		} else {
+			p = p.Next
+		}
+	}
+	return dummy.Next
+}
+
+// 206. 反转链表的迭代法
+//func reverseList(head *ListNode) *ListNode {
+//	var pre *ListNode
+//	for cur := head; cur != nil; {
+//		nxt := cur.Next
+//		cur.Next = pre
+//		cur, pre = nxt, cur
+//	}
+//	return pre
+//}
+
+// 206. 反转链表的递归法
+func reverseList(head *ListNode) *ListNode {
+	var dfs func(node *ListNode) *ListNode
+	dfs = func(node *ListNode) *ListNode {
+		if node == nil || node.Next == nil {
+			return node
+		}
+		//先将后面的节点反转
+		newHead := dfs(node.Next)
+		node.Next.Next = node
+		node.Next = nil
+		return newHead
+	}
+	return dfs(head)
+}
+
+// 24. 两两交换链表中的节点 多用几个变量表示节点之间的关系即可
+//func swapPairs(head *ListNode) *ListNode {
+//	dummy := &ListNode{Next: head}
+//	pre := dummy
+//	cur := dummy.Next
+//	for cur != nil && cur.Next != nil {
+//		nxt := cur.Next
+//		cur.Next = nxt.Next
+//		nxt.Next = cur
+//		pre.Next = nxt
+//		pre = cur
+//		cur = cur.Next
+//	}
+//	return dummy.Next
+//}
+
+// 24. 两两交换链表中的节点优化版
+//func swapPairs(head *ListNode) *ListNode {
+//	dummy := &ListNode{Next: head}
+//	for pre, cur := dummy, dummy.Next; cur != nil && cur.Next != nil; pre, cur = cur, cur.Next {
+//		nxt := cur.Next
+//		cur.Next = nxt.Next
+//		nxt.Next = cur
+//		pre.Next = nxt
+//	}
+//	return dummy.Next
+//}
+
+// 24. 两两交换链表中的节点递归版
+//func swapPairs(head *ListNode) *ListNode {
+//
+//}

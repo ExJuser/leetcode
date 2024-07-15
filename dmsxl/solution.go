@@ -323,7 +323,139 @@ func reverseList(head *ListNode) *ListNode {
 //	return dummy.Next
 //}
 
-// 24. 两两交换链表中的节点递归版
-//func swapPairs(head *ListNode) *ListNode {
-//
+// 24. 两两交换链表中的节点递归版 画个图就可以
+func swapPairs(head *ListNode) *ListNode {
+	var dfs func(node *ListNode) *ListNode
+	dfs = func(node *ListNode) *ListNode {
+		if node == nil || node.Next == nil {
+			return node
+		}
+		nxt := node.Next
+		node.Next = dfs(node.Next.Next)
+		nxt.Next = node
+		return nxt
+	}
+	return dfs(head)
+}
+
+// 59. 螺旋矩阵 II
+func generateMatrix(n int) [][]int {
+	top, bottom, left, right := 0, n-1, 0, n-1
+	num := 1
+	matrix := make([][]int, n)
+	for i := 0; i < n; i++ {
+		matrix[i] = make([]int, n)
+	}
+	for num <= n*n {
+		for i := left; i <= right; i++ {
+			matrix[top][i] = num
+			num++
+		}
+		top++
+		for i := top; i <= bottom; i++ {
+			matrix[i][right] = num
+			num++
+		}
+		right--
+		for i := right; i >= left; i-- {
+			matrix[bottom][i] = num
+			num++
+		}
+		bottom--
+		for i := bottom; i >= top; i-- {
+			matrix[i][left] = num
+			num++
+		}
+		left++
+	}
+	return matrix
+}
+
+// 54. 螺旋矩阵 注意处理最后只剩一行或者只剩一圈的问题
+func spiralOrder(matrix [][]int) (ans []int) {
+	height, width := len(matrix), len(matrix[0])
+	top, bottom, left, right := 0, height-1, 0, width-1
+	for left < right && top < bottom {
+		for i := left; i <= right; i++ {
+			ans = append(ans, matrix[top][i])
+		}
+		top++
+		for i := top; i <= bottom; i++ {
+			ans = append(ans, matrix[i][right])
+		}
+		right--
+		for i := right; i >= left; i-- {
+			ans = append(ans, matrix[bottom][i])
+		}
+		bottom--
+		for i := bottom; i >= top; i-- {
+			ans = append(ans, matrix[i][left])
+		}
+		left++
+	}
+	//只剩一行
+	if top == bottom {
+		for i := left; i <= right; i++ {
+			ans = append(ans, matrix[top][i])
+		}
+	} else if left == right {
+		for i := top; i <= bottom; i++ {
+			ans = append(ans, matrix[i][left])
+		}
+	}
+	return
+}
+
+// 19. 删除链表的倒数第 N 个结点 快慢指针
+func removeNthFromEnd(head *ListNode, n int) *ListNode {
+	dummy := &ListNode{Next: head}
+	slow, fast := dummy, dummy
+	for i := 0; i < n; i++ {
+		fast = fast.Next
+	}
+	for fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next
+	}
+	slow.Next = slow.Next.Next
+
+	return dummy.Next
+}
+
+// 面试题 02.07. 链表相交 使用额外内存的解法
+//func getIntersectionNode(headA, headB *ListNode) *ListNode {
+//	set := make(map[*ListNode]struct{})
+//	for p := headA; p != nil; p = p.Next {
+//		set[p] = struct{}{}
+//	}
+//	for p := headB; p != nil; p = p.Next {
+//		if _, ok := set[p]; ok {
+//			return p
+//		}
+//	}
+//	return nil
 //}
+
+func getIntersectionNode(headA, headB *ListNode) *ListNode {
+	lenA, lenB := GetLinkedListLength(headA), GetLinkedListLength(headB)
+	var p, q *ListNode
+	diff := lenA - lenB
+	if diff > 0 {
+		p = headA
+		q = headB
+	} else {
+		p = headB
+		q = headA
+	}
+	for i := 0; i < Abs(diff); i++ {
+		p = p.Next
+	}
+	for p != nil && q != nil {
+		if p == q {
+			return p
+		}
+		p = p.Next
+		q = q.Next
+	}
+	return nil
+}

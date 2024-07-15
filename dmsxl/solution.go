@@ -459,3 +459,67 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
 	}
 	return nil
 }
+
+// 142. 环形链表 II 需要输出环的入口
+func detectCycle(head *ListNode) *ListNode {
+	slow, fast := head, head
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+		if slow == fast {
+			break
+		}
+	}
+	if fast == nil || fast.Next == nil {
+		return nil
+	}
+	for p := head; p != slow; {
+		p = p.Next
+		slow = slow.Next
+	}
+	return slow
+}
+
+// 141. 环形链表 只需要判断有环无环
+func hasCycle(head *ListNode) bool {
+	slow, fast := head, head
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+		if slow == fast {
+			return true
+		}
+	}
+	return false
+}
+
+// 242. 有效的字母异位词
+func isAnagram(s string, t string) bool {
+	target := make(map[byte]int)
+	for _, ch := range s {
+		target[byte(ch)]++
+	}
+	for _, ch := range t {
+		target[byte(ch)]--
+		if target[byte(ch)] == 0 {
+			delete(target, byte(ch))
+		}
+	}
+	return len(target) == 0
+}
+
+func canConstruct(ransomNote string, magazine string) bool {
+	mp := make(map[byte]int)
+	for _, ch := range ransomNote {
+		mp[byte(ch)]++
+	}
+	target := len(mp)
+	cur := 0
+	for _, ch := range magazine {
+		mp[byte(ch)]--
+		if mp[byte(ch)] == 0 {
+			cur++
+		}
+	}
+	return cur == target
+}

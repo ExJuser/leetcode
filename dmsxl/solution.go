@@ -2,6 +2,7 @@ package dmsxl
 
 import (
 	"math"
+	"slices"
 )
 
 // 704. 二分查找
@@ -508,6 +509,7 @@ func isAnagram(s string, t string) bool {
 	return len(target) == 0
 }
 
+// 383. 赎金信
 func canConstruct(ransomNote string, magazine string) bool {
 	mp := make(map[byte]int)
 	for _, ch := range ransomNote {
@@ -522,4 +524,164 @@ func canConstruct(ransomNote string, magazine string) bool {
 		}
 	}
 	return cur == target
+}
+
+// 49. 字母异位词分组 排序即可
+func groupAnagrams(strs []string) [][]string {
+	cnt := 0
+	mp := make(map[string]int)
+	ans := make([][]string, 0)
+	for _, str := range strs {
+		bytes := []byte(str)
+		slices.Sort(bytes)
+		sortedStr := string(bytes)
+		if index, ok := mp[sortedStr]; ok {
+			ans[index] = append(ans[index], str)
+		} else {
+			mp[sortedStr] = cnt
+			ans = append(ans, make([]string, 0))
+			ans[cnt] = append(ans[cnt], str)
+			cnt++
+		}
+	}
+	return ans
+}
+
+// 438. 找到字符串中所有字母异位词
+func findAnagrams(s string, p string) (ans []int) {
+	if len(s) < len(p) {
+		return
+	}
+	target := make(map[byte]int)
+	for _, ch := range p {
+		target[byte(ch)]++
+	}
+	for i := 0; i < len(p); i++ {
+		target[s[i]]--
+		if target[s[i]] == 0 {
+			delete(target, s[i])
+		}
+	}
+	if len(target) == 0 {
+		ans = append(ans, 0)
+	}
+	for i := 1; i < len(s)-len(p)+1; i++ {
+		target[s[i-1]]++
+		if target[s[i-1]] == 0 {
+			delete(target, s[i-1])
+		}
+		//abcd abc
+		target[s[i+len(p)-1]]--
+		if target[s[i+len(p)-1]] == 0 {
+			delete(target, s[i+len(p)-1])
+		}
+		if len(target) == 0 {
+			ans = append(ans, i)
+		}
+	}
+	return
+}
+
+// 349. 两个数组的交集
+func intersection(nums1 []int, nums2 []int) (ans []int) {
+	mp := make(map[int]struct{}, len(nums1))
+	for _, num := range nums1 {
+		mp[num] = struct{}{}
+	}
+	for _, num := range nums2 {
+		if _, ok := mp[num]; ok {
+			ans = append(ans, num)
+			delete(mp, num) //加入交集即可删除
+		}
+	}
+	return
+}
+
+// 350. 两个数组的交集 II
+func intersect(nums1 []int, nums2 []int) (ans []int) {
+	set1 := make(map[int]int)
+	set2 := make(map[int]int)
+	for _, num := range nums1 {
+		set1[num]++
+	}
+	for _, num := range nums2 {
+		set2[num]++
+	}
+	for k, v1 := range set1 {
+		if v2, ok := set2[k]; ok && v2 > 0 {
+			for i := 0; i < min(v1, v2); i++ {
+				ans = append(ans, k)
+			}
+			set2[k] -= min(v1, v2)
+		}
+	}
+	return
+}
+
+// 202. 快乐数
+func isHappy(n int) bool {
+	set := make(map[int]struct{})
+	for n != 1 {
+		sum := 0
+		for n > 0 {
+			digit := n % 10
+			sum += digit * digit
+			n /= 10
+		}
+		if _, ok := set[sum]; ok {
+			return false
+		}
+		set[sum] = struct{}{}
+		n = sum
+	}
+	return true
+}
+
+// 1. 两数之和
+func twoSum(nums []int, target int) []int {
+	mp := make(map[int]int)
+	for i, num := range nums {
+		if j, ok := mp[target-num]; ok {
+			return []int{i, j}
+		}
+		mp[num] = i
+	}
+	return []int{}
+}
+
+// 2956. 找到两个数组中的公共元素
+func findIntersectionValues(nums1 []int, nums2 []int) []int {
+	set1 := make(map[int]struct{})
+	set2 := make(map[int]struct{})
+	var ans1, ans2 int
+	for _, num := range nums1 {
+		set1[num] = struct{}{}
+	}
+	for _, num := range nums2 {
+		set2[num] = struct{}{}
+		if _, ok := set1[num]; ok {
+			ans2++
+		}
+	}
+	for _, num := range nums1 {
+		if _, ok := set2[num]; ok {
+			ans1++
+		}
+	}
+	return []int{ans1, ans2}
+}
+
+func fourSumCount(nums1 []int, nums2 []int, nums3 []int, nums4 []int) (ans int) {
+	mp := make(map[int]int)
+	for _, num1 := range nums1 {
+		for _, num2 := range nums2 {
+			mp[num1+num2]++
+		}
+	}
+	for _, num3 := range nums3 {
+		for _, num4 := range nums4 {
+			ans += mp[-num3-num4]
+		}
+	}
+	return
 }

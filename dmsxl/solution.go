@@ -1,25 +1,28 @@
 package dmsxl
 
 import (
+	"fmt"
 	"math"
 	"slices"
+	"strconv"
+	"strings"
 )
 
 // 704. 二分查找
-func search(nums []int, target int) int {
-	left, right := 0, len(nums)-1
-	for left <= right {
-		mid := (right-left)/2 + left
-		if nums[mid] == target {
-			return mid
-		} else if nums[mid] < target {
-			left = mid + 1
-		} else {
-			right = mid - 1
-		}
-	}
-	return -1
-}
+//func search(nums []int, target int) int {
+//	left, right := 0, len(nums)-1
+//	for left <= right {
+//		mid := (right-left)/2 + left
+//		if nums[mid] == target {
+//			return mid
+//		} else if nums[mid] < target {
+//			left = mid + 1
+//		} else {
+//			right = mid - 1
+//		}
+//	}
+//	return -1
+//}
 
 // 35. 搜索插入位置
 func searchInsert(nums []int, target int) int {
@@ -281,20 +284,20 @@ func removeElements(head *ListNode, val int) *ListNode {
 //}
 
 // 206. 反转链表的递归法
-func reverseList(head *ListNode) *ListNode {
-	var dfs func(node *ListNode) *ListNode
-	dfs = func(node *ListNode) *ListNode {
-		if node == nil || node.Next == nil {
-			return node
-		}
-		//先将后面的节点反转
-		newHead := dfs(node.Next)
-		node.Next.Next = node
-		node.Next = nil
-		return newHead
-	}
-	return dfs(head)
-}
+//func reverseList(head *ListNode) *ListNode {
+//	var dfs func(node *ListNode) *ListNode
+//	dfs = func(node *ListNode) *ListNode {
+//		if node == nil || node.Next == nil {
+//			return node
+//		}
+//		//先将后面的节点反转
+//		newHead := dfs(node.Next)
+//		node.Next.Next = node
+//		node.Next = nil
+//		return newHead
+//	}
+//	return dfs(head)
+//}
 
 // 24. 两两交换链表中的节点 多用几个变量表示节点之间的关系即可
 //func swapPairs(head *ListNode) *ListNode {
@@ -373,53 +376,52 @@ func generateMatrix(n int) [][]int {
 }
 
 // 54. 螺旋矩阵 注意处理最后只剩一行或者只剩一圈的问题
-func spiralOrder(matrix [][]int) (ans []int) {
-	height, width := len(matrix), len(matrix[0])
-	top, bottom, left, right := 0, height-1, 0, width-1
-	for left < right && top < bottom {
-		for i := left; i <= right; i++ {
-			ans = append(ans, matrix[top][i])
-		}
-		top++
-		for i := top; i <= bottom; i++ {
-			ans = append(ans, matrix[i][right])
-		}
-		right--
-		for i := right; i >= left; i-- {
-			ans = append(ans, matrix[bottom][i])
-		}
-		bottom--
-		for i := bottom; i >= top; i-- {
-			ans = append(ans, matrix[i][left])
-		}
-		left++
-	}
-	//只剩一行
-	if top == bottom {
-		for i := left; i <= right; i++ {
-			ans = append(ans, matrix[top][i])
-		}
-	} else if left == right {
-		for i := top; i <= bottom; i++ {
-			ans = append(ans, matrix[i][left])
-		}
-	}
-	return
-}
+//func spiralOrder(matrix [][]int) (ans []int) {
+//	height, width := len(matrix), len(matrix[0])
+//	top, bottom, left, right := 0, height-1, 0, width-1
+//	for left < right && top < bottom {
+//		for i := left; i <= right; i++ {
+//			ans = append(ans, matrix[top][i])
+//		}
+//		top++
+//		for i := top; i <= bottom; i++ {
+//			ans = append(ans, matrix[i][right])
+//		}
+//		right--
+//		for i := right; i >= left; i-- {
+//			ans = append(ans, matrix[bottom][i])
+//		}
+//		bottom--
+//		for i := bottom; i >= top; i-- {
+//			ans = append(ans, matrix[i][left])
+//		}
+//		left++
+//	}
+//	//只剩一行
+//	if top == bottom {
+//		for i := left; i <= right; i++ {
+//			ans = append(ans, matrix[top][i])
+//		}
+//	} else if left == right {
+//		for i := top; i <= bottom; i++ {
+//			ans = append(ans, matrix[i][left])
+//		}
+//	}
+//	return
+//}
 
 // 19. 删除链表的倒数第 N 个结点 快慢指针
 func removeNthFromEnd(head *ListNode, n int) *ListNode {
 	dummy := &ListNode{Next: head}
 	slow, fast := dummy, dummy
-	for i := 0; i < n; i++ {
+	for ; n > 0; n-- {
 		fast = fast.Next
 	}
-	for fast.Next != nil {
+	for fast != nil && fast.Next != nil {
 		slow = slow.Next
 		fast = fast.Next
 	}
 	slow.Next = slow.Next.Next
-
 	return dummy.Next
 }
 
@@ -684,4 +686,292 @@ func fourSumCount(nums1 []int, nums2 []int, nums3 []int, nums4 []int) (ans int) 
 		}
 	}
 	return
+}
+
+func spiralOrder(matrix [][]int) (ans []int) {
+	left, right := 0, len(matrix[0])-1
+	top, bottom := 0, len(matrix)-1
+	for left < right && top < bottom {
+		for i := left; i <= right; i++ {
+			ans = append(ans, matrix[top][i])
+		}
+		top++
+		for i := top; i <= bottom; i++ {
+			ans = append(ans, matrix[i][right])
+		}
+		right--
+		for i := right; i >= left; i-- {
+			ans = append(ans, matrix[bottom][i])
+		}
+		bottom--
+		for i := bottom; i >= top; i-- {
+			ans = append(ans, matrix[i][left])
+		}
+		left++
+	}
+	if left == right {
+		for i := top; i <= bottom; i++ {
+			ans = append(ans, matrix[i][left])
+		}
+	} else if top == bottom {
+		for i := left; i <= right; i++ {
+			ans = append(ans, matrix[top][i])
+		}
+	}
+	return
+}
+
+// 20. 有效的括号
+func isValid(s string) bool {
+	mp := map[byte]byte{
+		')': '(',
+		']': '[',
+		'}': '{',
+	}
+	stack := make([]byte, 0, len(s))
+	for _, ch := range s {
+		if _, ok := mp[byte(ch)]; !ok { //是左括号
+			stack = append(stack, byte(ch))
+		} else { //右括号
+			if len(stack) == 0 || mp[byte(ch)] != stack[len(stack)-1] {
+				return false
+			}
+			stack = stack[:len(stack)-1]
+		}
+	}
+	return len(stack) == 0
+}
+
+// 46. 全排列
+func permute(nums []int) (ans [][]int) {
+	used := make([]bool, len(nums))
+	var dfs func(index int, path []int)
+	dfs = func(index int, path []int) {
+		if index == len(nums) {
+			ans = append(ans, append([]int{}, path...))
+			return
+		}
+		for i := 0; i < len(nums); i++ {
+			if !used[i] {
+				used[i] = true
+				path = append(path, nums[i])
+				dfs(index+1, path)
+				used[i] = false
+				path = path[:len(path)-1]
+			}
+		}
+	}
+	dfs(0, []int{})
+	return
+}
+
+// 3. 无重复字符的最长子串 滑动窗口
+func lengthOfLongestSubstring(s string) int {
+	mp := make(map[byte]int)
+	var left, ans int
+	for right := 0; right < len(s); right++ {
+		mp[s[right]]++
+		for ; len(mp) < right-left+1; left++ {
+			mp[s[left]]--
+			if mp[s[left]] == 0 {
+				delete(mp, s[left])
+			}
+		}
+		ans = max(ans, right-left+1)
+	}
+	return ans
+}
+
+// 5. 最长回文子串 动态规划
+func longestPalindrome(s string) string {
+	dp := make([][]int, len(s))
+	for i := 0; i < len(dp); i++ {
+		dp[i] = make([]int, len(s))
+	}
+	//dp[i][j]可以由dp[i+1][j-1]推出
+	//初始对角线：单个字符的字符串都是回文串
+	for i := 0; i < len(s); i++ {
+		dp[i][i] = 1
+	}
+	length := 1
+	ans := s[0:1]
+	//注意遍历的顺序问题
+	for j := 1; j < len(s); j++ {
+		for i := 0; i < j; i++ {
+			if s[i] == s[j] && dp[i+1][j-1] == j-i-1 {
+				dp[i][j] = dp[i+1][j-1] + 2
+			} else {
+				dp[i][j] = 0
+			}
+			if dp[i][j] > length {
+				length = dp[i][j]
+				ans = s[i : j+1]
+			}
+		}
+	}
+	return ans
+}
+
+// 93. 复原 IP 地址 回溯插入三个点/找到三个切割位置
+func restoreIpAddresses(s string) (ans []string) {
+	//如何判断是否合法：切割出来的数字处于0-255 不能有前导0
+	var dfs func(pre, cur int, path []string)
+	var check func(str string) bool
+	check = func(str string) bool {
+		//如果首位是0 那他必须是零本身
+		if str[0] == '0' {
+			return len(str) == 1
+		}
+		val, _ := strconv.Atoi(str)
+		return val >= 0 && val <= 255
+	}
+	dfs = func(pre, cur int, path []string) {
+		if cur == len(s) {
+			if len(path) == 4 && cur == pre {
+				ans = append(ans, strings.Join(path, "."))
+			}
+			return
+		}
+		//切割
+		//判断是否合法
+		if check(s[pre : cur+1]) {
+			path = append(path, s[pre:cur+1])
+			dfs(cur+1, cur+1, path)
+			path = path[:len(path)-1]
+		}
+		//不切割
+		dfs(pre, cur+1, path)
+	}
+	dfs(0, 0, []string{})
+	return
+}
+
+// 415. 字符串相加
+func addStrings(num1 string, num2 string) string {
+	carry := 0
+	bytes1 := []byte(num1)
+	bytes2 := []byte(num2)
+	res := make([]byte, max(len(num1), len(num2)))
+	index := len(res)
+	i, j := len(bytes1)-1, len(bytes2)-1
+	for ; i >= 0 && j >= 0; i, j = i-1, j-1 {
+		val := carry + int(bytes1[i]-'0') + int(bytes2[j]-'0')
+		carry = val / 10
+		val %= 10
+		res[index] = byte(val) + '0'
+		index--
+	}
+	for ; i >= 0; i-- {
+		val := carry + int(bytes1[i]-'0')
+		carry = val / 10
+		val %= 10
+		res[index] = byte(val) + '0'
+		index--
+	}
+	for ; j >= 0; j-- {
+		val := carry + int(bytes2[j]-'0')
+		carry = val / 10
+		val %= 10
+		res[index] = byte(val) + '0'
+		index--
+	}
+	if carry != 0 {
+		return fmt.Sprintf("%d%s", carry, string(res))
+	}
+	return string(res)
+}
+
+// LCR 181. 字符串中的单词反转 使用库函数版本
+//func reverseMessage(message string) string {
+//	fields := strings.Fields(message)
+//	slices.Reverse(fields)
+//	return strings.Join(fields, " ")
+//}
+
+// LCR 181. 字符串中的单词反转 不使用库函数版本
+func reverseMessage(message string) string {
+	//从不是空格的字符开始循环 到是空格的循环为止
+	fields := make([]string, 0, len(message))
+	for left := 0; left < len(message); {
+		if message[left] == ' ' {
+			left++
+			continue
+		}
+		right := left + 1
+		for ; right < len(message); right++ {
+			if message[right] == ' ' {
+				break
+			}
+		}
+		fields = append(fields, message[left:right])
+		left = right + 1
+	}
+	slices.Reverse(fields)
+	return strings.Join(fields, " ")
+}
+
+// 704. 二分查找
+func search(nums []int, target int) int {
+	left, right := 0, len(nums)-1
+	for left <= right {
+		mid := (right-left)/2 + left
+		if nums[mid] == target {
+			return mid
+		} else if nums[mid] < target {
+			left = mid + 1
+		} else {
+			right = mid - 1
+		}
+	}
+	return -1
+}
+
+// 21. 合并两个有序链表
+func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
+	dummy := &ListNode{}
+	p := dummy
+	p1, p2 := list1, list2
+	for p1 != nil && p2 != nil {
+		if p1.Val <= p2.Val {
+			p.Next = &ListNode{Val: p1.Val}
+			p1 = p1.Next
+		} else {
+			p.Next = &ListNode{Val: p2.Val}
+			p2 = p2.Next
+		}
+		p = p.Next
+	}
+	if p1 != nil {
+		p.Next = p1
+	} else {
+		p.Next = p2
+	}
+	return dummy.Next
+}
+
+// 206. 反转链表的迭代做法
+//
+//	func reverseList(head *ListNode) *ListNode {
+//		var pre *ListNode
+//		for cur := head; cur != nil; {
+//			nxt := cur.Next
+//			cur.Next = pre
+//			cur, pre = nxt, cur
+//		}
+//		return pre
+//	}
+//
+// 206. 反转链表的递归
+func reverseList(head *ListNode) *ListNode {
+	var dfs func(node *ListNode) *ListNode
+	dfs = func(node *ListNode) *ListNode {
+		if node == nil || node.Next == nil {
+			return node
+		}
+		newHead := dfs(node.Next)
+		node.Next.Next = node
+		node.Next = nil
+		return newHead
+	}
+	return dfs(head)
 }

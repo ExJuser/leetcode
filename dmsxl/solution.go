@@ -43,7 +43,7 @@ func searchInsert(nums []int, target int) int {
 }
 
 // 34. 在排序数组中查找元素的第一个和最后一个位置
-func searchRange(nums []int, target int) []int {
+func searchRangePivot(nums []int, target int) []int {
 	pivot := search(nums, target)
 	if pivot == -1 {
 		return []int{-1, -1}
@@ -59,20 +59,20 @@ func searchRange(nums []int, target int) []int {
 }
 
 // 69. x 的平方根
-func mySqrt(x int) int {
-	left, right := 0, x
-	var ans int
-	for left <= right {
-		mid := (right-left)/2 + left
-		if mid*mid > x {
-			right = mid - 1
-		} else {
-			ans = mid
-			left = mid + 1
-		}
-	}
-	return ans
-}
+//func mySqrt(x int) int {
+//	left, right := 0, x
+//	var ans int
+//	for left <= right {
+//		mid := (right-left)/2 + left
+//		if mid*mid > x {
+//			right = mid - 1
+//		} else {
+//			ans = mid
+//			left = mid + 1
+//		}
+//	}
+//	return ans
+//}
 
 // 367. 有效的完全平方数
 func isPerfectSquare(num int) bool {
@@ -464,37 +464,37 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
 }
 
 // 142. 环形链表 II 需要输出环的入口
-func detectCycle(head *ListNode) *ListNode {
-	slow, fast := head, head
-	for fast != nil && fast.Next != nil {
-		slow = slow.Next
-		fast = fast.Next.Next
-		if slow == fast {
-			break
-		}
-	}
-	if fast == nil || fast.Next == nil {
-		return nil
-	}
-	for p := head; p != slow; {
-		p = p.Next
-		slow = slow.Next
-	}
-	return slow
-}
+//func detectCycle(head *ListNode) *ListNode {
+//	slow, fast := head, head
+//	for fast != nil && fast.Next != nil {
+//		slow = slow.Next
+//		fast = fast.Next.Next
+//		if slow == fast {
+//			break
+//		}
+//	}
+//	if fast == nil || fast.Next == nil {
+//		return nil
+//	}
+//	for p := head; p != slow; {
+//		p = p.Next
+//		slow = slow.Next
+//	}
+//	return slow
+//}
 
 // 141. 环形链表 只需要判断有环无环
-func hasCycle(head *ListNode) bool {
-	slow, fast := head, head
-	for fast != nil && fast.Next != nil {
-		slow = slow.Next
-		fast = fast.Next.Next
-		if slow == fast {
-			return true
-		}
-	}
-	return false
-}
+//func hasCycle(head *ListNode) bool {
+//	slow, fast := head, head
+//	for fast != nil && fast.Next != nil {
+//		slow = slow.Next
+//		fast = fast.Next.Next
+//		if slow == fast {
+//			return true
+//		}
+//	}
+//	return false
+//}
 
 // 242. 有效的字母异位词
 func isAnagram(s string, t string) bool {
@@ -950,19 +950,18 @@ func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
 }
 
 // 206. 反转链表的迭代做法
-//
-//	func reverseList(head *ListNode) *ListNode {
-//		var pre *ListNode
-//		for cur := head; cur != nil; {
-//			nxt := cur.Next
-//			cur.Next = pre
-//			cur, pre = nxt, cur
-//		}
-//		return pre
-//	}
-//
-// 206. 反转链表的递归
 func reverseList(head *ListNode) *ListNode {
+	var pre *ListNode
+	for cur := head; cur != nil; {
+		nxt := cur.Next
+		cur.Next = pre
+		cur, pre = nxt, cur
+	}
+	return pre
+}
+
+// 206. 反转链表的递归
+func reverseListRecursive(head *ListNode) *ListNode {
 	var dfs func(node *ListNode) *ListNode
 	dfs = func(node *ListNode) *ListNode {
 		if node == nil || node.Next == nil {

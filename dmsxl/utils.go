@@ -23,6 +23,13 @@ func Abs[T Number](num T) T {
 	return num
 }
 
+func GenerateSlice(bound, length int) (res []int) {
+	for i := 0; i < length; i++ {
+		res = append(res, rand.IntN(bound))
+	}
+	return
+}
+
 func GenerateLinkedListFromSlice(vals []int) *ListNode {
 	dummy := &ListNode{}
 	p := dummy

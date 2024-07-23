@@ -185,8 +185,40 @@ func addStrings(num1 string, num2 string) string {
 	}
 	return string(res)
 }
-
+func shortestSeq(big []int, small []int) []int {
+	//在包含全部元素的情况下移动左窗口
+	//如何判断包含了全部元素？
+	mp := make(map[int]int)
+	for _, num := range small {
+		mp[num] = 0
+	}
+	var left, satisfy int
+	var ans []int
+	length := len(big) + 1
+	for right := 0; right < len(big); right++ {
+		if _, ok := mp[big[right]]; ok {
+			mp[big[right]]++
+			if mp[big[right]] == 1 {
+				satisfy++
+			}
+		}
+		for ; satisfy == len(small); left++ {
+			if right-left+1 < length {
+				length = right - left + 1
+				ans = []int{left, right}
+			}
+			if _, ok := mp[big[left]]; ok {
+				mp[big[left]]--
+				if mp[big[left]] == 0 {
+					satisfy--
+				}
+			}
+		}
+	}
+	return ans
+}
 func main() {
-	fields := strings.Fields("  hello world!  ")
-	fmt.Println(fields, len(fields))
+	big := []int{7, 5, 9, 0, 2, 1, 3, 5, 7, 9, 1, 1, 5, 8, 8, 9, 7}
+	small := []int{1, 5, 9}
+	shortestSeq(big, small)
 }

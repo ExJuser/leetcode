@@ -110,3 +110,100 @@ func longestSemiRepetitiveSubstring(s string) int {
 	}
 	return ans
 }
+
+// 209. 长度最小的子数组 找出总和大于等于target的最短的子数组
+func minSubArrayLen(target int, nums []int) int {
+	ans := len(nums) + 1
+	var sum, left int
+	for right := 0; right < len(nums); right++ {
+		sum += nums[right]
+		for ; sum >= target; left++ {
+			ans = min(ans, right-left+1)
+			sum -= nums[left]
+		}
+	}
+	if ans > len(nums) {
+		return 0
+	}
+	return ans
+}
+
+// 76. 最小覆盖子串
+func minWindow(s string, t string) string {
+	target := make(map[byte]int)
+	var check func() bool
+	check = func() bool {
+		for _, v := range target {
+			if v > 0 {
+				return false
+			}
+		}
+		return true
+	}
+	for _, ch := range t {
+		target[byte(ch)]++
+	}
+	var left int
+	var ans string
+	length := len(s) + 1
+	for right := 0; right < len(s); right++ {
+		target[s[right]]--
+		for ; check(); left++ {
+			target[s[left]]++
+			if right-left+1 < length {
+				ans = s[left : right+1]
+				length = right - left + 1
+			}
+		}
+	}
+	return ans
+}
+
+// 面试题 17.18. 最短超串
+// 找出最短的包含small全部元素的数组 small不包含重复元素
+func shortestSeq(big []int, small []int) []int {
+	//在包含全部元素的情况下移动左窗口
+	//如何判断包含了全部元素？
+	mp := make(map[int]int)
+	for _, num := range small {
+		mp[num] = 0
+	}
+	var left, satisfy int
+	var ans []int
+	length := len(big) + 1
+	for right := 0; right < len(big); right++ {
+		if _, ok := mp[big[right]]; ok {
+			mp[big[right]]++
+			if mp[big[right]] == 1 {
+				satisfy++
+			}
+		}
+		for ; satisfy == len(small); left++ {
+			if right-left+1 < length {
+				length = right - left + 1
+				ans = []int{left, right}
+			}
+			if _, ok := mp[big[left]]; ok {
+				mp[big[left]]--
+				if mp[big[left]] == 0 {
+					satisfy--
+				}
+			}
+		}
+	}
+	return ans
+}
+
+// 713. 乘积小于 K 的子数组
+func numSubarrayProductLessThanK(nums []int, k int) int {
+	var left, cnt int
+	product := 1
+	for right := 0; right < len(nums); right++ {
+		product *= nums[right]
+		for ; left <= right && product >= k; left++ {
+			product /= nums[left]
+		}
+		cnt += right - left + 1
+	}
+	return cnt
+}

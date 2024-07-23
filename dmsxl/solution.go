@@ -106,16 +106,16 @@ func removeElement(nums []int, val int) int {
 }
 
 // 26. 删除有序数组中的重复项
-func removeDuplicates(nums []int) int {
-	var count int
-	for i := 0; i < len(nums); i++ {
-		if i == 0 || nums[i] != nums[i-1] {
-			nums[count] = nums[i]
-			count++
-		}
-	}
-	return count
-}
+//func removeDuplicates(nums []int) int {
+//	var count int
+//	for i := 0; i < len(nums); i++ {
+//		if i == 0 || nums[i] != nums[i-1] {
+//			nums[count] = nums[i]
+//			count++
+//		}
+//	}
+//	return count
+//}
 
 // 283. 移动零
 func moveZeroes(nums []int) {
@@ -640,16 +640,16 @@ func isHappy(n int) bool {
 }
 
 // 1. 两数之和
-func twoSum(nums []int, target int) []int {
-	mp := make(map[int]int)
-	for i, num := range nums {
-		if j, ok := mp[target-num]; ok {
-			return []int{i, j}
-		}
-		mp[num] = i
-	}
-	return []int{}
-}
+//func twoSum(nums []int, target int) []int {
+//	mp := make(map[int]int)
+//	for i, num := range nums {
+//		if j, ok := mp[target-num]; ok {
+//			return []int{i, j}
+//		}
+//		mp[num] = i
+//	}
+//	return []int{}
+//}
 
 // 2956. 找到两个数组中的公共元素
 func findIntersectionValues(nums1 []int, nums2 []int) []int {
@@ -911,20 +911,20 @@ func reverseMessage(message string) string {
 }
 
 // 704. 二分查找
-func search(nums []int, target int) int {
-	left, right := 0, len(nums)-1
-	for left <= right {
-		mid := (right-left)/2 + left
-		if nums[mid] == target {
-			return mid
-		} else if nums[mid] < target {
-			left = mid + 1
-		} else {
-			right = mid - 1
-		}
-	}
-	return -1
-}
+//func search(nums []int, target int) int {
+//	left, right := 0, len(nums)-1
+//	for left <= right {
+//		mid := (right-left)/2 + left
+//		if nums[mid] == target {
+//			return mid
+//		} else if nums[mid] < target {
+//			left = mid + 1
+//		} else {
+//			right = mid - 1
+//		}
+//	}
+//	return -1
+//}
 
 // 21. 合并两个有序链表
 func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {

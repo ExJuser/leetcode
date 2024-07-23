@@ -2,8 +2,10 @@ package dmsxl
 
 import (
 	"container/heap"
+	"math"
 	"slices"
 	"sort"
+	"strconv"
 )
 
 type NodeHeap []*ListNode
@@ -127,4 +129,393 @@ func rob(nums []int) int {
 		dp1, dp2 = dp2, max(dp1+nums[i], dp2)
 	}
 	return dp2
+}
+
+func twoSum(nums []int, target int) []int {
+	mp := make(map[int]int, len(nums))
+	for i, num := range nums {
+		if j, ok := mp[target-num]; ok {
+			return []int{i, j}
+		} else {
+			mp[num] = i
+		}
+	}
+	return nil
+}
+
+// 200. 岛屿数量 dfs版本
+//
+//	func numIslands(grid [][]byte) (ans int) {
+//		var dfs func(i, j int)
+//		dfs = func(i, j int) {
+//			if i < 0 || i >= len(grid) || j < 0 || j >= len(grid[0]) {
+//				return
+//			}
+//			if grid[i][j] == '1' {
+//				grid[i][j] = '0'
+//				dfs(i+1, j)
+//				dfs(i-1, j)
+//				dfs(i, j-1)
+//				dfs(i, j+1)
+//			}
+//		}
+//		for i := 0; i < len(grid); i++ {
+//			for j := 0; j < len(grid[0]); j++ {
+//				if grid[i][j] == '1' {
+//					ans++
+//					dfs(i, j)
+//				}
+//			}
+//		}
+//		return
+//	}
+//
+// 200. 岛屿数量 bfs版本
+func numIslands(grid [][]byte) (ans int) {
+	var bfs func(i, j int)
+	bfs = func(i, j int) {
+		if i < 0 || j < 0 || i >= len(grid) || j >= len(grid[0]) {
+			return
+		}
+		if grid[i][j] == '1' {
+			grid[i][j] = '0'
+			queue := [][2]int{{i, j}}
+			for len(queue) > 0 {
+				x, y := queue[0][0], queue[0][1]
+				queue = queue[1:]
+				bfs(x-1, y)
+				bfs(x+1, y)
+				bfs(x, y-1)
+				bfs(x, y+1)
+			}
+		}
+	}
+	for i := 0; i < len(grid); i++ {
+		for j := 0; j < len(grid[0]); j++ {
+			if grid[i][j] == '1' {
+				ans++
+				bfs(i, j)
+			}
+		}
+	}
+	return ans
+}
+
+// 80. 删除有序数组中的重复项 II
+func removeDuplicates(nums []int) int {
+	var count, index int
+	for i := 0; i < len(nums); i++ {
+		if i == 0 || nums[i] != nums[i-1] {
+			count = 1
+		} else {
+			count++
+		}
+		if count <= 2 {
+			nums[index] = nums[i]
+			index++
+		}
+	}
+	return index
+}
+
+// 33. 搜索旋转排序数组
+func search(nums []int, target int) int {
+	/**
+	两段有序序列分情况讨论
+	*/
+	left, right := 0, len(nums)-1
+	for left <= right {
+		mid := (right-left)/2 + left
+		if nums[mid] == target {
+			return mid
+		}
+		if nums[mid] >= nums[left] {
+			if target < nums[left] || target > nums[mid] {
+				left = mid + 1
+			} else {
+				right = mid - 1
+			}
+		} else {
+			if target > nums[right] || target < nums[mid] {
+				right = mid - 1
+			} else {
+				left = mid + 1
+			}
+		}
+	}
+	return -1
+}
+
+// 39. 组合总和 可以重复选取
+func combinationSum(candidates []int, target int) (ans [][]int) {
+	var dfs func(index, sum int, path []int)
+	dfs = func(index, sum int, path []int) {
+		if sum > target {
+			return
+		}
+		if index == len(candidates) {
+			if sum == target {
+				ans = append(ans, append([]int{}, path...))
+			}
+			return
+		}
+		//选或者不选
+		path = append(path, candidates[index])
+		dfs(index, sum+candidates[index], path)
+		path = path[:len(path)-1]
+
+		dfs(index+1, sum, path)
+	}
+	dfs(0, 0, []int{})
+	return
+}
+
+// 40. 组合总和 II 只能选择一次
+func combinationSum2(candidates []int, target int) (ans [][]int) {
+	used := make([]bool, len(candidates))
+	slices.Sort(candidates)
+	var dfs func(index, sum int, path []int)
+	dfs = func(index, sum int, path []int) {
+		if sum >= target {
+			if sum == target {
+				ans = append(ans, append([]int{}, path...))
+			}
+			return
+		}
+		for i := index; i < len(candidates); i++ {
+			if (i == index || candidates[i] != candidates[i-1]) && !used[i] {
+				used[i] = true
+				path = append(path, candidates[i])
+				dfs(i+1, sum+candidates[i], path)
+				used[i] = false
+				path = path[:len(path)-1]
+			}
+		}
+	}
+	dfs(0, 0, []int{})
+	return
+}
+
+// 215. 数组中的第K个最大元素 最小堆做法
+// 时间复杂度为 n*log(k) 当k较小时近似线性复杂度
+//	func findKthLargest(nums []int, k int) int {
+//		hp := &IntMinHeap{}
+//		for _, num := range nums {
+//			heap.Push(hp, num)
+//			if hp.Len() > k {
+//				heap.Pop(hp)
+//			}
+//		}
+//		return (*hp)[0]
+//	}
+//
+
+// 215. 数组中的第K个最大元素 快速排序做法
+// func findKthLargest(nums []int, k int) int {
+//
+// }
+
+// 104. 二叉树的最大深度
+func maxDepth(root *TreeNode) int {
+	var dfs func(node *TreeNode) int
+	dfs = func(node *TreeNode) int {
+		if node == nil {
+			return 0
+		}
+		return max(dfs(node.Left), dfs(node.Right)) + 1
+	}
+	return dfs(root)
+}
+
+// 435. 无重叠区间
+func eraseOverlapIntervals(intervals [][]int) int {
+	slices.SortFunc(intervals, func(a, b []int) int {
+		return a[0] - b[0]
+	})
+	pre := intervals[0]
+	var ans int
+	for i := 1; i < len(intervals); i++ {
+		cur := intervals[i]
+		if cur[0] >= pre[1] {
+			pre = cur
+		} else {
+			ans++
+			if pre[1] > cur[1] {
+				pre = cur
+			}
+		}
+	}
+	return ans
+}
+
+// 22. 括号生成 回溯 右括号不能大于左括号
+func generateParenthesis(n int) (ans []string) {
+	var dfs func(left, right int, path []byte)
+	dfs = func(left, right int, path []byte) {
+		if left < right {
+			return
+		}
+		if left == n && right == n {
+			ans = append(ans, string(path))
+		}
+		if left < n {
+			path = append(path, '(')
+			dfs(left+1, right, path)
+			path = path[:len(path)-1]
+		}
+		if right < n {
+			path = append(path, ')')
+			dfs(left, right+1, path)
+			path = path[:len(path)-1]
+		}
+
+	}
+	dfs(0, 0, []byte{})
+	return
+}
+
+// 189. 轮转数组 比较巧妙的做法
+func rotate(nums []int, k int) {
+	k %= len(nums)
+	slices.Reverse(nums[:len(nums)-k])
+	slices.Reverse(nums[len(nums)-k:])
+	slices.Reverse(nums)
+}
+
+// FreqHeap 存储的值 出现频率 加入时间
+type FreqHeap [][3]int
+
+func (f *FreqHeap) Len() int {
+	return len(*f)
+}
+
+func (f *FreqHeap) Less(i, j int) bool {
+	if (*f)[i][1] == (*f)[j][1] {
+		return (*f)[i][2] > (*f)[j][2]
+	}
+	return (*f)[i][1] > (*f)[j][1]
+}
+
+func (f *FreqHeap) Swap(i, j int) {
+	(*f)[i], (*f)[j] = (*f)[j], (*f)[i]
+}
+
+func (f *FreqHeap) Push(x any) {
+	*f = append(*f, x.([3]int))
+}
+
+func (f *FreqHeap) Pop() any {
+	x := (*f)[(*f).Len()-1]
+	*f = (*f)[:(*f).Len()-1]
+	return x
+}
+
+// FreqStack 895. 最大频率栈
+type FreqStack struct {
+	hp    *FreqHeap
+	mp    map[int]int
+	index int
+}
+
+func Constructor() FreqStack {
+	return FreqStack{
+		hp:    &FreqHeap{},
+		index: 0,
+		mp:    make(map[int]int),
+	}
+}
+
+func (this *FreqStack) Push(val int) {
+	this.mp[val]++
+	heap.Push(this.hp, [3]int{val, this.mp[val], this.index})
+	this.index++
+}
+
+func (this *FreqStack) Pop() int {
+	num := heap.Pop(this.hp).([3]int)[0]
+	this.mp[num]--
+	return num
+}
+
+// 124. 二叉树中的最大路径和
+func maxPathSum(root *TreeNode) int {
+	var dfs func(node *TreeNode) int
+	ans := root.Val
+	dfs = func(node *TreeNode) int {
+		if node == nil {
+			return 0
+		}
+		left, right := dfs(node.Left), dfs(node.Right)
+		ans = max(ans, max(0, left)+max(0, right)+node.Val)
+		return max(0, left, right) + node.Val
+	}
+	dfs(root)
+	return ans
+}
+
+// 1456. 定长子串中元音的最大数目 定长滑动窗口
+func maxVowels(s string, k int) int {
+	vowels := []byte{'a', 'i', 'e', 'o', 'u'}
+	var count int
+	for i := 0; i < k; i++ {
+		if slices.Contains(vowels, s[i]) {
+			count++
+		}
+	}
+	ans := count
+	for i := 0; i < len(s)-k; i++ {
+		if slices.Contains(vowels, s[i]) {
+			count--
+		}
+		if slices.Contains(vowels, s[i+k]) {
+			count++
+		}
+		ans = max(ans, count)
+	}
+	return ans
+}
+
+// 2269. 找到一个数字的 K 美丽值 定长滑动窗口
+func divisorSubstrings(num int, k int) int {
+	numStr := strconv.Itoa(num)
+	mod := int(math.Pow10(k - 1))
+	var val int
+	for i := 0; i < k; i++ {
+		val = val*10 + int(numStr[i]-'0')
+	}
+	var cnt int
+	if num%val == 0 {
+		cnt = 1
+	}
+	for i := 0; i < len(numStr)-k; i++ {
+		val = (val%mod)*10 + int(numStr[i+k]-'0')
+		if val != 0 && num%val == 0 {
+			cnt++
+		}
+	}
+	return cnt
+}
+
+// 1984. 学生分数的最小差值 定长滑动窗口
+func minimumDifference(nums []int, k int) int {
+	slices.Sort(nums)
+	ans := math.MaxInt
+	for i := 0; i < len(nums)-k+1; i++ {
+		ans = min(ans, nums[i+k-1]-nums[i])
+	}
+	return ans
+}
+
+// 643. 子数组最大平均数 I
+func findMaxAverage(nums []int, k int) float64 {
+	var sum int
+	for i := 0; i < k; i++ {
+		sum += nums[i]
+	}
+	ans := float64(sum) / float64(k)
+	for i := 0; i < len(nums)-k; i++ {
+		sum -= nums[i] - nums[i+k]
+		ans = max(ans, float64(sum)/float64(k))
+	}
+	return ans
 }

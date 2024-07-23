@@ -1,4 +1,4 @@
-package dmsxl
+package common
 
 import (
 	"math/rand/v2"

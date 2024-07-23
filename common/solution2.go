@@ -1,11 +1,9 @@
-package dmsxl
+package common
 
 import (
 	"container/heap"
-	"math"
 	"slices"
 	"sort"
-	"strconv"
 )
 
 type NodeHeap []*ListNode
@@ -450,72 +448,5 @@ func maxPathSum(root *TreeNode) int {
 		return max(0, left, right) + node.Val
 	}
 	dfs(root)
-	return ans
-}
-
-// 1456. 定长子串中元音的最大数目 定长滑动窗口
-func maxVowels(s string, k int) int {
-	vowels := []byte{'a', 'i', 'e', 'o', 'u'}
-	var count int
-	for i := 0; i < k; i++ {
-		if slices.Contains(vowels, s[i]) {
-			count++
-		}
-	}
-	ans := count
-	for i := 0; i < len(s)-k; i++ {
-		if slices.Contains(vowels, s[i]) {
-			count--
-		}
-		if slices.Contains(vowels, s[i+k]) {
-			count++
-		}
-		ans = max(ans, count)
-	}
-	return ans
-}
-
-// 2269. 找到一个数字的 K 美丽值 定长滑动窗口
-func divisorSubstrings(num int, k int) int {
-	numStr := strconv.Itoa(num)
-	mod := int(math.Pow10(k - 1))
-	var val int
-	for i := 0; i < k; i++ {
-		val = val*10 + int(numStr[i]-'0')
-	}
-	var cnt int
-	if num%val == 0 {
-		cnt = 1
-	}
-	for i := 0; i < len(numStr)-k; i++ {
-		val = (val%mod)*10 + int(numStr[i+k]-'0')
-		if val != 0 && num%val == 0 {
-			cnt++
-		}
-	}
-	return cnt
-}
-
-// 1984. 学生分数的最小差值 定长滑动窗口
-func minimumDifference(nums []int, k int) int {
-	slices.Sort(nums)
-	ans := math.MaxInt
-	for i := 0; i < len(nums)-k+1; i++ {
-		ans = min(ans, nums[i+k-1]-nums[i])
-	}
-	return ans
-}
-
-// 643. 子数组最大平均数 I
-func findMaxAverage(nums []int, k int) float64 {
-	var sum int
-	for i := 0; i < k; i++ {
-		sum += nums[i]
-	}
-	ans := float64(sum) / float64(k)
-	for i := 0; i < len(nums)-k; i++ {
-		sum -= nums[i] - nums[i+k]
-		ans = max(ans, float64(sum)/float64(k))
-	}
 	return ans
 }

@@ -677,3 +677,34 @@ func merge(intervals [][]int) (ans [][]int) {
 	ans = append(ans, pre)
 	return
 }
+
+func rotate_(matrix [][]int) {
+	for i := 0; i < len(matrix); i++ {
+		slices.Reverse(matrix[i])
+	}
+	for i := 0; i < len(matrix); i++ {
+		for j := 0; j < len(matrix[i]); j++ {
+			matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]
+		}
+	}
+}
+
+func pathSum(root *TreeNode, targetSum int) (ans [][]int) {
+	var dfs func(node *TreeNode, sum int, path []int)
+	dfs = func(node *TreeNode, sum int, path []int) {
+		if node == nil {
+			return
+		}
+		sum += node.Val
+		path = append(path, node.Val)
+		if node.Left == nil && node.Right == nil {
+			if sum == targetSum {
+				ans = append(ans, append([]int{}, path...))
+			}
+		}
+		dfs(node.Left, sum, path)
+		dfs(node.Right, sum, path)
+	}
+	dfs(root, 0, []int{})
+	return
+}

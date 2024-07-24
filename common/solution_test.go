@@ -1,7 +1,9 @@
 package common
 
 import (
+	"github.com/stretchr/testify/assert"
 	"math/rand/v2"
+	"slices"
 	"testing"
 )
 
@@ -37,4 +39,14 @@ func BenchmarkSearchRange(b *testing.B) {
 			searchRangeBinary(slices, randNum)
 		}
 	})
+}
+
+func TestSort(t *testing.T) {
+	nums := GenerateSlice(1000, 100000)
+	numsCopy := make([]int, len(nums))
+	copy(numsCopy, nums)
+	quickSort(nums)
+	//selectSort(numsCopy)
+	bubbleSort(numsCopy)
+	assert.True(t, slices.Equal(nums, numsCopy))
 }

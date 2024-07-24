@@ -2,6 +2,7 @@ package common
 
 import (
 	"container/heap"
+	"math/rand/v2"
 	"slices"
 	"sort"
 )
@@ -449,4 +450,58 @@ func maxPathSum(root *TreeNode) int {
 	}
 	dfs(root)
 	return ans
+}
+
+func quickSort(nums []int) []int {
+	var quickSortHelper func(left, right int)
+	quickSortHelper = func(left, right int) {
+		if left >= right {
+			return
+		}
+		pivot := nums[rand.IntN(right-left+1)+left]
+		i, j := left, right
+		for i <= j {
+			for nums[i] < pivot {
+				i++
+			}
+			for nums[j] > pivot {
+				j--
+			}
+			if i <= j {
+				nums[i], nums[j] = nums[j], nums[i]
+				i++
+				j--
+			}
+		}
+		quickSortHelper(left, j)
+		quickSortHelper(i, right)
+	}
+	quickSortHelper(0, len(nums)-1)
+	return nums
+}
+
+// 选择排序 每次选择一个最小的放在最前面
+func selectSort(nums []int) []int {
+	for i := 0; i < len(nums); i++ {
+		minIndex := i
+		for j := i; j < len(nums); j++ {
+			if nums[j] < nums[minIndex] {
+				minIndex = j
+			}
+		}
+		nums[i], nums[minIndex] = nums[minIndex], nums[i]
+	}
+	return nums
+}
+
+// 冒泡排序 每一次把最大的往上冒
+func bubbleSort(nums []int) []int {
+	for i := 0; i < len(nums); i++ {
+		for j := 0; j < len(nums)-i-1; j++ {
+			if nums[j] > nums[j+1] {
+				nums[j], nums[j+1] = nums[j+1], nums[j]
+			}
+		}
+	}
+	return nums
 }

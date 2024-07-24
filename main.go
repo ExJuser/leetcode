@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -217,8 +218,89 @@ func shortestSeq(big []int, small []int) []int {
 	}
 	return ans
 }
+
+// TimeMap 981. 基于时间的键值存储
+type TimeMap struct {
+	times []struct {
+		timestamp int
+		key       string
+		value     string
+	}
+}
+
+func Constructor() TimeMap {
+	return TimeMap{
+		times: make([]struct {
+			timestamp int
+			key       string
+			value     string
+		}, 0),
+	}
+}
+
+func (this *TimeMap) Set(key string, value string, timestamp int) {
+	//set中的timestamp都是递增的
+	this.times = append(this.times, struct {
+		timestamp int
+		key       string
+		value     string
+	}{timestamp: timestamp, key: key, value: value})
+}
+
+func (this *TimeMap) Get(key string, timestamp int) string {
+	left, right := 0, len(this.times)-1
+	target := len(this.times)
+	for left <= right {
+		mid := (right-left)/2 + left
+		if this.times[mid].timestamp > timestamp {
+			right = mid - 1
+			target = mid
+		} else {
+			left = mid + 1
+		}
+	}
+	for i := target - 1; i >= 0; i-- {
+		if this.times[i].key == key {
+			return this.times[i].value
+		}
+	}
+	return ""
+}
+
+func SlicesSum[T Number](nums []T) (sum T) {
+	for _, num := range nums {
+		sum += num
+	}
+	return
+}
+
+type Number interface {
+	~int | ~int8 | ~int16 | ~int32 | ~int64 | ~float32 | ~float64
+}
+
+func smallestDivisor(nums []int, threshold int) int {
+	var check func(divisor int) bool
+	check = func(divisor int) bool {
+		var ans int
+		for i := 0; i < len(nums); i++ {
+			ans += (nums[i] + divisor - 1) / divisor
+		}
+		return ans <= threshold
+	}
+	//越往右 满足条件的可能性越大
+	left, right := max(SlicesSum(nums)/threshold, 1), slices.Max(nums)
+	ans := right
+	for left <= right {
+		mid := (right-left)/2 + left
+		if check(mid) {
+			ans = mid
+			right = mid - 1
+		} else {
+			left = mid + 1
+		}
+	}
+	return ans
+}
 func main() {
-	big := []int{7, 5, 9, 0, 2, 1, 3, 5, 7, 9, 1, 1, 5, 8, 8, 9, 7}
-	small := []int{1, 5, 9}
-	shortestSeq(big, small)
+	smallestDivisor([]int{21212, 10101, 12121}, 1000000)
 }

@@ -458,8 +458,8 @@ func quickSort(nums []int) []int {
 		if left >= right {
 			return
 		}
-		pivot := nums[rand.IntN(right-left+1)+left]
 		i, j := left, right
+		pivot := nums[rand.IntN(right-left+1)+left]
 		for i <= j {
 			for nums[i] < pivot {
 				i++
@@ -504,4 +504,176 @@ func bubbleSort(nums []int) []int {
 		}
 	}
 	return nums
+}
+
+// 15. 三数之和 固定一个数 相向双指针 去重
+//func threeSum(nums []int) (ans [][]int) {
+//	slices.Sort(nums)
+//	for i := 0; i < len(nums); i++ {
+//		n1 := nums[i]
+//		if n1 <= 0 && (i == 0 || nums[i-1] != n1) {
+//			left, right := i+1, len(nums)-1
+//			for left < right {
+//				n2, n3 := nums[left], nums[right]
+//				if n1+n2+n3 < 0 {
+//					left++
+//				} else if n1+n2+n3 > 0 {
+//					right--
+//				} else {
+//					ans = append(ans, []int{n1, n2, n3})
+//					for left < right && nums[left] == n2 {
+//						left++
+//					}
+//					for left < right && nums[right] == n3 {
+//						right--
+//					}
+//				}
+//			}
+//		}
+//	}
+//	return
+//}
+
+func levelOrder(root *TreeNode) (ans [][]int) {
+	queue := make([]*TreeNode, 0)
+	if root != nil {
+		queue = append(queue, root)
+	}
+	for len(queue) > 0 {
+		size := len(queue)
+		level := make([]int, 0, size)
+		for i := 0; i < size; i++ {
+			temp := queue[0]
+			level = append(level, temp.Val)
+			queue = queue[1:]
+			if temp.Left != nil {
+				queue = append(queue, temp.Left)
+			}
+			if temp.Right != nil {
+				queue = append(queue, temp.Right)
+			}
+		}
+		ans = append(ans, level)
+	}
+	return
+}
+
+// 88. 合并两个有序数组 倒序遍历
+//func merge(nums1 []int, m int, nums2 []int, n int) {
+//	i, j := m-1, n-1
+//	for i >= 0 && j >= 0 {
+//		if nums1[i] >= nums2[j] {
+//			nums1[i+j+1] = nums1[i]
+//			i--
+//		} else {
+//			nums1[i+j+1] = nums2[j]
+//			j--
+//		}
+//	}
+//	if j >= 0 {
+//		for k := 0; k <= j; k++ {
+//			nums1[k] = nums2[k]
+//		}
+//	}
+//}
+
+func maxProfit(prices []int) int {
+	//两种状态 持有和卖出
+	dp := make([][2]int, len(prices))
+	dp[0][0] = -prices[0]
+	for i := 1; i < len(prices); i++ {
+		dp[i][0] = max(dp[i-1][0], -prices[i])
+		dp[i][1] = max(dp[i-1][1], dp[i-1][0]+prices[i])
+	}
+	return dp[len(prices)-1][1]
+}
+
+func zigzagLevelOrder(root *TreeNode) [][]int {
+	levels := levelOrder(root)
+	for i := 0; i < len(levels); i++ {
+		if i%2 == 1 {
+			slices.Reverse(levels[i])
+		}
+	}
+	return levels
+}
+
+// 92. 反转链表 II
+func reverseBetween(head *ListNode, left int, right int) *ListNode {
+	dummy := &ListNode{Next: head}
+	p := dummy
+	var temp *ListNode
+	for i := 0; i < left; i++ {
+		if i == left-1 {
+			temp = p
+		}
+		p = p.Next
+	}
+	cur := p
+	var pre *ListNode
+	for i := left; i <= right; i++ {
+		nxt := cur.Next
+		cur.Next = pre
+		pre, cur = cur, nxt
+	}
+	temp.Next.Next = cur
+	temp.Next = pre
+	return dummy.Next
+}
+
+// 300. 最长递增子序列 n^2 复杂度
+func lengthOfLIS(nums []int) int {
+	//dpi 代表到i为止的最长递增子序列
+	dp := make([]int, len(nums))
+	for i := 0; i < len(dp); i++ {
+		dp[i] = 1
+	}
+	ans := 1
+	for i := 1; i < len(nums); i++ {
+		for j := i - 1; j >= 0; j-- {
+			if nums[i] > nums[j] {
+				dp[i] = max(dp[i], dp[j]+1)
+				ans = max(ans, dp[i])
+			}
+		}
+	}
+	return ans
+}
+
+// 143. 重排链表
+func reorderList(head *ListNode) {
+	slow, fast := head, head
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+	}
+	reversed := reverseList(slow.Next)
+	slow.Next = nil
+	q := head
+	for p := reversed; p != nil; {
+		nxt := p.Next
+		p.Next = q.Next
+		q.Next = p
+		q = p.Next
+		p = nxt
+	}
+}
+
+// 56. 合并区间
+func merge(intervals [][]int) (ans [][]int) {
+	slices.SortFunc(intervals, func(a, b []int) int {
+		return a[0] - b[0]
+	})
+	pre := intervals[0]
+	for i := 1; i < len(intervals); i++ {
+		cur := intervals[i]
+		if cur[0] > pre[1] {
+			ans = append(ans, pre)
+			pre = cur
+		} else {
+			pre[1] = max(pre[1], cur[1])
+		}
+	}
+	ans = append(ans, pre)
+	return
 }

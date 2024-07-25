@@ -2,9 +2,11 @@ package common
 
 import (
 	"container/heap"
+	"fmt"
 	"math/rand/v2"
 	"slices"
 	"sort"
+	"strconv"
 )
 
 type NodeHeap []*ListNode
@@ -707,4 +709,73 @@ func pathSum(root *TreeNode, targetSum int) (ans [][]int) {
 	}
 	dfs(root, 0, []int{})
 	return
+}
+
+// 100. 相同的树
+func isSameTree(p *TreeNode, q *TreeNode) bool {
+	var dfs func(node1, node2 *TreeNode) bool
+	dfs = func(node1, node2 *TreeNode) bool {
+		if node1 == nil || node2 == nil {
+			return node1 == node2
+		}
+		if node1.Val != node2.Val {
+			return false
+		}
+		return dfs(node1.Left, node2.Left) && dfs(node1.Right, node2.Right)
+	}
+	return dfs(p, q)
+}
+
+// 98. 验证二叉搜索树 中序遍历序列有序
+func isValidBST(root *TreeNode) bool {
+	var res []int
+	var dfs func(node *TreeNode)
+	dfs = func(node *TreeNode) {
+		if node == nil {
+			return
+		}
+		dfs(node.Left)
+		res = append(res, node.Val)
+		dfs(node.Right)
+	}
+	dfs(root)
+	for i := 1; i < len(res); i++ {
+		if res[i] <= res[i-1] {
+			return false
+		}
+	}
+	return true
+}
+
+// 107. 二叉树的层序遍历 II
+func levelOrderBottom(root *TreeNode) [][]int {
+	levels := levelOrder(root)
+	slices.Reverse(levels)
+	return levels
+}
+
+// 1022. 从根到叶的二进制数之和
+func sumRootToLeaf(root *TreeNode) int {
+	var sum int
+	var dfs func(node *TreeNode, path []byte)
+	var pathToint func(path []byte) int
+	dfs = func(node *TreeNode, path []byte) {
+		if node == nil {
+			return
+		}
+		path = append(path, byte(node.Val+'0'))
+		if node.Left == nil && node.Right == nil {
+			sum += pathToint(path)
+			return
+		}
+		dfs(node.Left, path)
+		dfs(node.Right, path)
+	}
+	pathToint = func(path []byte) int {
+		i, _ := strconv.ParseInt(string(path), 2, 64)
+		fmt.Println(string(path))
+		return int(i)
+	}
+	dfs(root, []byte{})
+	return sum
 }

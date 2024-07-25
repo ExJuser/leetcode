@@ -301,6 +301,36 @@ func smallestDivisor(nums []int, threshold int) int {
 	}
 	return ans
 }
+func countGoodStrings(low int, high int, zero int, one int) int {
+	var mod int = 1e9 + 7
+	dp := make([]int, high+1)
+	dp[zero] += 1
+	dp[one] += 1
+	for i := min(one, zero); i <= high; i++ {
+		if i >= zero {
+			dp[i] = (dp[i] + dp[i-zero]) % mod
+		}
+		if i >= one {
+			dp[i] = (dp[i] + dp[i-one]) % mod
+		}
+	}
+	var ans int
+	for i := low; i <= high; i++ {
+		ans = (ans + dp[i]) % mod
+	}
+	return ans
+}
+func countHousePlacements(n int) int {
+	//放或者不放
+	dp := make([][2]int, n)
+	dp[0][0] = 1
+	dp[0][1] = 1
+	for i := 1; i < n; i++ {
+		dp[i][0] = dp[i-1][1]
+		dp[i][1] = dp[i-1][0] + dp[i-1][1]
+	}
+	return 0
+}
 func main() {
-	smallestDivisor([]int{21212, 10101, 12121}, 1000000)
+	countHousePlacements(3)
 }

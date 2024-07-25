@@ -331,6 +331,29 @@ func countHousePlacements(n int) int {
 	}
 	return 0
 }
+func maximumCostSubstring(s string, chars string, vals []int) int {
+	//对于一个字符ch 如果它在chars中 它的价值就是chars中的对应
+	valsMap := make(map[byte]int)
+	for i, ch := range chars {
+		valsMap[byte(ch)] = vals[i]
+	}
+	dp := make([]int, len(s))
+	val, ok := valsMap[s[0]]
+	if !ok {
+		val = int(s[0] - 'a' + 1)
+	}
+	dp[0] = max(val, 0)
+	ans := dp[0]
+	for i := 1; i < len(dp); i++ {
+		val, ok := valsMap[s[i]]
+		if !ok {
+			val = int(s[i] - 'a' + 1)
+		}
+		dp[i] = max(dp[i-1]+val, val, 0)
+		ans = max(ans, dp[i])
+	}
+	return ans
+}
 func main() {
-	countHousePlacements(3)
+	maximumCostSubstring("adaa", "d", []int{-1000})
 }

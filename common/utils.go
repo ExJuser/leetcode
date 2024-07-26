@@ -16,13 +16,6 @@ func GetLinkedListLength(head *ListNode) (length int) {
 	return length
 }
 
-func Abs[T Number](num T) T {
-	if num < 0 {
-		return -num
-	}
-	return num
-}
-
 func GenerateSlice(bound, length int) (res []int) {
 	for i := 0; i < length; i++ {
 		res = append(res, rand.IntN(bound))

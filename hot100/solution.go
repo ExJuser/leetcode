@@ -454,3 +454,24 @@ func coinChange(coins []int, amount int) int {
 	}
 	return dp[amount]
 }
+
+// 543. 二叉树的直径：两个节点之间最长路径的长度
+func diameterOfBinaryTree(root *TreeNode) int {
+	//经过一个节点的最长路径：左+右
+	//但是返回给上层的是max(左,右)
+	var dfs func(node *TreeNode) int
+	var ans int
+	dfs = func(node *TreeNode) int {
+		if node == nil {
+			return 0
+		}
+		if node.Left == nil && node.Right == nil {
+			return 1
+		}
+		left, right := dfs(node.Left), dfs(node.Right)
+		ans = max(ans, left+right)
+		return max(left, right) + 1
+	}
+	dfs(root)
+	return ans
+}

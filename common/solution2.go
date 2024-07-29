@@ -590,15 +590,15 @@ func maxProfit(prices []int) int {
 	return dp[len(prices)-1][1]
 }
 
-func zigzagLevelOrder(root *TreeNode) [][]int {
-	levels := levelOrder(root)
-	for i := 0; i < len(levels); i++ {
-		if i%2 == 1 {
-			slices.Reverse(levels[i])
-		}
-	}
-	return levels
-}
+//func zigzagLevelOrder(root *TreeNode) [][]int {
+//	levels := levelOrder(root)
+//	for i := 0; i < len(levels); i++ {
+//		if i%2 == 1 {
+//			slices.Reverse(levels[i])
+//		}
+//	}
+//	return levels
+//}
 
 // 92. 反转链表 II
 func reverseBetween(head *ListNode, left int, right int) *ListNode {
@@ -778,4 +778,161 @@ func sumRootToLeaf(root *TreeNode) int {
 	}
 	dfs(root, []byte{})
 	return sum
+}
+
+// 494. 目标和 回溯做法非常慢
+func findTargetSumWays(nums []int, target int) int {
+	var dfs func(index, sum int)
+	var ans int
+	dfs = func(index, sum int) {
+		if index == len(nums) {
+			if sum == target {
+				ans++
+			}
+			return
+		}
+		//加法
+		dfs(index+1, sum+nums[index])
+		//减法
+		dfs(index+1, sum-nums[index])
+	}
+	dfs(0, 0)
+	return ans
+}
+
+func zigzagLevelOrder(root *TreeNode) (ans [][]int) {
+	if root == nil {
+		return
+	}
+	queue := make([]*TreeNode, 0)
+	queue = append(queue, root)
+	depth := 0
+	for len(queue) > 0 {
+		size := len(queue)
+		level := make([]int, size)
+		for i := 0; i < size; i++ {
+			temp := queue[0]
+			queue = queue[1:]
+			if depth%2 > 0 {
+				level[size-i-1] = temp.Val
+			} else {
+				level[i] = temp.Val
+			}
+			if temp.Left != nil {
+				queue = append(queue, temp.Left)
+			}
+			if temp.Right != nil {
+				queue = append(queue, temp.Right)
+			}
+		}
+		depth++
+		ans = append(ans, level)
+	}
+	return
+}
+
+// 918. 环形子数组的最大和
+func maxSubarraySumCircular(nums []int) int {
+	//第一种情况 最大和在数组中间，即普通的子数组最大和问题
+	if len(nums) == 1 {
+		return nums[0]
+	}
+	if len(nums) == 2 {
+		return max(nums[0], nums[1], nums[0]+nums[1])
+	}
+	dp := make([]int, len(nums))
+	dp[0] = nums[0]
+	ans := dp[0]
+	sum := nums[0]
+	for i := 1; i < len(nums); i++ {
+		sum += nums[i]
+		dp[i] = max(dp[i-1]+nums[i], nums[i])
+		ans = max(ans, dp[i])
+	}
+	//第二种情况 最大和跨越了头尾，即在中间找一个最小和
+	var minSubarraySum func(nums []int) int
+	minSubarraySum = func(nums []int) int {
+		dp := make([]int, len(nums))
+		dp[0] = nums[0]
+		ans := dp[0]
+		for i := 1; i < len(nums); i++ {
+			dp[i] = min(dp[i-1]+nums[i], nums[i])
+			ans = min(ans, dp[i])
+		}
+		return ans
+	}
+	minSum := minSubarraySum(nums[1 : len(nums)-1])
+	ans = max(ans, sum-minSum)
+	return ans
+}
+
+// 2560. 打家劫舍 IV 二分答案法
+func minCapability(nums []int, k int) int {
+	//能力越大 能偷的房子越多 越能满足至少偷k间的要求
+	var check func(ability int) bool
+	check = func(ability int) bool {
+		if len(nums) == 1 {
+			return ability >= nums[0]
+		}
+		if len(nums) == 2 {
+			return ability >= nums[0] || ability >= nums[1]
+		}
+		//dpi 到i号房间为止 能偷的最大房间个数
+		dp := make([]int, len(nums))
+		if ability >= nums[0] {
+			dp[0] = 1
+			dp[1] = 1
+		} else {
+			dp[0] = 0
+			if ability >= nums[1] {
+				dp[1] = 1
+			}
+		}
+		for i := 2; i < len(nums); i++ {
+			if ability >= nums[i] {
+				dp[i] = max(dp[i-2]+1, dp[i-1])
+			} else { //偷不了
+				dp[i] = dp[i-1]
+			}
+		}
+		return dp[len(nums)-1] >= k
+	}
+	maxAbility := slices.Max(nums)
+	left, right := 1, maxAbility
+	var ans int
+	for left <= right {
+		mid := (right-left)/2 + left
+		if check(mid) {
+			right = mid - 1
+			ans = mid
+		} else {
+			left = mid + 1
+		}
+	}
+	return ans
+}
+
+// 239. 滑动窗口最大值 单调队列
+func maxSlidingWindow(nums []int, k int) (ans []int) {
+	//维护单调递减的单调队列
+	maxQueue := make([]int, 0, len(nums))
+	for i := 0; i < k-1; i++ {
+		for len(maxQueue) > 0 && nums[maxQueue[len(maxQueue)-1]] <= nums[i] {
+			maxQueue = maxQueue[:len(maxQueue)-1]
+		}
+		maxQueue = append(maxQueue, i)
+	}
+	for i := 0; i <= len(nums)-k; i++ {
+		//加入一个到队列 收集答案 再弹出一个
+		for len(maxQueue) > 0 && nums[maxQueue[len(maxQueue)-1]] <= nums[i+k-1] {
+			maxQueue = maxQueue[:len(maxQueue)-1]
+		}
+		maxQueue = append(maxQueue, i+k-1)
+		//收集当前最大值
+		ans = append(ans, nums[maxQueue[0]])
+		if maxQueue[0] == i {
+			maxQueue = maxQueue[1:]
+		}
+	}
+	return
 }

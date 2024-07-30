@@ -3,6 +3,7 @@ package hot100
 import (
 	"container/heap"
 	"math"
+	"slices"
 	"strings"
 )
 
@@ -474,4 +475,126 @@ func diameterOfBinaryTree(root *TreeNode) int {
 	}
 	dfs(root)
 	return ans
+}
+
+// 49. 字母异位词分组
+func groupAnagrams(strs []string) [][]string {
+	mp := make(map[string]int)
+	var cnt int
+	ans := make([][]string, 0)
+	for _, str := range strs {
+		bytes := []byte(str)
+		slices.Sort(bytes)
+		if index, ok := mp[string(bytes)]; ok {
+			ans[index] = append(ans[index], str)
+		} else {
+			mp[string(bytes)] = cnt
+			cnt++
+			ans = append(ans, []string{str})
+		}
+	}
+	return ans
+}
+
+// 283. 移动零
+func moveZeroes(nums []int) {
+	var index int
+	for i := 0; i < len(nums); i++ {
+		if nums[i] != 0 {
+			nums[index], nums[i] = nums[i], nums[index]
+			index++
+		}
+	}
+}
+
+// 11. 盛最多水的容器
+func maxArea(height []int) int {
+	var area int
+	left, right := 0, len(height)-1
+	for left <= right {
+		area = max(area, (right-left)*min(height[right], height[left]))
+		if height[left] <= height[right] {
+			left++
+		} else {
+			right--
+		}
+	}
+	return area
+}
+
+// 42. 接雨水
+func trap(height []int) int {
+	//一个格子上方所能接的雨水的大小：左边的最大值和右边的最大值的最小值减去当前格子高度与0作比较
+	leftMax := make([]int, len(height))
+	rightMax := make([]int, len(height))
+	for i := 1; i < len(leftMax); i++ {
+		leftMax[i] = max(leftMax[i-1], height[i-1])
+	}
+	for i := len(rightMax) - 2; i >= 0; i-- {
+		rightMax[i] = max(rightMax[i+1], height[i+1])
+	}
+	var sum int
+	for i := 0; i < len(height); i++ {
+		sum += max(min(leftMax[i], rightMax[i])-height[i], 0)
+	}
+	return sum
+}
+
+// 438. 找到字符串中所有字母异位词 定长滑动窗口
+func findAnagrams(s string, p string) (ans []int) {
+	if len(s) < len(p) {
+		return
+	}
+	target := make(map[byte]int)
+	for _, ch := range p {
+		target[byte(ch)]++
+	}
+	for i := 0; i < len(p)-1; i++ {
+		target[s[i]]--
+		if target[s[i]] == 0 {
+			delete(target, s[i])
+		}
+	}
+	for i := 0; i <= len(s)-len(p); i++ {
+		target[s[i+len(p)-1]]--
+		if target[s[i+len(p)-1]] == 0 {
+			delete(target, s[i+len(p)-1])
+		}
+		if len(target) == 0 {
+			ans = append(ans, i)
+		}
+		target[s[i]]++
+		if target[s[i]] == 0 {
+			delete(target, s[i])
+		}
+	}
+	return
+}
+
+// 560. 和为 K 的子数组 哈希表？
+func subarraySum(nums []int, k int) int {
+	prefix := make([]int, len(nums)+1)
+	for i := 0; i < len(nums); i++ {
+		prefix[i+1] = prefix[i] + nums[i]
+	}
+	var ans int
+	mp := make(map[int]int)
+	for i := 0; i < len(prefix); i++ {
+		ans += mp[prefix[i]-k]
+		mp[prefix[i]]++
+	}
+	return ans
+}
+
+// 189. 轮转数组
+func rotate(nums []int, k int) {
+	k %= len(nums)
+	slices.Reverse(nums[len(nums)-k:])
+	slices.Reverse(nums[:len(nums)-k])
+	slices.Reverse(nums)
+}
+
+// 73. 矩阵置零
+func setZeroes(matrix [][]int) {
+
 }

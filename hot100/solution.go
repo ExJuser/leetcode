@@ -647,21 +647,20 @@ func removeNthFromEnd(head *ListNode, n int) *ListNode {
 	return dummy.Next
 }
 
-// 24. 两两交换链表中的节点 递归法
-//
-//	func swapPairs(head *ListNode) *ListNode {
-//		var dfs func(node *ListNode) *ListNode
-//		dfs = func(node *ListNode) *ListNode {
-//			if node == nil || node.Next == nil {
-//				return node
-//			}
-//			nxt := node.Next
-//			node.Next = dfs(nxt.Next)
-//			nxt.Next = node
-//			return nxt
-//		}
-//		return dfs(head)
-//	}
+//  24. 两两交换链表中的节点 递归法
+//     func swapPairs(head *ListNode) *ListNode {
+//     var dfs func(node *ListNode) *ListNode
+//     dfs = func(node *ListNode) *ListNode {
+//     if node == nil || node.Next == nil {
+//     return node
+//     }
+//     nxt := node.Next
+//     node.Next = dfs(nxt.Next)
+//     nxt.Next = node
+//     return nxt
+//     }
+//     return dfs(head)
+//     }
 //
 // 24. 两两交换链表中的节点 迭代法
 func swapPairs(head *ListNode) *ListNode {
@@ -717,4 +716,80 @@ func rightSideView(root *TreeNode) (ans []int) {
 	}
 	dfs(root, 1)
 	return
+}
+
+// 105. 从前序与中序遍历序列构造二叉树
+func buildTree(preorder []int, inorder []int) *TreeNode {
+	if len(preorder) == 0 {
+		return nil
+	}
+	rootVal := preorder[0]
+	index := slices.Index(inorder, rootVal)
+	return &TreeNode{
+		Val:   rootVal,
+		Left:  buildTree(preorder[1:index+1], inorder[:index]),
+		Right: buildTree(preorder[index+1:], inorder[index+1:]),
+	}
+}
+
+// 108. 将有序数组转换为二叉搜索树
+func sortedArrayToBST(nums []int) *TreeNode {
+	if len(nums) == 0 {
+		return nil
+	}
+	mid := len(nums) / 2
+	return &TreeNode{
+		Val:   nums[mid],
+		Left:  sortedArrayToBST(nums[:mid]),
+		Right: sortedArrayToBST(nums[mid+1:]),
+	}
+}
+
+// 240. 搜索二维矩阵 II
+func searchMatrix(matrix [][]int, target int) bool {
+	for _, row := range matrix {
+		if index, ok := slices.BinarySearch(row, target); ok {
+			return true
+		} else if index == 0 {
+			return false
+		}
+	}
+	return false
+}
+
+// 114. 二叉树展开为链表 原地算法
+func flatten(root *TreeNode) {
+	var findMostRight func(node *TreeNode) *TreeNode
+	var dfs func(node *TreeNode)
+	p := root
+	findMostRight = func(node *TreeNode) *TreeNode {
+		for node.Right != nil {
+			node = node.Right
+		}
+		return node
+	}
+	dfs = func(node *TreeNode) {
+		if node == nil {
+			return
+		}
+		p.Right = &TreeNode{Val: node.Val}
+		p = p.Right
+		dfs(node.Left)
+		dfs(node.Right)
+	}
+	if root == nil {
+		return
+	}
+	//将右子树全挂到左子树上
+	if root.Right != nil {
+		if root.Left == nil {
+			root.Left = root.Right
+		} else { //root.Left != nil
+			mostRight := findMostRight(root.Left)
+			mostRight.Right = root.Right
+		}
+		root.Right = nil
+	}
+	dfs(root.Left)
+	root.Left = nil
 }

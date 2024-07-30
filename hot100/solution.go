@@ -3,6 +3,7 @@ package hot100
 import (
 	"container/heap"
 	"math"
+	"math/bits"
 	"slices"
 	"strings"
 )
@@ -594,7 +595,126 @@ func rotate(nums []int, k int) {
 	slices.Reverse(nums)
 }
 
-// 73. 矩阵置零
-func setZeroes(matrix [][]int) {
+// 461. 汉明距离
+func hammingDistance(x int, y int) int {
+	return bits.OnesCount(uint(x ^ y))
+}
 
+// 2. 两数相加
+func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
+	var carry int
+	dummy := &ListNode{}
+	p := dummy
+	p1, p2 := l1, l2
+	for ; p1 != nil && p2 != nil; p1, p2 = p1.Next, p2.Next {
+		val := carry + p1.Val + p2.Val
+		carry = val / 10
+		val %= 10
+		p.Next = &ListNode{Val: val}
+		p = p.Next
+	}
+	var q *ListNode
+	if p1 != nil {
+		q = p1
+	} else {
+		q = p2
+	}
+	for ; q != nil; q = q.Next {
+		val := carry + q.Val
+		carry = val / 10
+		val %= 10
+		p.Next = &ListNode{Val: val}
+		p = p.Next
+	}
+	if carry != 0 {
+		p.Next = &ListNode{Val: carry}
+	}
+	return dummy.Next
+}
+
+// 19. 删除链表的倒数第 N 个结点
+func removeNthFromEnd(head *ListNode, n int) *ListNode {
+	dummy := &ListNode{Next: head}
+	slow, fast := dummy, dummy
+	for i := 0; i < n; i++ {
+		fast = fast.Next
+	}
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next
+	}
+	slow.Next = slow.Next.Next
+	return dummy.Next
+}
+
+// 24. 两两交换链表中的节点 递归法
+//
+//	func swapPairs(head *ListNode) *ListNode {
+//		var dfs func(node *ListNode) *ListNode
+//		dfs = func(node *ListNode) *ListNode {
+//			if node == nil || node.Next == nil {
+//				return node
+//			}
+//			nxt := node.Next
+//			node.Next = dfs(nxt.Next)
+//			nxt.Next = node
+//			return nxt
+//		}
+//		return dfs(head)
+//	}
+//
+// 24. 两两交换链表中的节点 迭代法
+func swapPairs(head *ListNode) *ListNode {
+	dummy := &ListNode{Next: head}
+	pre := dummy
+	for cur := head; cur != nil && cur.Next != nil; cur = cur.Next {
+		nxt := cur.Next
+		pre.Next = nxt
+		cur.Next = nxt.Next
+		nxt.Next = cur
+		pre = cur
+	}
+	return dummy.Next
+}
+
+// 230. 二叉搜索树中第K小的元素
+func kthSmallest(root *TreeNode, k int) int {
+	var count int
+	var dfs func(node *TreeNode) int
+	dfs = func(node *TreeNode) int {
+		if node == nil {
+			return -1
+		}
+		if res := dfs(node.Left); res != -1 {
+			return res
+		}
+		count++
+		if count == k {
+			return node.Val
+		}
+		if res := dfs(node.Right); res != -1 {
+			return res
+		}
+		return -1
+	}
+	return dfs(root)
+}
+
+// 199. 二叉树的右视图
+func rightSideView(root *TreeNode) (ans []int) {
+	var dfs func(node *TreeNode, depth int)
+	var curDepth int
+	dfs = func(node *TreeNode, depth int) {
+		if node == nil {
+			return
+		}
+		if depth > curDepth {
+			curDepth = depth
+			ans = append(ans, node.Val)
+		}
+		dfs(node.Right, depth+1)
+		dfs(node.Left, depth+1)
+	}
+	dfs(root, 1)
+	return
 }

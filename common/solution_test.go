@@ -50,3 +50,10 @@ func TestSort(t *testing.T) {
 	bubbleSort(numsCopy)
 	assert.True(t, slices.Equal(nums, numsCopy))
 }
+
+func TestDuplicate(t *testing.T) {
+	list := GenerateLinkedListFromSlice([]int{1, 2, 3, 3, 4, 4, 5})
+	PrintLinkedList(list)
+	newList := deleteDuplicates(list)
+	PrintLinkedList(newList)
+}

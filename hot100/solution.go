@@ -821,3 +821,51 @@ func reverseKGroup(head *ListNode, k int) *ListNode {
 	}
 	return dummy.Next
 }
+
+// 78. 子集
+func subsets(nums []int) (ans [][]int) {
+	var dfs func(index int, path []int)
+	dfs = func(index int, path []int) {
+		if index == len(nums) {
+			ans = append(ans, append([]int{}, path...))
+			return
+		}
+		//选或者不选
+		path = append(path, nums[index])
+		dfs(index+1, path)
+		path = path[:len(path)-1]
+		dfs(index+1, path)
+	}
+	dfs(0, []int{})
+	return
+}
+
+// 17. 电话号码的字母组合
+func letterCombinations(digits string) (ans []string) {
+	mapping := map[byte]string{
+		'2': "abc",
+		'3': "def",
+		'4': "ghi",
+		'5': "jkl",
+		'6': "mno",
+		'7': "pqrs",
+		'8': "tuv",
+		'9': "wxyz",
+	}
+	var dfs func(index int, path []byte)
+	dfs = func(index int, path []byte) {
+		if index == len(digits) {
+			if len(path) != 0 {
+				ans = append(ans, string(path))
+			}
+			return
+		}
+		for _, b := range mapping[digits[index]] {
+			path = append(path, byte(b))
+			dfs(index+1, path)
+			path = path[:len(path)-1]
+		}
+	}
+	dfs(0, []byte{})
+	return
+}

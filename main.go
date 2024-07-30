@@ -354,6 +354,7 @@ func maximumCostSubstring(s string, chars string, vals []int) int {
 	}
 	return ans
 }
+
 func main() {
 	maximumCostSubstring("adaa", "d", []int{-1000})
 }

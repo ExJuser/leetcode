@@ -936,3 +936,27 @@ func maxSlidingWindow(nums []int, k int) (ans []int) {
 	}
 	return
 }
+
+// 82. 删除排序链表中的重复元素 II
+func deleteDuplicates(head *ListNode) *ListNode {
+	dummy := &ListNode{Next: head}
+	slow, fast := dummy, head
+	for fast != nil && fast.Next != nil {
+		if fast.Val == fast.Next.Val {
+			dup := fast.Val
+			for fast != nil && fast.Val == dup {
+				fast = fast.Next
+			}
+		} else {
+			slow.Next.Val = fast.Val
+			slow = slow.Next
+			fast = fast.Next
+		}
+	}
+	if fast != nil {
+		slow.Next.Val = fast.Val
+		slow = slow.Next
+	}
+	slow.Next = nil
+	return dummy.Next
+}

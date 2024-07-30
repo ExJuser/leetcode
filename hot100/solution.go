@@ -793,3 +793,31 @@ func flatten(root *TreeNode) {
 	dfs(root.Left)
 	root.Left = nil
 }
+func GetLinkedListLength(head *ListNode) (length int) {
+	for p := head; p != nil; p = p.Next {
+		length++
+	}
+	return length
+}
+
+// 25. K 个一组翻转链表
+func reverseKGroup(head *ListNode, k int) *ListNode {
+	length := GetLinkedListLength(head)
+	times := length / k
+	dummy := &ListNode{Next: head}
+	temp := dummy
+	cur := head
+	for i := 0; i < times; i++ {
+		var pre *ListNode
+		for j := 0; j < k; j++ {
+			nxt := cur.Next
+			cur.Next = pre
+			pre, cur = cur, nxt
+		}
+		temp.Next.Next = cur
+		newTemp := temp.Next
+		temp.Next = pre
+		temp = newTemp
+	}
+	return dummy.Next
+}

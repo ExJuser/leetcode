@@ -981,24 +981,3 @@ func maxSlidingWindow(nums []int, k int) (ans []int) {
 //	}
 //	return dfs(head)
 //}
-
-// 83. 删除排序链表中的重复元素 保留一个
-func deleteDuplicates(head *ListNode) *ListNode {
-	var dfs func(node *ListNode) *ListNode
-	dfs = func(node *ListNode) *ListNode {
-		if node == nil || node.Next == nil {
-			return node
-		}
-		if node.Val != node.Next.Val {
-			node.Next = dfs(node.Next)
-			return node
-		} else {
-			val := node.Val
-			for node != nil && node.Val == val {
-				node = node.Next
-			}
-			return &ListNode{Val: val, Next: dfs(node)}
-		}
-	}
-	return dfs(head)
-}

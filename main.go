@@ -5,6 +5,7 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"unicode"
 )
 
 //for debug
@@ -355,6 +356,95 @@ func maximumCostSubstring(s string, chars string, vals []int) int {
 	return ans
 }
 
-func main() {
-	maximumCostSubstring("adaa", "d", []int{-1000})
+func exist(board [][]byte, word string) bool {
+	var used [][]bool
+	var dfs func(x, y, index int) bool
+	dfs = func(x, y, index int) bool {
+		if x < 0 || x >= len(board) || y < 0 || y >= len(board[0]) {
+			return false
+		}
+		if !used[x][y] && board[x][y] == word[index] {
+			used[x][y] = true
+			if index == len(word)-1 {
+				return true
+			}
+			if dfs(x+1, y, index+1) || dfs(x, y+1, index+1) || dfs(x-1, y, index+1) || dfs(x, y-1, index+1) {
+				return true
+			}
+			used[x][y] = false
+		}
+		return false
+	}
+	for i := 0; i < len(board); i++ {
+		for j := 0; j < len(board[i]); j++ {
+			if board[i][j] == word[0] {
+				used = make([][]bool, len(board))
+				for i := 0; i < len(used); i++ {
+					used[i] = make([]bool, len(board[i]))
+				}
+				if dfs(i, j, 0) {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+func partition(s string) (ans [][]string) {
+	var check func(s string) bool
+	//左闭右开区间
+	var dfs func(left, right int, path []string)
+	check = func(s string) bool {
+		bytes := []byte(s)
+		slices.Reverse(bytes)
+		return string(bytes) == s
+	}
+	dfs = func(left, right int, path []string) {
+		if right == len(s) { //到达字符串末尾
+			if check(s[left:right]) {
+				path = append(path, s[left:right])
+				ans = append(ans, append([]string{}, path...))
+			}
+			return
+		}
+		//如果当前切割结果是回文串
+		if check(s[left:right]) {
+			path = append(path, s[left:right])
+			dfs(right, right+1, path)
+			path = path[:len(path)-1]
+		}
+		dfs(left, right+1, path)
+	}
+	dfs(0, 1, []string{})
+	return
+}
+func decodeString(s string) string {
+	numTemp := make([]byte, 0)
+	numStack := make([]int, 0)
+	temp := make([]byte, 0)
+	for _, ch := range s {
+		if unicode.IsDigit(ch) {
+			numTemp = append(numTemp, byte(ch))
+		} else if unicode.IsLetter(ch) {
+			temp = append(temp, byte(ch))
+		} else if ch == '[' {
+			temp = append(temp, byte(ch))
+			num, _ := strconv.Atoi(string(numTemp))
+			numStack = append(numStack, num)
+			numTemp = []byte{}
+		} else {
+			j := len(temp) - 1
+			for temp[j] != '[' {
+				j--
+			}
+			toAppend := string(temp[j+1:])
+			temp = temp[:j]
+			num := numStack[len(numStack)-1]
+			numStack = numStack[:len(numStack)-1]
+			for ; num > 0; num-- {
+				temp = append(temp, toAppend...)
+			}
+		}
+	}
+	return string(temp)
 }

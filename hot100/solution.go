@@ -5,7 +5,9 @@ import (
 	"math"
 	"math/bits"
 	"slices"
+	"strconv"
 	"strings"
+	"unicode"
 )
 
 // 160. 相交链表
@@ -746,16 +748,16 @@ func sortedArrayToBST(nums []int) *TreeNode {
 }
 
 // 240. 搜索二维矩阵 II
-func searchMatrix(matrix [][]int, target int) bool {
-	for _, row := range matrix {
-		if index, ok := slices.BinarySearch(row, target); ok {
-			return true
-		} else if index == 0 {
-			return false
-		}
-	}
-	return false
-}
+//func searchMatrix(matrix [][]int, target int) bool {
+//	for _, row := range matrix {
+//		if index, ok := slices.BinarySearch(row, target); ok {
+//			return true
+//		} else if index == 0 {
+//			return false
+//		}
+//	}
+//	return false
+//}
 
 // 114. 二叉树展开为链表 原地算法
 func flatten(root *TreeNode) {
@@ -868,4 +870,165 @@ func letterCombinations(digits string) (ans []string) {
 	}
 	dfs(0, []byte{})
 	return
+}
+
+// 79. 单词搜索
+func exist(board [][]byte, word string) bool {
+	var used [][]bool
+	var dfs func(x, y, index int) bool
+	dfs = func(x, y, index int) bool {
+		if x < 0 || x >= len(board) || y < 0 || y >= len(board[0]) {
+			return false
+		}
+		if !used[x][y] && board[x][y] == word[index] {
+			used[x][y] = true
+			if index == len(word)-1 {
+				return true
+			}
+			if dfs(x+1, y, index+1) || dfs(x, y+1, index+1) || dfs(x-1, y, index+1) || dfs(x, y-1, index+1) {
+				return true
+			}
+			used[x][y] = false
+		}
+		return false
+	}
+	for i := 0; i < len(board); i++ {
+		for j := 0; j < len(board[i]); j++ {
+			if board[i][j] == word[0] {
+				used = make([][]bool, len(board))
+				for i := 0; i < len(used); i++ {
+					used[i] = make([]bool, len(board[i]))
+				}
+				if dfs(i, j, 0) {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+// 131. 分割回文串
+func partition(s string) (ans [][]string) {
+	var check func(s string) bool
+	//左闭右开区间
+	var dfs func(left, right int, path []string)
+	check = func(s string) bool {
+		bytes := []byte(s)
+		slices.Reverse(bytes)
+		return string(bytes) == s
+	}
+	dfs = func(left, right int, path []string) {
+		if right == len(s) { //到达字符串末尾
+			if check(s[left:right]) {
+				path = append(path, s[left:right])
+				ans = append(ans, append([]string{}, path...))
+			}
+			return
+		}
+		//如果当前切割结果是回文串
+		if check(s[left:right]) {
+			path = append(path, s[left:right])
+			dfs(right, right+1, path)
+			path = path[:len(path)-1]
+		}
+		dfs(left, right+1, path)
+	}
+	dfs(0, 1, []string{})
+	return
+}
+
+func searchMatrix(matrix [][]int, target int) bool {
+	for _, row := range matrix {
+		index, ok := slices.BinarySearch(row, target)
+		if ok {
+			return true
+		}
+		if index >= 0 && index < len(row) {
+			return false
+		}
+	}
+	return false
+}
+
+// 33. 搜索旋转排序数组
+//func search(nums []int, target int) int {
+//	left, right := 0, len(nums)-1
+//	for left <= right {
+//		mid := (right-left)/2 + left
+//		if nums[mid] == target {
+//			return mid
+//		}
+//		if nums[mid] < nums[left] {
+//			if target < nums[left] && nums[mid] < target {
+//				left = mid + 1
+//			} else {
+//				right = mid - 1
+//			}
+//		} else {
+//			if target >= nums[left] && target < nums[mid] {
+//				right = mid - 1
+//			} else {
+//				left = mid + 1
+//			}
+//		}
+//	}
+//	return -1
+//}
+
+// 153. 寻找旋转排序数组中的最小值
+func findMin(nums []int) int {
+	left, right := 0, len(nums)-1
+	for left <= right {
+		if nums[left] <= nums[right] {
+			return nums[left]
+		}
+		//下面只讨论分段的情况
+		mid := (right-left)/2 + left
+		if nums[mid] >= nums[left] {
+			left = mid + 1
+		} else {
+			right = mid
+		}
+	}
+	return -1
+}
+
+// 81. 搜索旋转排序数组 II
+func search(nums []int, target int) bool {
+	slices.Sort(nums)
+	_, ok := slices.BinarySearch(nums, target)
+	return ok
+}
+
+// 394. 字符串解码
+func decodeString(s string) string {
+	numTemp := make([]byte, 0)
+	numStack := make([]int, 0)
+	temp := make([]byte, 0)
+	for _, ch := range s {
+		if unicode.IsDigit(ch) {
+			numTemp = append(numTemp, byte(ch))
+		} else if unicode.IsLetter(ch) {
+			temp = append(temp, byte(ch))
+		} else if ch == '[' {
+			temp = append(temp, byte(ch))
+			num, _ := strconv.Atoi(string(numTemp))
+			numStack = append(numStack, num)
+			numTemp = []byte{}
+		} else {
+			j := len(temp) - 1
+			for temp[j] != '[' {
+				j--
+			}
+			toAppend := string(temp[j+1:])
+			temp = temp[:j]
+			num := numStack[len(numStack)-1]
+			numStack = numStack[:len(numStack)-1]
+			for ; num > 0; num-- {
+				temp = append(temp, toAppend...)
+			}
+		}
+	}
+	return string(temp)
 }

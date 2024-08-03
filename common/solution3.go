@@ -601,3 +601,38 @@ func alienOrder(words []string) string {
 	}
 	return string(ans)
 }
+
+// 851. 喧闹和富有
+func loudAndRich(richer [][]int, quiet []int) []int {
+	ans := make([]int, len(quiet))
+	for i := 0; i < len(ans); i++ {
+		ans[i] = i
+	}
+	graph := make([][]int, len(quiet))
+	inDegree := make(map[int]int)
+	for _, r := range richer {
+		graph[r[0]] = append(graph[r[0]], r[1])
+		inDegree[r[1]]++
+	}
+	queue := make([]int, 0, len(quiet))
+	for i := 0; i < len(quiet); i++ {
+		if inDegree[i] == 0 {
+			queue = append(queue, i)
+		}
+	}
+	for len(queue) > 0 {
+		temp := queue[0]
+		queue = queue[1:]
+		for _, e := range graph[temp] {
+			inDegree[e]--
+			if inDegree[e] == 0 {
+				queue = append(queue, e)
+			}
+			//核心 根据拓扑排序逐层携带消息 携带的是人的编号！
+			if quiet[ans[e]] > quiet[ans[temp]] {
+				ans[e] = ans[temp]
+			}
+		}
+	}
+	return ans
+}

@@ -496,13 +496,10 @@ func alienOrder(words []string) string {
 			set[int(ch-'a')] = struct{}{}
 		}
 	}
-	var flag bool
 	for i := 0; i < len(words); i++ {
 		for j := i + 1; j < len(words); j++ {
 			word1 := words[i]
 			word2 := words[j]
-			//找到word1和word2第一个不相同的字符ch1 ch2
-			//加入边ch1->ch2
 			k := 0
 			for ; k < len(word1) && k < len(word2); k++ {
 				if word1[k] != word2[k] {
@@ -514,11 +511,8 @@ func alienOrder(words []string) string {
 				}
 			}
 			if (k == len(word1) || k == len(word2)) && len(word1) > len(word2) {
-				flag = true
+				return ""
 			}
-			//if (k == len(word1) && k < len(word2)) || (k == len(word2) && k < len(word1)) {
-			//	flag = true
-			//}
 		}
 	}
 	ans := make([]byte, 0, 26)
@@ -528,10 +522,6 @@ func alienOrder(words []string) string {
 		if inDegree[k] == 0 {
 			queue = append(queue, k)
 		}
-	}
-
-	if flag && len(inDegree) == 0 {
-		return ""
 	}
 
 	for len(queue) > 0 {
@@ -555,6 +545,47 @@ func alienOrder(words []string) string {
 	}
 	return string(ans)
 }
+
+// 851. 喧闹和富有
+func loudAndRich(richer [][]int, quiet []int) []int {
+	ans := make([]int, len(quiet))
+	for i := 0; i < len(ans); i++ {
+		ans[i] = i
+	}
+	//copy(ans, quiet)
+	graph := make([][]int, len(quiet))
+	inDegree := make(map[int]int)
+	for _, r := range richer {
+		graph[r[0]] = append(graph[r[0]], r[1])
+		inDegree[r[1]]++
+	}
+	queue := make([]int, 0, len(quiet))
+	for i := 0; i < len(quiet); i++ {
+		if inDegree[i] == 0 {
+			queue = append(queue, i)
+		}
+	}
+	for len(queue) > 0 {
+		temp := queue[0]
+		queue = queue[1:]
+		for _, e := range graph[temp] {
+			inDegree[e]--
+			if inDegree[e] == 0 {
+				queue = append(queue, e)
+			}
+			if quiet[ans[e]] > quiet[ans[temp]] {
+				ans[e] = ans[temp]
+			}
+		}
+	}
+	return ans
+}
 func main() {
-	fmt.Println(alienOrder([]string{"abc", "ab"}))
+	fmt.Println(loudAndRich([][]int{
+		{1, 0},
+		{2, 1},
+		{3, 1},
+		{3, 7},
+		{4, 3}, {5, 3}, {6, 3},
+	}, []int{3, 2, 5, 4, 6, 1, 7, 0}))
 }

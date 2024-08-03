@@ -426,7 +426,7 @@ func validPath(n int, edges [][]int, source int, destination int) bool {
 	return same(source, destination)
 }
 
-// 拓扑排序
+// 拓扑排序 入度+队列
 func canFinish(numCourses int, prerequisites [][]int) bool {
 	graph := make([][]int, numCourses)
 	inDegree := make(map[int]int)
@@ -459,7 +459,7 @@ func canFinish(numCourses int, prerequisites [][]int) bool {
 	return cnt == numCourses
 }
 
-// 210. 课程表 II 打印拓扑排序序列
+// 210. 课程表 II 打印拓扑排序序列 入度+队列
 func findOrder(numCourses int, prerequisites [][]int) []int {
 	path := make([]int, 0, numCourses)
 	graph := make([][]int, numCourses)
@@ -491,4 +491,113 @@ func findOrder(numCourses int, prerequisites [][]int) []int {
 		return path
 	}
 	return []int{}
+}
+
+// LCR 114. 火星词典 拓扑排序
+//func alienOrder(words []string) string {
+//	graph := make([][]byte, 26)
+//	inDegree := make(map[byte]int)
+//	for i := 0; i < len(words); i++ {
+//		for j := i + 1; j < len(words); j++ {
+//			word1 := words[i]
+//			word2 := words[j]
+//			//找到word1和word2第一个不相同的字符ch1 ch2
+//			//加入边ch1->ch2
+//			for k := 0; k < len(word1) && k < len(word2); k++ {
+//				if word1[k] != word2[k] {
+//					graph[word1[k]-'a'] = append(graph[word1[k]-'a'], word2[k])
+//					inDegree[word2[k]]++
+//					if _, ok := inDegree[word1[k]]; !ok {
+//						inDegree[word1[k]] = 0
+//					}
+//					break
+//				}
+//			}
+//		}
+//	}
+//	ans := make([]byte, 0, 26)
+//	queue := make([]byte, 0, 26)
+//	for i := 0; i <= 26; i++ {
+//		if deg, ok := inDegree[byte(i+'a')]; ok && deg == 0 {
+//			queue = append(queue)
+//		}
+//	}
+//	for len(queue) > 0 {
+//		temp := queue[1]
+//		queue = queue[1:]
+//		ans = append(ans, temp)
+//		for _, e := range graph[temp] {
+//			inDegree[e]--
+//			if inDegree[e] == 0 {
+//				queue = append(queue, e)
+//			}
+//		}
+//	}
+//	if len(ans) == len(inDegree) {
+//		return string(ans)
+//	}
+//	return ""
+//}
+
+// LCR 114. 火星词典 拓扑排序
+func alienOrder(words []string) string {
+	graph := make([]map[int]struct{}, 26)
+	for i := 0; i < len(graph); i++ {
+		graph[i] = make(map[int]struct{})
+	}
+	inDegree := make(map[int]int)
+	set := make(map[int]struct{})
+	for _, word := range words {
+		for _, ch := range word {
+			set[int(ch-'a')] = struct{}{}
+		}
+	}
+	for i := 0; i < len(words); i++ {
+		for j := i + 1; j < len(words); j++ {
+			word1 := words[i]
+			word2 := words[j]
+			k := 0
+			for ; k < len(word1) && k < len(word2); k++ {
+				if word1[k] != word2[k] {
+					if _, ok := graph[word1[k]-'a'][int(word2[k]-'a')]; !ok {
+						graph[word1[k]-'a'][int(word2[k]-'a')] = struct{}{}
+						inDegree[int(word2[k]-'a')]++
+					}
+					break
+				}
+			}
+			if (k == len(word1) || k == len(word2)) && len(word1) > len(word2) {
+				return ""
+			}
+		}
+	}
+	ans := make([]byte, 0, 26)
+	queue := make([]int, 0, 26)
+
+	for k := range set {
+		if inDegree[k] == 0 {
+			queue = append(queue, k)
+		}
+	}
+
+	for len(queue) > 0 {
+		temp := queue[0]
+		queue = queue[1:]
+		ans = append(ans, byte(temp+'a'))
+		delete(set, temp)
+		for e := range graph[temp] {
+			inDegree[e]--
+			if inDegree[e] == 0 {
+				delete(inDegree, e)
+				queue = append(queue, e)
+			}
+		}
+	}
+	if len(inDegree) != 0 {
+		return ""
+	}
+	for k := range set {
+		ans = append(ans, byte(k+'a'))
+	}
+	return string(ans)
 }

@@ -482,6 +482,79 @@ func findOrder(numCourses int, prerequisites [][]int) []int {
 	}
 	return []int{}
 }
+
+// LCR 114. 火星词典 拓扑排序
+func alienOrder(words []string) string {
+	graph := make([]map[int]struct{}, 26)
+	for i := 0; i < len(graph); i++ {
+		graph[i] = make(map[int]struct{})
+	}
+	inDegree := make(map[int]int)
+	set := make(map[int]struct{})
+	for _, word := range words {
+		for _, ch := range word {
+			set[int(ch-'a')] = struct{}{}
+		}
+	}
+	var flag bool
+	for i := 0; i < len(words); i++ {
+		for j := i + 1; j < len(words); j++ {
+			word1 := words[i]
+			word2 := words[j]
+			//找到word1和word2第一个不相同的字符ch1 ch2
+			//加入边ch1->ch2
+			k := 0
+			for ; k < len(word1) && k < len(word2); k++ {
+				if word1[k] != word2[k] {
+					if _, ok := graph[word1[k]-'a'][int(word2[k]-'a')]; !ok {
+						graph[word1[k]-'a'][int(word2[k]-'a')] = struct{}{}
+						inDegree[int(word2[k]-'a')]++
+					}
+					break
+				}
+			}
+			if (k == len(word1) || k == len(word2)) && len(word1) > len(word2) {
+				flag = true
+			}
+			//if (k == len(word1) && k < len(word2)) || (k == len(word2) && k < len(word1)) {
+			//	flag = true
+			//}
+		}
+	}
+	ans := make([]byte, 0, 26)
+	queue := make([]int, 0, 26)
+
+	for k := range set {
+		if inDegree[k] == 0 {
+			queue = append(queue, k)
+		}
+	}
+
+	if flag && len(inDegree) == 0 {
+		return ""
+	}
+
+	for len(queue) > 0 {
+		temp := queue[0]
+		queue = queue[1:]
+		ans = append(ans, byte(temp+'a'))
+		delete(set, temp)
+		for e := range graph[temp] {
+			inDegree[e]--
+			if inDegree[e] == 0 {
+				delete(inDegree, e)
+				queue = append(queue, e)
+			}
+		}
+	}
+	if len(inDegree) != 0 {
+		return ""
+	}
+	for k := range set {
+		ans = append(ans, byte(k+'a'))
+	}
+	return string(ans)
+}
 func main() {
-	findOrder(2, [][]int{{1, 0}})
+	fmt.Println(alienOrder([]string{"abc", "ab"}))
 }

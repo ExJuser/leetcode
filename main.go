@@ -448,3 +448,40 @@ func decodeString(s string) string {
 	}
 	return string(temp)
 }
+
+// 210. 课程表 II 打印拓扑排序序列
+func findOrder(numCourses int, prerequisites [][]int) []int {
+	path := make([]int, 0, numCourses)
+	graph := make([][]int, numCourses)
+	inDegree := make(map[int]int)
+	for _, pre := range prerequisites {
+		preCourse, course := pre[1], pre[0]
+		graph[preCourse] = append(graph[preCourse], course)
+		inDegree[course]++
+	}
+
+	queue := make([]int, 0, numCourses)
+	for i := 0; i < numCourses; i++ {
+		if inDegree[i] == 0 {
+			queue = append(queue, i)
+		}
+	}
+	for len(queue) > 0 {
+		temp := queue[0]
+		queue = queue[1:]
+		path = append(path, temp)
+		for _, c := range graph[temp] {
+			inDegree[c]--
+			if inDegree[c] == 0 {
+				queue = append(queue, c)
+			}
+		}
+	}
+	if len(path) == numCourses {
+		return path
+	}
+	return []int{}
+}
+func main() {
+	findOrder(2, [][]int{{1, 0}})
+}

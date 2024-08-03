@@ -425,3 +425,70 @@ func validPath(n int, edges [][]int, source int, destination int) bool {
 
 	return same(source, destination)
 }
+
+// 拓扑排序
+func canFinish(numCourses int, prerequisites [][]int) bool {
+	graph := make([][]int, numCourses)
+	inDegree := make(map[int]int)
+	//建图 指向关系代表课程顺序
+	for _, pre := range prerequisites {
+		preCourse, course := pre[1], pre[0]
+		graph[preCourse] = append(graph[preCourse], course)
+		inDegree[course]++
+	}
+	queue := make([]int, 0, numCourses)
+	//找到入度为0的节点直接加入
+	for i := 0; i < numCourses; i++ {
+		if inDegree[i] == 0 {
+			queue = append(queue, i)
+		}
+	}
+	var cnt int
+	for len(queue) > 0 {
+		temp := queue[0]
+		queue = queue[1:]
+		cnt++
+		//找到temp的所有边
+		for _, c := range graph[temp] {
+			inDegree[c]--
+			if inDegree[c] == 0 {
+				queue = append(queue, c)
+			}
+		}
+	}
+	return cnt == numCourses
+}
+
+// 210. 课程表 II 打印拓扑排序序列
+func findOrder(numCourses int, prerequisites [][]int) []int {
+	path := make([]int, 0, numCourses)
+	graph := make([][]int, numCourses)
+	inDegree := make(map[int]int)
+	for _, pre := range prerequisites {
+		preCourse, course := pre[1], pre[0]
+		graph[preCourse] = append(graph[preCourse], course)
+		inDegree[course]++
+	}
+
+	queue := make([]int, 0, numCourses)
+	for i := 0; i < numCourses; i++ {
+		if inDegree[i] == 0 {
+			queue = append(queue, i)
+		}
+	}
+	for len(queue) > 0 {
+		temp := queue[0]
+		queue = queue[1:]
+		path = append(path, temp)
+		for _, c := range graph[temp] {
+			inDegree[c]--
+			if inDegree[c] == 0 {
+				queue = append(queue, c)
+			}
+		}
+	}
+	if len(path) == numCourses {
+		return path
+	}
+	return []int{}
+}

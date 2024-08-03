@@ -347,6 +347,7 @@ func numIslands(grid [][]byte) int {
 	return ans
 }
 
+// 130. 被围绕的区域
 func solve(board [][]byte) {
 	//从边界出发 洪水填充到的O都不会被感染 标记其不会被感染
 	//再遍历一遍 将会被感染的修改为x 不会被感染的修改为f
@@ -388,4 +389,39 @@ func solve(board [][]byte) {
 			}
 		}
 	}
+}
+
+// 1971. 寻找图中是否存在路径 并查集里最简单的模板题
+func validPath(n int, edges [][]int, source int, destination int) bool {
+	father := make([]int, n)
+	for i := 0; i < n; i++ {
+		father[i] = i
+	}
+	var (
+		find  func(x int) int
+		union func(x, y int)
+		same  func(x, y int) bool
+	)
+	find = func(x int) int {
+		if father[x] != x {
+			father[x] = find(father[x])
+		}
+		return father[x]
+	}
+	union = func(x, y int) {
+		fx := find(x)
+		fy := find(y)
+		if fx != fy {
+			father[fx] = fy
+		}
+	}
+	same = func(x, y int) bool {
+		return find(x) == find(y)
+	}
+
+	for _, edge := range edges {
+		union(edge[0], edge[1])
+	}
+
+	return same(source, destination)
 }

@@ -172,35 +172,35 @@ func twoSum(nums []int, target int) []int {
 //	}
 //
 // 200. 岛屿数量 bfs版本
-func numIslands(grid [][]byte) (ans int) {
-	var bfs func(i, j int)
-	bfs = func(i, j int) {
-		if i < 0 || j < 0 || i >= len(grid) || j >= len(grid[0]) {
-			return
-		}
-		if grid[i][j] == '1' {
-			grid[i][j] = '0'
-			queue := [][2]int{{i, j}}
-			for len(queue) > 0 {
-				x, y := queue[0][0], queue[0][1]
-				queue = queue[1:]
-				bfs(x-1, y)
-				bfs(x+1, y)
-				bfs(x, y-1)
-				bfs(x, y+1)
-			}
-		}
-	}
-	for i := 0; i < len(grid); i++ {
-		for j := 0; j < len(grid[0]); j++ {
-			if grid[i][j] == '1' {
-				ans++
-				bfs(i, j)
-			}
-		}
-	}
-	return ans
-}
+//func numIslands(grid [][]byte) (ans int) {
+//	var bfs func(i, j int)
+//	bfs = func(i, j int) {
+//		if i < 0 || j < 0 || i >= len(grid) || j >= len(grid[0]) {
+//			return
+//		}
+//		if grid[i][j] == '1' {
+//			grid[i][j] = '0'
+//			queue := [][2]int{{i, j}}
+//			for len(queue) > 0 {
+//				x, y := queue[0][0], queue[0][1]
+//				queue = queue[1:]
+//				bfs(x-1, y)
+//				bfs(x+1, y)
+//				bfs(x, y-1)
+//				bfs(x, y+1)
+//			}
+//		}
+//	}
+//	for i := 0; i < len(grid); i++ {
+//		for j := 0; j < len(grid[0]); j++ {
+//			if grid[i][j] == '1' {
+//				ans++
+//				bfs(i, j)
+//			}
+//		}
+//	}
+//	return ans
+//}
 
 // 80. 删除有序数组中的重复项 II
 func removeDuplicates(nums []int) int {

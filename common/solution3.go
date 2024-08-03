@@ -602,7 +602,7 @@ func alienOrder(words []string) string {
 	return string(ans)
 }
 
-// 851. 喧闹和富有
+// 851. 喧闹和富有 拓扑排序 树形DP
 func loudAndRich(richer [][]int, quiet []int) []int {
 	ans := make([]int, len(quiet))
 	for i := 0; i < len(ans); i++ {
@@ -628,11 +628,82 @@ func loudAndRich(richer [][]int, quiet []int) []int {
 			if inDegree[e] == 0 {
 				queue = append(queue, e)
 			}
-			//核心 根据拓扑排序逐层携带消息 携带的是人的编号！
+			//核心：根据拓扑排序逐层携带消息 携带的是人的编号！将收集到的答案推送
 			if quiet[ans[e]] > quiet[ans[temp]] {
 				ans[e] = ans[temp]
 			}
 		}
 	}
 	return ans
+}
+
+// 1494. 并行课程 II 有反例 拓扑排序只能过69个用例
+func minNumberOfSemesters(n int, relations [][]int, k int) int {
+	graph := make([][]int, n+1)
+	inDegree := make(map[int]int)
+	for _, relation := range relations {
+		preCourse, course := relation[0], relation[1]
+		graph[preCourse] = append(graph[preCourse], course)
+		inDegree[course]++
+	}
+	queue := make([]int, 0, n+1)
+	for i := 1; i <= n; i++ {
+		if inDegree[i] == 0 {
+			queue = append(queue, i)
+		}
+	}
+	term := 0
+	for len(queue) > 0 {
+		size := len(queue)
+		for i := 0; i < k && i < size; i++ {
+			course := queue[0]
+			queue = queue[1:]
+			for _, e := range graph[course] {
+				inDegree[e]--
+				if inDegree[e] == 0 {
+					queue = append(queue, e)
+				}
+			}
+		}
+		term++
+	}
+	return term
+}
+
+// 2050. 并行课程 III
+func minimumTime(n int, relations [][]int, time []int) int {
+	var res int
+	ans := make([]int, n+1)
+	copy(ans[1:], time)
+	for i := 0; i < len(time); i++ {
+		ans[i+1] = time[i]
+		res = max(res, ans[i+1])
+	}
+
+	graph := make([][]int, n+1)
+	inDegree := make(map[int]int)
+	for _, r := range relations {
+		preCourse, course := r[0], r[1]
+		graph[preCourse] = append(graph[preCourse], course)
+		inDegree[course]++
+	}
+	queue := make([]int, 0, n+1)
+	for i := 1; i <= n; i++ {
+		if inDegree[i] == 0 {
+			queue = append(queue, i)
+		}
+	}
+	for len(queue) > 0 {
+		temp := queue[0]
+		queue = queue[1:]
+		for _, e := range graph[temp] {
+			ans[e] = max(ans[e], ans[temp]+time[e-1])
+			res = max(res, ans[e])
+			inDegree[e]--
+			if inDegree[e] == 0 {
+				queue = append(queue, e)
+			}
+		}
+	}
+	return res
 }

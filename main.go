@@ -580,12 +580,3 @@ func loudAndRich(richer [][]int, quiet []int) []int {
 	}
 	return ans
 }
-func main() {
-	fmt.Println(loudAndRich([][]int{
-		{1, 0},
-		{2, 1},
-		{3, 1},
-		{3, 7},
-		{4, 3}, {5, 3}, {6, 3},
-	}, []int{3, 2, 5, 4, 6, 1, 7, 0}))
-}

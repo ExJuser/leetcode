@@ -272,3 +272,120 @@ func findAllPeople(n int, meetings [][]int, firstPerson int) (ans []int) {
 	}
 	return
 }
+
+// 2421. 好路径的数目
+func numberOfGoodPaths(vals []int, edges [][]int) int {
+	father := make([]int, len(vals))
+	maxCnt := make([]int, len(vals))
+	for i := 0; i < len(vals); i++ {
+		father[i] = i
+		maxCnt[i] = 1
+	}
+
+	var (
+		find  func(x int) int
+		union func(x, y int)
+		ans   = len(vals) //单节点也是好路径
+	)
+	//标准并查集递归find模板
+	find = func(x int) int {
+		if father[x] != x {
+			father[x] = find(father[x])
+		}
+		return father[x]
+	}
+	union = func(x, y int) {
+		fx := find(x)
+		fy := find(y)
+		//让最大值更大的代表节点做代表节点
+		if vals[fx] > vals[fy] { //无需更新最大值个数
+			father[fy] = fx
+		} else if vals[fx] < vals[fy] { //无需更新最大值个数
+			father[fx] = fy
+		} else { //核心逻辑
+			ans += maxCnt[fx] * maxCnt[fy]
+			father[fy] = fx
+			maxCnt[fx] += maxCnt[fy]
+		}
+	}
+
+	sort.Slice(edges, func(i, j int) bool {
+		return max(vals[edges[i][0]], vals[edges[i][1]]) < max(vals[edges[j][0]], vals[edges[j][1]])
+	})
+
+	for i := 0; i < len(edges); i++ {
+		union(edges[i][0], edges[i][1])
+	}
+
+	return ans
+}
+
+// 200. 岛屿数量 dfs洪水填充
+func numIslands(grid [][]byte) int {
+	var dfs func(x, y int)
+	dfs = func(x, y int) {
+		if x < 0 || x >= len(grid) || y < 0 || y >= len(grid[0]) {
+			return
+		}
+		if grid[x][y] == '1' {
+			grid[x][y] = '2'
+			dfs(x-1, y)
+			dfs(x, y-1)
+			dfs(x+1, y)
+			dfs(x, y+1)
+		}
+	}
+	var ans int
+	for i := 0; i < len(grid); i++ {
+		for j := 0; j < len(grid[0]); j++ {
+			if grid[i][j] == '1' {
+				ans++
+				dfs(i, j)
+			}
+		}
+	}
+	return ans
+}
+
+func solve(board [][]byte) {
+	//从边界出发 洪水填充到的O都不会被感染 标记其不会被感染
+	//再遍历一遍 将会被感染的修改为x 不会被感染的修改为f
+	var dfs func(i, j int)
+	dfs = func(i, j int) {
+		if i < 0 || i >= len(board) || j < 0 || j >= len(board[0]) || board[i][j] == 'X' || board[i][j] == 'F' {
+			return
+		}
+		board[i][j] = 'F'
+		dfs(i-1, j)
+		dfs(i+1, j)
+		dfs(i, j-1)
+		dfs(i, j+1)
+	}
+
+	//从边界出发
+	for i := 0; i < len(board); i++ {
+		if board[i][0] == 'O' { //第一列
+			dfs(i, 0)
+		}
+		if board[i][len(board[0])-1] == 'O' { //最后一列
+			dfs(i, len(board[0])-1)
+		}
+	}
+	for i := 0; i < len(board[0]); i++ {
+		if board[0][i] == 'O' { //第一行
+			dfs(0, i)
+		}
+		if board[len(board)-1][i] == 'O' { //最后一行
+			dfs(len(board)-1, i)
+		}
+	}
+	for i := 0; i < len(board); i++ {
+		for j := 0; j < len(board[0]); j++ {
+			if board[i][j] == 'O' {
+				board[i][j] = 'X'
+			} else if board[i][j] == 'F' {
+				board[i][j] = 'O'
+			}
+		}
+	}
+}

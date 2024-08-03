@@ -1,6 +1,7 @@
 package common
 
 import (
+	"container/heap"
 	"sort"
 )
 
@@ -706,4 +707,73 @@ func minimumTime(n int, relations [][]int, time []int) int {
 		}
 	}
 	return res
+}
+
+// PointHeap 两个端点+权值
+type PointHeap [][3]int
+
+func (p *PointHeap) Len() int {
+	return len(*p)
+}
+
+func (p *PointHeap) Less(i, j int) bool {
+	return (*p)[i][2] < (*p)[j][2]
+}
+
+func (p *PointHeap) Swap(i, j int) {
+	(*p)[i], (*p)[j] = (*p)[j], (*p)[i]
+}
+
+func (p *PointHeap) Push(x any) {
+	*p = append(*p, x.([3]int))
+}
+
+func (p *PointHeap) Pop() any {
+	x := (*p)[(*p).Len()-1]
+	*p = (*p)[:(*p).Len()-1]
+	return x
+}
+
+// 最小生成树
+// 并查集+克鲁斯卡尔+最小堆：每次都选取权值最小的边 最小堆维护每一条边和其权值
+func minCostConnectPoints(points [][]int) int {
+	father := make([]int, len(points))
+	for i := 0; i < len(points); i++ {
+		father[i] = i
+	}
+	var (
+		find  func(x int) int
+		union func(x, y int) bool
+	)
+	find = func(x int) int {
+		if father[x] != x {
+			father[x] = find(father[x])
+		}
+		return father[x]
+	}
+	union = func(x, y int) bool {
+		fx, fy := find(x), find(y)
+		if fx != fy {
+			father[fx] = fy
+			return true
+		}
+		return false
+	}
+	hp := &PointHeap{}
+	for i := 0; i < len(points); i++ {
+		for j := i + 1; j < len(points); j++ {
+			dist := Abs(points[i][0]-points[j][0]) + Abs(points[i][1]-points[j][1])
+			heap.Push(hp, [3]int{i, j, dist})
+		}
+	}
+
+	var sum int
+	for hp.Len() > 0 {
+		popped := heap.Pop(hp).([3]int)
+		point1, point2, dist := popped[0], popped[1], popped[2]
+		if union(point1, point2) {
+			sum += dist
+		}
+	}
+	return sum
 }

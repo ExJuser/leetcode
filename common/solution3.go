@@ -777,3 +777,48 @@ func minCostConnectPoints(points [][]int) int {
 	}
 	return sum
 }
+
+// NumMatrix 304. 二维区域和检索 - 矩阵不可变
+type NumMatrix struct {
+	matrix [][]int
+	prefix [][]int
+}
+
+//func Constructor(matrix [][]int) NumMatrix {
+//	prefix := make([][]int, len(matrix))
+//	for i := 0; i < len(prefix); i++ {
+//		prefix[i] = make([]int, len(matrix[i]))
+//	}
+//	for i := 0; i < len(prefix); i++ {
+//		for j := 0; j < len(prefix[i]); j++ {
+//			prefix[i][j] = matrix[i][j]
+//			if i >= 1 {
+//				prefix[i][j] += prefix[i-1][j]
+//			}
+//			if j >= 1 {
+//				prefix[i][j] += prefix[i][j-1]
+//			}
+//			if i >= 1 && j >= 1 {
+//				prefix[i][j] -= prefix[i-1][j-1]
+//			}
+//		}
+//	}
+//	return NumMatrix{
+//		prefix: prefix,
+//		matrix: matrix,
+//	}
+//}
+
+func (this *NumMatrix) SumRegion(row1 int, col1 int, row2 int, col2 int) int {
+	res := this.prefix[row2][col2]
+	if col1 >= 1 {
+		res -= this.prefix[row2][col1-1]
+	}
+	if row1 >= 1 {
+		res -= this.prefix[row1-1][col2]
+	}
+	if row1 >= 1 && col1 >= 1 {
+		res += this.prefix[row1-1][col1-1]
+	}
+	return res
+}

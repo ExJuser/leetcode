@@ -625,23 +625,61 @@ func (this *NumMatrix) SumRegion(row1 int, col1 int, row2 int, col2 int) int {
 	}
 	return res
 }
-func main() {
-	matrix := [][]int{
-		{
-			3, 0, 1, 4, 2,
-		},
-		{
-			5, 6, 3, 2, 1,
-		}, {
-			1, 2, 0, 1, 5,
-		},
-		{
-			4, 1, 0, 1, 7,
-		},
-		{
-			1, 0, 3, 0, 5,
-		},
+
+// 994. 腐烂的橘子
+func orangesRotting(grid [][]int) int {
+	queue := make([][2]int, 0, len(grid)*len(grid[0]))
+	visited := make([][]bool, len(grid))
+	for i := 0; i < len(visited); i++ {
+		visited[i] = make([]bool, len(grid[i]))
 	}
-	x := Constructor(matrix)
-	fmt.Println(x)
+	var freshCount int
+	for i := 0; i < len(grid); i++ {
+		for j := 0; j < len(grid[i]); j++ {
+			if grid[i][j] == 2 {
+				queue = append(queue, [2]int{i, j})
+				visited[i][j] = true
+			} else if grid[i][j] == 1 {
+				freshCount++
+			}
+		}
+	}
+	var minute int
+	for len(queue) > 0 {
+		size := len(queue)
+		minute++
+		for i := 0; i < size; i++ {
+			temp := queue[0]
+			queue = queue[1:]
+			x, y := temp[0], temp[1]
+			if x-1 >= 0 && grid[x-1][y] == 1 && !visited[x-1][y] {
+				queue = append(queue, [2]int{x - 1, y})
+				visited[x-1][y] = true
+				freshCount--
+			}
+			if x+1 < len(grid) && grid[x+1][y] == 1 && !visited[x+1][y] {
+				queue = append(queue, [2]int{x + 1, y})
+				visited[x+1][y] = true
+				freshCount--
+			}
+			if y-1 >= 0 && grid[x][y-1] == 1 && !visited[x][y-1] {
+				queue = append(queue, [2]int{x, y - 1})
+				visited[x][y-1] = true
+				freshCount--
+			}
+			if y+1 < len(grid[0]) && grid[x][y+1] == 1 && !visited[x][y+1] {
+				queue = append(queue, [2]int{x, y + 1})
+				visited[x][y+1] = true
+				freshCount--
+			}
+		}
+	}
+	if freshCount != 0 {
+		return -1
+	}
+	return minute - 1
+}
+
+func main() {
+	orangesRotting([][]int{{0}})
 }

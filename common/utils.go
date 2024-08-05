@@ -16,8 +16,9 @@ func Abs[T Number](num T) T {
 	return num
 }
 
-func GetLinkedListLength(head *ListNode) (length int) {
-	for p := head; p != nil; p = p.Next {
+func GetLinkedListLength(node *ListNode) int {
+	length := 0
+	for ; node != nil; node = node.Next {
 		length++
 	}
 	return length

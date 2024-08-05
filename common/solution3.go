@@ -2,6 +2,7 @@ package common
 
 import (
 	"container/heap"
+	"slices"
 	"sort"
 )
 
@@ -925,3 +926,114 @@ func orangesRotting(grid [][]int) int {
 	}
 	return minute - 1
 }
+
+// 90. 子集 II
+func subsetsWithDup(nums []int) (ans [][]int) {
+	slices.Sort(nums)
+	var dfs func(index int, path []int)
+	dfs = func(index int, path []int) {
+		if index == len(nums) {
+			ans = append(ans, append([]int{}, path...))
+			return
+		}
+		for i := index; i < len(nums); i++ {
+			//选或者不选
+			if i == index || nums[i] != nums[i-1] {
+				path = append(path, nums[i])
+				dfs(i+1, path)
+				path = path[:len(path)-1]
+				dfs(i+1, path)
+			}
+		}
+	}
+	dfs(0, []int{})
+	return
+}
+
+// 47. 全排列 II
+func permuteUnique(nums []int) (ans [][]int) {
+	slices.Sort(nums)
+	visited := make([]bool, len(nums))
+	var dfs func(path []int)
+	dfs = func(path []int) {
+		if len(path) == len(nums) {
+			ans = append(ans, append([]int{}, path...))
+			return
+		}
+		for i := 0; i < len(nums); i++ {
+			//已经访问过的数不允许再访问
+			//如果这个数和之前的数相同 而且前一个数还没有访问：对这个数的操作会被上一个数重复
+			if visited[i] || (i >= 1 && nums[i] == nums[i-1] && !visited[i-1]) {
+				continue
+			}
+			visited[i] = true
+			path = append(path, nums[i])
+			dfs(path)
+			visited[i] = false
+			path = path[:len(path)-1]
+		}
+	}
+	dfs([]int{})
+	return
+}
+
+//type minHeap [][2]int
+//
+//func (m *minHeap) Len() int {
+//	return len(*m)
+//}
+//
+//func (m *minHeap) Less(i, j int) bool {
+//	return (*m)[i][1] < (*m)[j][1]
+//}
+//
+//func (m *minHeap) Swap(i, j int) {
+//	(*m)[i], (*m)[j] = (*m)[j], (*m)[i]
+//}
+//
+//func (m *minHeap) Push(x any) {
+//	*m = append(*m, x.([2]int))
+//}
+//
+//func (m *minHeap) Pop() any {
+//	x := (*m)[(*m).Len()-1]
+//	*m = (*m)[:(*m).Len()-1]
+//	return x
+//}
+//
+//// 743. 网络延迟时间 迪杰斯特拉模板题
+//func networkDelayTime(times [][]int, n int, k int) int {
+//	graph := make([][][2]int, n+1)
+//	visited := make([]bool, n+1)
+//	cost := make([]int, n+1)
+//	for i := 1; i <= n; i++ {
+//		cost[i] = math.MaxInt
+//	}
+//	cost[k] = 0
+//	for _, time := range times {
+//		//u到v的距离为w
+//		u, v, w := time[0], time[1], time[2]
+//		graph[u] = append(graph[u], [2]int{v, w})
+//	}
+//	hp := &minHeap{}
+//	//先将起始节点加入小根堆
+//	heap.Push(hp, [2]int{k, 0})
+//	for hp.Len() > 0 {
+//		edge := heap.Pop(hp).([2]int)
+//		v, w := edge[0], edge[1]
+//		if !visited[v] {
+//			visited[v] = true
+//			for _, e := range graph[v] {
+//				if !visited[e[0]] && e[1]+w < cost[e[0]] {
+//					cost[e[0]] = e[1] + w
+//					heap.Push(hp, [2]int{e[0], cost[e[0]]})
+//				}
+//			}
+//		}
+//	}
+//	ans := slices.Max(cost)
+//	if ans == math.MaxInt {
+//		return -1
+//	}
+//	return ans
+//}

@@ -769,10 +769,62 @@ func networkDelayTime(times [][]int, n int, k int) int {
 	}
 	return ans
 }
+
+func shortestPathAllKeys(grid []string) int {
+	//先遍历一遍确定k：钥匙个数
+	var k, startI, startJ int
+	for i := 0; i < len(grid); i++ {
+		for j := 0; j < len(grid[i]); j++ {
+			//如果是小写字母代表一把钥匙
+			if grid[i][j] >= 'a' && grid[i][j] <= 'z' {
+				k++
+			}
+			if grid[i][j] == '@' {
+				startI, startJ = i, j
+			}
+		}
+	}
+	target := int(math.Pow(2, float64(k))) - 1
+	directions := [][]int{
+		{0, 1}, {0, -1}, {1, 0}, {-1, 0},
+	}
+	visited := make([][][64]bool, len(grid))
+	for i := 0; i < len(visited); i++ {
+		visited[i] = make([][64]bool, len(grid[0]))
+	}
+	var moves int
+	queue := make([][3]int, 0)
+	//所在坐标+状态
+	queue = append(queue, [3]int{startI, startJ, 0})
+	for len(queue) > 0 {
+		moves++
+		for size := len(queue); size > 0; size-- {
+			x := queue[0]
+			queue = queue[1:]
+			i, j, status := x[0], x[1], x[2]
+			//所在位置是一把钥匙 需要设置状态位标记为钥匙已经获得
+			if grid[i][j] >= 'a' && grid[i][j] <= 'z' {
+				status |= 1 << (grid[i][j] - 'a')
+			}
+			if status == target { //拿到了所有的钥匙
+				return moves - 1
+			}
+			visited[i][j][status] = true
+			for _, dir := range directions {
+				ii, jj := i+dir[0], j+dir[1] //新到达的位置
+				//没有超出边界且不是墙且没有访问过
+				if ii >= 0 && jj >= 0 && ii < len(grid) && jj < len(grid[0]) && grid[ii][jj] != '#' && !visited[ii][jj][status] {
+					//如果遇到了锁 需要判断能否进去
+					if !(grid[ii][jj] >= 'A' && grid[ii][jj] <= 'Z' && status&(1<<(grid[ii][jj]-'A')) < 1) {
+						visited[ii][jj][status] = true
+						queue = append(queue, [3]int{ii, jj, status})
+					}
+				}
+			}
+		}
+	}
+	return -1
+}
 func main() {
-	networkDelayTime([][]int{
-		{2, 1, 1},
-		{2, 3, 1},
-		{3, 4, 1},
-	}, 4, 2)
+	shortestPathAllKeys([]string{"@.a..", "###.#", "b.A.B"})
 }

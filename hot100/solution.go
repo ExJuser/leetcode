@@ -288,49 +288,49 @@ func maxProduct(nums []int) int {
 	return int(ans)
 }
 
-func mergeList(p, q *ListNode) *ListNode {
-	dummy := &ListNode{}
-	l := dummy
-	for p != nil && q != nil {
-		if p.Val <= q.Val {
-			l.Next = p
-			p = p.Next
-		} else {
-			l.Next = q
-			q = q.Next
-		}
-		l = l.Next
-	}
-	if p == nil {
-		l.Next = q
-	}
-	if q == nil {
-		l.Next = p
-	}
-	return dummy.Next
-}
+//func mergeList(p, q *ListNode) *ListNode {
+//	dummy := &ListNode{}
+//	l := dummy
+//	for p != nil && q != nil {
+//		if p.Val <= q.Val {
+//			l.Next = p
+//			p = p.Next
+//		} else {
+//			l.Next = q
+//			q = q.Next
+//		}
+//		l = l.Next
+//	}
+//	if p == nil {
+//		l.Next = q
+//	}
+//	if q == nil {
+//		l.Next = p
+//	}
+//	return dummy.Next
+//}
 
-// 链表的归并排序
-func sortList(head *ListNode) *ListNode {
-	var dfs func(node *ListNode) *ListNode
-	dfs = func(node *ListNode) *ListNode {
-		if node == nil || node.Next == nil {
-			return node
-		}
-		slow, fast := node, node
-		var preSlow *ListNode
-		for fast != nil && fast.Next != nil {
-			preSlow = slow
-			slow = slow.Next
-			fast = fast.Next.Next
-		}
-		preSlow.Next = nil
-		left := dfs(node)
-		right := dfs(slow)
-		return mergeList(left, right)
-	}
-	return dfs(head)
-}
+//// 链表的归并排序
+//func sortList(head *ListNode) *ListNode {
+//	var dfs func(node *ListNode) *ListNode
+//	dfs = func(node *ListNode) *ListNode {
+//		if node == nil || node.Next == nil {
+//			return node
+//		}
+//		slow, fast := node, node
+//		var preSlow *ListNode
+//		for fast != nil && fast.Next != nil {
+//			preSlow = slow
+//			slow = slow.Next
+//			fast = fast.Next.Next
+//		}
+//		preSlow.Next = nil
+//		left := dfs(node)
+//		right := dfs(slow)
+//		return mergeList(left, right)
+//	}
+//	return dfs(head)
+//}
 
 // 139. 单词拆分 动态规划
 func wordBreak(s string, wordDict []string) bool {
@@ -575,19 +575,19 @@ func findAnagrams(s string, p string) (ans []int) {
 }
 
 // 560. 和为 K 的子数组 哈希表？
-func subarraySum(nums []int, k int) int {
-	prefix := make([]int, len(nums)+1)
-	for i := 0; i < len(nums); i++ {
-		prefix[i+1] = prefix[i] + nums[i]
-	}
-	var ans int
-	mp := make(map[int]int)
-	for i := 0; i < len(prefix); i++ {
-		ans += mp[prefix[i]-k]
-		mp[prefix[i]]++
-	}
-	return ans
-}
+//func subarraySum(nums []int, k int) int {
+//	prefix := make([]int, len(nums)+1)
+//	for i := 0; i < len(nums); i++ {
+//		prefix[i+1] = prefix[i] + nums[i]
+//	}
+//	var ans int
+//	mp := make(map[int]int)
+//	for i := 0; i < len(prefix); i++ {
+//		ans += mp[prefix[i]-k]
+//		mp[prefix[i]]++
+//	}
+//	return ans
+//}
 
 // 189. 轮转数组
 func rotate(nums []int, k int) {
@@ -702,23 +702,23 @@ func kthSmallest(root *TreeNode, k int) int {
 }
 
 // 199. 二叉树的右视图
-func rightSideView(root *TreeNode) (ans []int) {
-	var dfs func(node *TreeNode, depth int)
-	var curDepth int
-	dfs = func(node *TreeNode, depth int) {
-		if node == nil {
-			return
-		}
-		if depth > curDepth {
-			curDepth = depth
-			ans = append(ans, node.Val)
-		}
-		dfs(node.Right, depth+1)
-		dfs(node.Left, depth+1)
-	}
-	dfs(root, 1)
-	return
-}
+//func rightSideView(root *TreeNode) (ans []int) {
+//	var dfs func(node *TreeNode, depth int)
+//	var curDepth int
+//	dfs = func(node *TreeNode, depth int) {
+//		if node == nil {
+//			return
+//		}
+//		if depth > curDepth {
+//			curDepth = depth
+//			ans = append(ans, node.Val)
+//		}
+//		dfs(node.Right, depth+1)
+//		dfs(node.Left, depth+1)
+//	}
+//	dfs(root, 1)
+//	return
+//}
 
 // 105. 从前序与中序遍历序列构造二叉树
 func buildTree(preorder []int, inorder []int) *TreeNode {
@@ -1031,4 +1031,140 @@ func decodeString(s string) string {
 		}
 	}
 	return string(temp)
+}
+
+// 199. 二叉树的右视图
+func rightSideView(root *TreeNode) (ans []int) {
+	var depth int
+	var dfs func(node *TreeNode, curDepth int)
+	dfs = func(node *TreeNode, curDepth int) {
+		if node == nil {
+			return
+		}
+		if curDepth > depth {
+			depth = curDepth
+			ans = append(ans, node.Val)
+		}
+		dfs(node.Right, curDepth+1)
+		dfs(node.Left, curDepth+1)
+	}
+	dfs(root, 1)
+	return
+}
+
+// 55. 跳跃游戏 o(n^2)
+//
+//	func canJump(nums []int) bool {
+//		//dpi表示能否跳到当前位置
+//		dp := make([]bool, len(nums))
+//		dp[0] = true
+//		for i := 0; i < len(nums); i++ {
+//			for j := 0; j <= nums[i] && j < len(nums)-i; j++ {
+//				dp[i+j] = dp[i] || dp[i+j]
+//			}
+//		}
+//		return dp[len(nums)-1]
+//	}
+//
+// 55. 跳跃游戏
+func canJump(nums []int) bool {
+	maxRight := nums[0]
+	for i := 1; i < len(nums); i++ {
+		maxRight = max(maxRight, i+nums[i])
+	}
+	return maxRight >= len(nums)-1
+}
+
+// 45. 跳跃游戏 II
+func jump(nums []int) int {
+	//dpi跳到i位置的最小跳跃次数
+	dp := make([]int, len(nums))
+	for i := 1; i < len(nums); i++ {
+		dp[i] = math.MaxInt
+	}
+	for i := 0; i < len(nums); i++ {
+		for j := 0; j <= nums[i] && j < len(nums)-i; j++ {
+			dp[i+j] = min(dp[i+j], dp[i]+1)
+		}
+	}
+	return dp[len(nums)-1]
+}
+
+func mergeList(p, q *ListNode) *ListNode {
+	dummy := &ListNode{}
+	cur := dummy
+	for p != nil && q != nil {
+		var val int
+		if p.Val <= q.Val {
+			val = p.Val
+			p = p.Next
+		} else {
+			val = q.Val
+			q = q.Next
+		}
+		cur.Next = &ListNode{Val: val}
+		cur = cur.Next
+	}
+	if p != nil {
+		cur.Next = p
+	} else {
+		cur.Next = q
+	}
+	return dummy.Next
+}
+
+// 排序链表
+func sortList(head *ListNode) *ListNode {
+	var dfs func(node *ListNode) *ListNode
+	dfs = func(node *ListNode) *ListNode {
+		if node == nil || node.Next == nil {
+			return node
+		}
+		slow, fast := node, node
+		var preSlow *ListNode
+		for fast != nil && fast.Next != nil {
+			preSlow = slow
+			slow = slow.Next
+			fast = fast.Next.Next
+		}
+		preSlow.Next = nil
+		left, right := dfs(node), dfs(slow)
+		return mergeList(left, right)
+	}
+	return dfs(head)
+}
+
+// 560. 和为 K 的子数组
+func subarraySum(nums []int, k int) (ans int) {
+	prefix := map[int]int{0: 1}
+	prefixSum := 0
+	for i := 0; i < len(nums); i++ {
+		prefixSum += nums[i]
+		ans += prefix[prefixSum-k]
+		prefix[prefixSum]++
+	}
+	return
+}
+
+// 239. 滑动窗口最大值 单调队列 维护单调减的队列
+func maxSlidingWindow(nums []int, k int) (ans []int) {
+	queue := make([]int, 0, len(nums))
+	for i := 0; i < k-1; i++ {
+		for len(queue) > 0 && nums[queue[len(queue)-1]] <= nums[i] {
+			queue = queue[:len(queue)-1]
+		}
+		queue = append(queue, i)
+	}
+	for i := 0; i < len(nums)-k+1; i++ {
+		//加入一个弹出一个
+		for len(queue) > 0 && nums[queue[len(queue)-1]] <= nums[i+k-1] {
+			queue = queue[:len(queue)-1]
+		}
+		queue = append(queue, i+k-1)
+		ans = append(ans, nums[queue[0]])
+		if i == queue[0] {
+			queue = queue[1:]
+		}
+	}
+	return
 }

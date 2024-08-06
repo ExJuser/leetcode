@@ -825,6 +825,118 @@ func shortestPathAllKeys(grid []string) int {
 	}
 	return -1
 }
+
+type planHeap [][3]int
+
+func (p *planHeap) Len() int {
+	return len(*p)
+}
+
+func (p *planHeap) Less(i, j int) bool {
+	return (*p)[i][1] < (*p)[j][1]
+}
+
+func (p *planHeap) Swap(i, j int) {
+	(*p)[i], (*p)[j] = (*p)[j], (*p)[i]
+}
+
+func (p *planHeap) Push(x any) {
+	*p = append(*p, x.([3]int))
+}
+
+func (p *planHeap) Pop() any {
+	x := (*p)[p.Len()-1]
+	*p = (*p)[:p.Len()-1]
+	return x
+}
+
+// LCP 35. 电动车游城市
+func electricCarPlan(paths [][]int, cnt int, start int, end int, charge []int) int {
+	//cnt 电动车最大电量 初始电量为0
+	//start end 起点和终点
+	//charge 单位电量充电时间 长度为城市数量
+	//paths[i][j]:城市i到城市j的距离也即行驶用时
+	//堆里放的东西：点 起点到该点的距离/行驶用时
+	type tuple struct {
+		location int
+		time     int
+		curCnt   int
+	}
+
+	n := len(charge)
+
+	//建图 无向图
+	graph := make([][][2]int, n)
+	//for i := 0; i < n; i++ {
+	//	graph[i] = make([][2]int, n)
+	//}
+	for _, path := range paths {
+		u, v, w := path[0], path[1], path[2]
+		graph[u] = append(graph[u], [2]int{v, w})
+		graph[v] = append(graph[v], [2]int{u, w})
+	}
+
+	//从起点到终点的最短用时初始化
+	cost := make([][]int, n)
+	for i := 0; i < n; i++ {
+		cost[i] = make([]int, cnt+1)
+	}
+	for i := 0; i < n; i++ {
+		for j := 0; j <= cnt; j++ {
+			cost[i][j] = math.MaxInt
+		}
+	}
+	cost[start][0] = 0
+
+	//所在位置+用时+目前电量表示一个状态 地图上的一个广义点
+	visited := make(map[tuple]bool)
+
+	hp := &planHeap{} //迪杰斯特拉算法用的堆结构
+	heap.Push(hp, [3]int{start, 0, 0})
+
+	for hp.Len() > 0 {
+		x := heap.Pop(hp).([3]int)
+		curLocation, curTime, curCnt := x[0], x[1], x[2]
+		if curLocation == end {
+			return curTime
+		}
+		if !visited[tuple{curLocation, curTime, curCnt}] {
+			visited[tuple{curLocation, curTime, curCnt}] = true
+			//可以充电
+			if curCnt < cnt {
+				chargedTime := curTime + charge[curLocation]
+				chargedCnt := curCnt + 1
+				if !visited[tuple{curLocation, chargedTime, chargedCnt}] {
+					if cost[curLocation][chargedCnt] > chargedTime {
+						cost[curLocation][chargedCnt] = chargedTime
+						heap.Push(hp, [3]int{curLocation, chargedTime, chargedCnt})
+					}
+				}
+			}
+
+			//不充电
+			for _, to := range graph[curLocation] {
+				nextLocation := to[0]
+				timeCost := to[1]
+				//电量足够
+				if curCnt >= timeCost {
+					arriveTime := curTime + timeCost
+					arriveCnt := curCnt - timeCost
+					if !visited[tuple{nextLocation, arriveTime, arriveCnt}] {
+						if cost[nextLocation][arriveCnt] > arriveTime {
+							cost[nextLocation][arriveCnt] = arriveTime
+							heap.Push(hp, [3]int{nextLocation, arriveTime, arriveCnt})
+						}
+					}
+				}
+			}
+		}
+	}
+	return -1
+}
+
 func main() {
-	shortestPathAllKeys([]string{"@.a..", "###.#", "b.A.B"})
+	electricCarPlan([][]int{
+		{1, 3, 3}, {3, 2, 1}, {2, 1, 3}, {0, 1, 4}, {3, 0, 5},
+	}, 6, 1, 0, []int{2, 10, 4, 1})
 }

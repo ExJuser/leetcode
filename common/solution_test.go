@@ -1,6 +1,7 @@
 package common
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"math/rand/v2"
 	"slices"
@@ -56,4 +57,33 @@ func TestDuplicate(t *testing.T) {
 	PrintLinkedList(list)
 	newList := deleteDuplicates(list)
 	PrintLinkedList(newList)
+}
+
+func TestQuickSort(t *testing.T) {
+	nums := GenerateSlice(1000, 10000)
+	numsCopy := make([]int, len(nums))
+	copy(numsCopy, nums)
+	fmt.Println(nums)
+	fmt.Println(numsCopy)
+	quickSort_(nums)
+	slices.Sort(numsCopy)
+	assert.Equal(t, nums, numsCopy)
+	fmt.Println(nums)
+	fmt.Println(numsCopy)
+}
+
+func BenchmarkSort(b *testing.B) {
+	nums := GenerateSlice(10, 10000)
+	numsCopy := make([]int, len(nums))
+	copy(numsCopy, nums)
+	b.Run("builtin sort", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			slices.Sort(nums)
+		}
+	})
+	b.Run("my quick sort", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			quickSort_(numsCopy)
+		}
+	})
 }

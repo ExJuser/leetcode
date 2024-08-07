@@ -3,6 +3,7 @@ package common
 import (
 	"container/heap"
 	"math"
+	"math/rand/v2"
 )
 
 type minHeap [][3]int
@@ -382,4 +383,57 @@ func findCheapestPrice(n int, flights [][]int, src int, dst int, k int) int {
 		}
 	}
 	return -1
+}
+
+// 114. 二叉树展开为链表
+func flatten(root *TreeNode) {
+	var dfs func(node *TreeNode) *TreeNode
+	var findMostRight func(node *TreeNode) *TreeNode
+	dfs = func(node *TreeNode) *TreeNode {
+		if node == nil || node.Left == nil && node.Right == nil {
+			return node
+		}
+		left := dfs(node.Left)
+		right := dfs(node.Right)
+		node.Right = left
+		mostRight := findMostRight(node)
+		mostRight.Right = right
+		node.Left = nil
+		return node
+	}
+	findMostRight = func(node *TreeNode) *TreeNode {
+		for node.Right != nil {
+			node = node.Right
+		}
+		return node
+	}
+	dfs(root)
+}
+
+func quickSort_(nums []int) []int {
+	var helper func(left, right int)
+	helper = func(left, right int) {
+		if left >= right {
+			return
+		}
+		i, j := left, right
+		pivot := nums[rand.IntN(right-left+1)+left]
+		for i <= j {
+			for nums[i] < pivot {
+				i++
+			}
+			for nums[j] > pivot {
+				j--
+			}
+			if i <= j {
+				nums[i], nums[j] = nums[j], nums[i]
+				i++
+				j--
+			}
+		}
+		helper(left, j)
+		helper(i, right)
+	}
+	helper(0, len(nums)-1)
+	return nums
 }

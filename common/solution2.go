@@ -781,24 +781,24 @@ func sumRootToLeaf(root *TreeNode) int {
 }
 
 // 494. 目标和 回溯做法非常慢
-func findTargetSumWays(nums []int, target int) int {
-	var dfs func(index, sum int)
-	var ans int
-	dfs = func(index, sum int) {
-		if index == len(nums) {
-			if sum == target {
-				ans++
-			}
-			return
-		}
-		//加法
-		dfs(index+1, sum+nums[index])
-		//减法
-		dfs(index+1, sum-nums[index])
-	}
-	dfs(0, 0)
-	return ans
-}
+//func findTargetSumWays(nums []int, target int) int {
+//	var dfs func(index, sum int)
+//	var ans int
+//	dfs = func(index, sum int) {
+//		if index == len(nums) {
+//			if sum == target {
+//				ans++
+//			}
+//			return
+//		}
+//		//加法
+//		dfs(index+1, sum+nums[index])
+//		//减法
+//		dfs(index+1, sum-nums[index])
+//	}
+//	dfs(0, 0)
+//	return ans
+//}
 
 func zigzagLevelOrder(root *TreeNode) (ans [][]int) {
 	if root == nil {

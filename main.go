@@ -934,9 +934,3 @@ func electricCarPlan(paths [][]int, cnt int, start int, end int, charge []int) i
 	}
 	return -1
 }
-
-func main() {
-	electricCarPlan([][]int{
-		{1, 3, 3}, {3, 2, 1}, {2, 1, 3}, {0, 1, 4}, {3, 0, 5},
-	}, 6, 1, 0, []int{2, 10, 4, 1})
-}

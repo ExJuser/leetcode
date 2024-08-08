@@ -55,20 +55,20 @@ func mergeKLists(lists []*ListNode) *ListNode {
 }
 
 // 69. x 的平方根
-func mySqrt(x int) int {
-	left, right := 0, x
-	ans := 0
-	for left <= right {
-		mid := (right-left)/2 + left
-		if mid*mid <= x {
-			ans = mid
-			right = mid - 1
-		} else {
-			left = mid + 1
-		}
-	}
-	return ans
-}
+//func mySqrt(x int) int {
+//	left, right := 0, x
+//	ans := 0
+//	for left <= right {
+//		mid := (right-left)/2 + left
+//		if mid*mid <= x {
+//			ans = mid
+//			right = mid - 1
+//		} else {
+//			left = mid + 1
+//		}
+//	}
+//	return ans
+//}
 
 // 34. 在排序数组中查找元素的第一个和最后一个位置
 func searchRangeBinary(nums []int, target int) []int {

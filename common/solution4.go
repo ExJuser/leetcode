@@ -4,6 +4,9 @@ import (
 	"container/heap"
 	"math"
 	"math/rand/v2"
+	"slices"
+	"strconv"
+	"strings"
 )
 
 type minHeap [][3]int
@@ -436,4 +439,243 @@ func quickSort_(nums []int) []int {
 	}
 	helper(0, len(nums)-1)
 	return nums
+}
+
+type Node struct {
+	Val    int
+	Next   *Node
+	Random *Node
+}
+
+func copyRandomList(head *Node) *Node {
+	//建立原链表和新链表之间节点的映射关系
+	mp := make(map[*Node]*Node)
+	dummy := &Node{}
+	for p, q := head, dummy; p != nil; p = p.Next {
+		q.Next = &Node{
+			Val: p.Val,
+		}
+		q = q.Next
+		mp[p] = q
+	}
+	for p, q := head, dummy.Next; p != nil && q != nil; p, q = p.Next, q.Next {
+		q.Random = mp[p.Random]
+	}
+	return dummy.Next
+}
+
+// 151. 反转字符串中的单词
+func reverseWords(s string) string {
+	//遇到非空格向后遍历 遇到空格加入slice
+	//遇到空格 向后遍历直到非空格
+	strs := make([]string, 0, len(s))
+	for i := 0; i < len(s); {
+		j := i + 1
+		if s[i] == ' ' {
+			for j < len(s) && s[j] == ' ' {
+				j++
+			}
+		} else {
+			for j < len(s) && s[j] != ' ' {
+				j++
+			}
+			strs = append(strs, s[i:j])
+		}
+		i = j
+	}
+	slices.Reverse(strs)
+	return strings.Join(strs, " ")
+}
+
+// 19. 删除链表的倒数第 N 个结点 快慢指针
+func removeNthFromEnd(head *ListNode, n int) *ListNode {
+	dummy := &ListNode{Next: head}
+	slow, fast := dummy, dummy
+	for ; n > 0; n-- {
+		fast = fast.Next
+	}
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next
+	}
+	slow.Next = slow.Next.Next
+	return dummy.Next
+}
+
+// 54. 螺旋矩阵
+func spiralOrder(matrix [][]int) (ans []int) {
+	left, right := 0, len(matrix[0])-1
+	top, bottom := 0, len(matrix)-1
+	for left < right && top < bottom {
+		for i := left; i <= right; i++ {
+			ans = append(ans, matrix[top][i])
+		}
+		top++
+		for i := top; i <= bottom; i++ {
+			ans = append(ans, matrix[i][right])
+		}
+		right--
+		for i := right; i >= left; i-- {
+			ans = append(ans, matrix[bottom][i])
+		}
+		bottom--
+		for i := bottom; i >= top; i-- {
+			ans = append(ans, matrix[i][left])
+		}
+		left++
+	}
+	if left == right {
+		for i := top; i <= bottom; i++ {
+			ans = append(ans, matrix[i][left])
+		}
+	} else if top == bottom {
+		for i := left; i <= right; i++ {
+			ans = append(ans, matrix[top][i])
+		}
+	}
+	return
+}
+
+//	func permute(nums []int) (ans [][]int) {
+//		//不含重复数字的全排列
+//		visited := make([]bool, len(nums))
+//		var dfs func(path []int)
+//		dfs = func(path []int) {
+//			if len(path) == len(nums) {
+//				ans = append(ans, append([]int{}, path...))
+//				return
+//			}
+//			for i := 0; i < len(nums); i++ {
+//				if !visited[i] {
+//					visited[i] = true
+//					path = append(path, nums[i])
+//					dfs(path)
+//					visited[i] = false
+//					path = path[:len(path)-1]
+//				}
+//			}
+//		}
+//		dfs([]int{})
+//		return
+//	}
+//
+// 最长回文子串
+func longestPalindrome(s string) string {
+	dp := make([][]bool, len(s))
+	for i := 0; i < len(s); i++ {
+		dp[i] = make([]bool, len(s))
+	}
+	for i := 0; i < len(s); i++ {
+		dp[i][i] = true
+	}
+	ans := s[0:1]
+	for i := len(s) - 1; i >= 0; i-- {
+		for j := i; j < len(s); j++ {
+			if s[i] == s[j] {
+				if j-i <= 1 || dp[i+1][j-1] {
+					dp[i][j] = true
+					if j-i+1 > len(ans) {
+						ans = s[i : j+1]
+					}
+				}
+			}
+		}
+	}
+	return ans
+}
+
+// 3. 无重复字符的最长子串
+func lengthOfLongestSubstring(s string) int {
+	var left, ans int
+	mp := map[byte]int{}
+	for right := 0; right < len(s); right++ {
+		mp[s[right]]++
+		for ; len(mp) < right-left+1; left++ {
+			mp[s[left]]--
+			if mp[s[left]] == 0 {
+				delete(mp, s[left])
+			}
+		}
+		ans = max(ans, right-left+1)
+	}
+	return ans
+}
+
+// 迭代
+func reverseList(head *ListNode) *ListNode {
+	var pre *ListNode
+	for cur := head; cur != nil; {
+		nxt := cur.Next
+		cur.Next = pre
+		cur, pre = nxt, cur
+	}
+	return pre
+}
+
+func reverseListRecursive(head *ListNode) *ListNode {
+	var dfs func(node *ListNode) *ListNode
+	dfs = func(node *ListNode) *ListNode {
+		if node == nil || node.Next == nil {
+			return node
+		}
+		newHead := dfs(node.Next)
+		node.Next.Next = node
+		node.Next = nil
+		return newHead
+	}
+	return dfs(head)
+}
+
+func restoreIpAddresses(s string) (ans []string) {
+	var check func(left, right int) bool
+	//check直接传入left和right比较好
+	check = func(left, right int) bool {
+		if left > right || right >= len(s) {
+			return false
+		}
+		str := s[left : right+1]
+		if str[0] == '0' {
+			return len(str) == 1
+		}
+		num, _ := strconv.Atoi(str)
+		return num <= 255 && num >= 0
+	}
+	var dfs func(left, right int, path []string)
+	dfs = func(left, right int, path []string) {
+		if right == len(s) && len(path) == 4 {
+			ans = append(ans, strings.Join(path, "."))
+			return
+		}
+
+		//选择不切割 只有right-left满足条件的情况下才可以不切割
+		//而且right不能为最后一位
+		if right-left <= 1 && right != len(s)-1 {
+			dfs(left, right+1, path)
+		}
+
+		//选择切割 此时已经切割的份数不能超过3
+		if check(left, right) && len(path) <= 3 {
+			path = append(path, s[left:right+1])
+			dfs(right+1, right+1, path)
+			path = path[:len(path)-1]
+		}
+	}
+	dfs(0, 0, []string{})
+	return
+}
+
+func mySqrt(x int) int {
+	left, right := 0, x
+	var ans int
+	for left <= right {
+		mid := (right-left)/2 + left
+		res := mid * mid
+		if res <= x {
+			ans = mid
+			left = mid + 1
+		} else {
+			right = mid - 1
+		}
+	}
+	return ans
 }

@@ -122,39 +122,39 @@ func longestPalindrome(s string) string {
 	return ans
 }
 
-// 93. 复原 IP 地址 回溯插入三个点/找到三个切割位置
-func restoreIpAddresses(s string) (ans []string) {
-	//如何判断是否合法：切割出来的数字处于0-255 不能有前导0
-	var dfs func(pre, cur int, path []string)
-	var check func(str string) bool
-	check = func(str string) bool {
-		//如果首位是0 那他必须是零本身
-		if str[0] == '0' {
-			return len(str) == 1
-		}
-		val, _ := strconv.Atoi(str)
-		return val >= 0 && val <= 255
-	}
-	dfs = func(pre, cur int, path []string) {
-		if cur == len(s) {
-			if len(path) == 4 && cur == pre {
-				ans = append(ans, strings.Join(path, "."))
-			}
-			return
-		}
-		//切割
-		//判断是否合法
-		if check(s[pre : cur+1]) {
-			path = append(path, s[pre:cur+1])
-			dfs(cur+1, cur+1, path)
-			path = path[:len(path)-1]
-		}
-		//不切割
-		dfs(pre, cur+1, path)
-	}
-	dfs(0, 0, []string{})
-	return
-}
+//// 93. 复原 IP 地址 回溯插入三个点/找到三个切割位置
+//func restoreIpAddresses(s string) (ans []string) {
+//	//如何判断是否合法：切割出来的数字处于0-255 不能有前导0
+//	var dfs func(pre, cur int, path []string)
+//	var check func(str string) bool
+//	check = func(str string) bool {
+//		//如果首位是0 那他必须是零本身
+//		if str[0] == '0' {
+//			return len(str) == 1
+//		}
+//		val, _ := strconv.Atoi(str)
+//		return val >= 0 && val <= 255
+//	}
+//	dfs = func(pre, cur int, path []string) {
+//		if cur == len(s) {
+//			if len(path) == 4 && cur == pre {
+//				ans = append(ans, strings.Join(path, "."))
+//			}
+//			return
+//		}
+//		//切割
+//		//判断是否合法
+//		if check(s[pre : cur+1]) {
+//			path = append(path, s[pre:cur+1])
+//			dfs(cur+1, cur+1, path)
+//			path = path[:len(path)-1]
+//		}
+//		//不切割
+//		dfs(pre, cur+1, path)
+//	}
+//	dfs(0, 0, []string{})
+//	return
+//}
 
 func addStrings(num1 string, num2 string) string {
 	carry := 0
@@ -933,4 +933,71 @@ func electricCarPlan(paths [][]int, cnt int, start int, end int, charge []int) i
 		}
 	}
 	return -1
+}
+
+// 151. 反转字符串中的单词
+func reverseWords(s string) string {
+	//遇到非空格向后遍历 遇到空格加入slice
+	//遇到空格 向后遍历直到非空格
+	strs := make([]string, 0, len(s))
+	for i := 0; i < len(s); {
+		if s[i] == ' ' {
+			j := i + 1
+			for j < len(s) && s[j] == ' ' {
+				j++
+			}
+			i = j
+		} else {
+			j := i + 1
+			for j < len(s) && s[j] != ' ' {
+				j++
+			}
+			strs = append(strs, s[i:j])
+			i = j
+		}
+	}
+	fmt.Println(strs)
+	return ""
+}
+
+// 93. 复原 IP 地址
+func restoreIpAddresses(s string) (ans []string) {
+	var check func(left, right int) bool
+	//check直接传入left和right比较好
+	check = func(left, right int) bool {
+		if left > right || right >= len(s) {
+			return false
+		}
+		str := s[left : right+1]
+		if str[0] == '0' {
+			return len(str) == 1
+		}
+		num, _ := strconv.Atoi(str)
+		return num <= 255 && num >= 0
+	}
+	var dfs func(left, right int, path []string)
+	dfs = func(left, right int, path []string) {
+		if right == len(s) && len(path) == 4 {
+			ans = append(ans, strings.Join(path, "."))
+			return
+		}
+
+		//选择不切割 只有right-left满足条件的情况下才可以不切割
+		//而且right不能为最后一位
+		if right-left <= 1 && right != len(s)-1 {
+			dfs(left, right+1, path)
+		}
+
+		//选择切割 此时已经切割的份数不能超过3
+		if check(left, right) && len(path) <= 3 {
+			path = append(path, s[left:right+1])
+			dfs(right+1, right+1, path)
+			path = path[:len(path)-1]
+		}
+	}
+	dfs(0, 0, []string{})
+	return
+}
+func main() {
+	fmt.Println(restoreIpAddresses("25525511135"))
 }

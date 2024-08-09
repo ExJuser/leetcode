@@ -87,3 +87,10 @@ func BenchmarkSort(b *testing.B) {
 		}
 	})
 }
+
+func TestReverseWords(t *testing.T) {
+	t.Log(reverseWords3("Let's take LeetCode contest"))
+}
+func TestRemoveOccurrences(t *testing.T) {
+	t.Log(removeOccurrences("daabcbaabcbc", "abc"))
+}

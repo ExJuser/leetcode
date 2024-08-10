@@ -928,3 +928,53 @@ func minCameraCover(root *TreeNode) int {
 	}
 	return ans
 }
+
+// 2477. 到达首都的最少油耗 拓扑排序
+func minimumFuelCost(roads [][]int, seats int) int64 {
+	//n个城市
+	n := len(roads) + 1
+	graph := make([]map[int]struct{}, n)
+	weights := make([]int, n)
+	for i := 0; i < n; i++ {
+		graph[i] = make(map[int]struct{})
+		weights[i] = 1
+	}
+	inDegrees := make(map[int]int)
+	for _, road := range roads {
+		//双向路 无向图
+		from, to := road[0], road[1]
+		graph[from][to] = struct{}{}
+		graph[to][from] = struct{}{}
+		//因此两个城市的入度都++
+		inDegrees[from]++
+		inDegrees[to]++
+	}
+	//入度为1的先入队列 但是首都不能加入
+	queue := make([]int, 0, n)
+	for k, v := range inDegrees {
+		if v == 1 && k != 0 {
+			queue = append(queue, k)
+		}
+	}
+	var cost int64
+	for len(queue) > 0 {
+		//出队
+		city := queue[0]
+		queue = queue[1:]
+		//找到这座城市所联通的城市 其实只有一座城市
+		var toCity int
+		for c, _ := range graph[city] {
+			toCity = c
+		}
+		//向上取整
+		cost += int64((weights[city] + seats - 1) / seats)
+		weights[toCity] += weights[city]
+		inDegrees[toCity]--
+		delete(graph[city], toCity)
+		delete(graph[toCity], city)
+		if inDegrees[toCity] == 1 && toCity != 0 {
+			queue = append(queue, toCity)
+		}
+	}
+	return cost
+}

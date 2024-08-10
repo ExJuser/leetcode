@@ -691,25 +691,25 @@ func rotate_(matrix [][]int) {
 	}
 }
 
-func pathSum(root *TreeNode, targetSum int) (ans [][]int) {
-	var dfs func(node *TreeNode, sum int, path []int)
-	dfs = func(node *TreeNode, sum int, path []int) {
-		if node == nil {
-			return
-		}
-		sum += node.Val
-		path = append(path, node.Val)
-		if node.Left == nil && node.Right == nil {
-			if sum == targetSum {
-				ans = append(ans, append([]int{}, path...))
-			}
-		}
-		dfs(node.Left, sum, path)
-		dfs(node.Right, sum, path)
-	}
-	dfs(root, 0, []int{})
-	return
-}
+//func pathSum(root *TreeNode, targetSum int) (ans [][]int) {
+//	var dfs func(node *TreeNode, sum int, path []int)
+//	dfs = func(node *TreeNode, sum int, path []int) {
+//		if node == nil {
+//			return
+//		}
+//		sum += node.Val
+//		path = append(path, node.Val)
+//		if node.Left == nil && node.Right == nil {
+//			if sum == targetSum {
+//				ans = append(ans, append([]int{}, path...))
+//			}
+//		}
+//		dfs(node.Left, sum, path)
+//		dfs(node.Right, sum, path)
+//	}
+//	dfs(root, 0, []int{})
+//	return
+//}
 
 // 100. 相同的树
 func isSameTree(p *TreeNode, q *TreeNode) bool {

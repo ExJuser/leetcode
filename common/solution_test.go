@@ -87,3 +87,9 @@ func BenchmarkSort(b *testing.B) {
 		}
 	})
 }
+
+func TestMinimumFuelCost(t *testing.T) {
+	t.Log(minimumFuelCost([][]int{
+		{0, 1}, {1, 2},
+	}, 3))
+}

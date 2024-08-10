@@ -786,7 +786,8 @@ func predictTheWinner(nums []int) bool {
 	return dp[0][n-1] >= sum-dp[0][n-1]
 }
 
-// 877. 石子游戏
+// 877. 石子游戏 博弈论 每个人都会做出让对方最差的选择
+// 存在数学解法
 func stoneGame(nums []int) bool {
 	n := len(nums)
 	dp := make([][]int, n)
@@ -807,4 +808,75 @@ func stoneGame(nums []int) bool {
 		}
 	}
 	return dp[0][n-1] >= sum-dp[0][n-1]
+}
+
+// 1373. 二叉搜索子树的最大键值和 树形dp
+// 综合子节点的信息 向上返回 可能需要返回很多信息
+func maxSumBST(root *TreeNode) int {
+	//左子树是BST而且右子树是BST 而且满足值的关系 那么当前子树就是二叉搜索子树
+	//因此需要返回 isBST max min sum
+	//空节点返回 true math.min math.max 0
+	var ans int
+	var dfs func(node *TreeNode) (isBST bool, max_, min_, ans int)
+	dfs = func(node *TreeNode) (isBST bool, max_, min_, sum int) {
+		if node == nil {
+			return true, math.MinInt, math.MaxInt, 0
+		}
+		isLeftBST, leftMax, leftMin, leftSum := dfs(node.Left)
+		isRightBST, rightMax, rightMin, rightSum := dfs(node.Right)
+		max_ = max(leftMax, rightMax, node.Val)
+		min_ = min(leftMin, rightMin, node.Val)
+		isBST = isLeftBST && isRightBST && (node.Val > leftMax && node.Val < rightMin)
+		if isBST {
+			sum = leftSum + rightSum + node.Val
+		} else {
+			sum = max(leftSum, rightSum)
+		}
+		ans = max(ans, sum)
+		return
+	}
+	dfs(root)
+	return ans
+}
+
+// 543. 二叉树的直径 最简单的树形dp
+func diameterOfBinaryTree(root *TreeNode) int {
+	var dfs func(node *TreeNode) int
+	var ans int
+	dfs = func(node *TreeNode) int {
+		if node == nil {
+			return 0
+		}
+		left, right := dfs(node.Left), dfs(node.Right)
+		ans = max(ans, left+right)
+		return max(left, right) + 1
+	}
+	dfs(root)
+	return ans
+}
+
+// 只能解决一枚硬币占一次移动次数的题目
+func distributeCoins(root *TreeNode) int {
+	//一个父节点需要负责将左右子树的硬币全变成1
+	//如果子树的硬币大于1 那么要给父结点
+	//如果子树硬币为0 要从父结点拿走 一个
+	var dfs func(node *TreeNode)
+	var ans int
+	dfs = func(node *TreeNode) {
+		if node == nil {
+			return
+		}
+		dfs(node.Left)
+		dfs(node.Right)
+		if node.Left != nil {
+			node.Val += node.Left.Val - 1
+			ans += Abs(node.Left.Val - 1)
+		}
+		if node.Right != nil {
+			node.Val += node.Right.Val - 1
+			ans += Abs(node.Right.Val - 1)
+		}
+	}
+	dfs(root)
+	return ans
 }

@@ -855,6 +855,7 @@ func diameterOfBinaryTree(root *TreeNode) int {
 	return ans
 }
 
+// 979. 在二叉树中分配硬币
 // 只能解决一枚硬币占一次移动次数的题目
 func distributeCoins(root *TreeNode) int {
 	//一个父节点需要负责将左右子树的硬币全变成1
@@ -878,5 +879,52 @@ func distributeCoins(root *TreeNode) int {
 		}
 	}
 	dfs(root)
+	return ans
+}
+
+// 337. 打家劫舍 III
+func rob(root *TreeNode) int {
+	//左右子树偷了任意一个就不能偷
+	//返回偷当前节点和不偷当前节点的值
+	var dfs func(node *TreeNode) (int, int)
+	dfs = func(node *TreeNode) (int, int) {
+		if node == nil {
+			return 0, 0
+		}
+		leftRob, leftNotRob := dfs(node.Left)
+		rightRob, rightNotRob := dfs(node.Right)
+		robbed := leftNotRob + rightNotRob + node.Val
+		notRobbed := max(leftRob, leftNotRob) + max(rightRob, rightNotRob)
+		return robbed, notRobbed
+	}
+	a, b := dfs(root)
+	return max(a, b)
+}
+
+// 968. 监控二叉树
+func minCameraCover(root *TreeNode) int {
+	//向上返回自己有没有放置摄像头，和有没有被监控到，当前子树的摄像头数目
+	var dfs func(node *TreeNode) (bool, bool, int)
+	dfs = func(node *TreeNode) (bool, bool, int) {
+		if node == nil {
+			return false, true, 0
+		}
+		leftCamera, leftCovered, leftCameraCount := dfs(node.Left)
+		rightCamera, rightCovered, rightCameraCount := dfs(node.Right)
+		//如果左右有一个没有被监控 那么当前节点必须放摄像头
+		if !leftCovered || !rightCovered {
+			return true, true, leftCameraCount + rightCameraCount + 1
+		}
+		//如果都被监控了 但是都没有放摄像头 由上层来放
+		if !leftCamera && !rightCamera {
+			return false, false, leftCameraCount + rightCameraCount
+		} else { //有一个放了摄像头 当前节点就被监控到 同样无需放摄像头
+			return false, true, leftCameraCount + rightCameraCount
+		}
+	}
+	_, covered, ans := dfs(root)
+	if !covered {
+		return ans + 1
+	}
 	return ans
 }

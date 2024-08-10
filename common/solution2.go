@@ -121,16 +121,16 @@ func detectCycle(head *ListNode) *ListNode {
 }
 
 // 198. 打家劫舍
-func rob(nums []int) int {
-	if len(nums) <= 2 {
-		return slices.Max(nums)
-	}
-	dp1, dp2 := nums[0], max(nums[0], nums[1])
-	for i := 2; i < len(nums); i++ {
-		dp1, dp2 = dp2, max(dp1+nums[i], dp2)
-	}
-	return dp2
-}
+//func rob(nums []int) int {
+//	if len(nums) <= 2 {
+//		return slices.Max(nums)
+//	}
+//	dp1, dp2 := nums[0], max(nums[0], nums[1])
+//	for i := 2; i < len(nums); i++ {
+//		dp1, dp2 = dp2, max(dp1+nums[i], dp2)
+//	}
+//	return dp2
+//}
 
 func twoSum(nums []int, target int) []int {
 	mp := make(map[int]int, len(nums))

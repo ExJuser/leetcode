@@ -266,13 +266,6 @@ func electricCarPlan(paths [][]int, cnt int, start int, end int, charge []int) i
 			if curCnt < cnt {
 				chargedTime := curTime + charge[curLocation]
 				chargedCnt := curCnt + 1
-				//如果在这个城市、当前时间、当前电量的状态之前没有访问过
-				//if !visited[tuple{curLocation, chargedTime, chargedCnt}] {
-				//	if cost[curLocation][chargedCnt] > chargedTime {
-				//		cost[curLocation][chargedCnt] = chargedTime
-				//		heap.Push(hp, [3]int{curLocation, chargedTime, chargedCnt})
-				//	}
-				//}
 				//判断是否访问过其实是不需要的 在出堆的时候会判断
 				if cost[curLocation][chargedCnt] > chargedTime {
 					cost[curLocation][chargedCnt] = chargedTime
@@ -292,12 +285,6 @@ func electricCarPlan(paths [][]int, cnt int, start int, end int, charge []int) i
 						cost[nextLocation][arriveCnt] = arriveTime
 						heap.Push(hp, [3]int{nextLocation, arriveTime, arriveCnt})
 					}
-					//if !visited[tuple{nextLocation, arriveTime, arriveCnt}] {
-					//	if cost[nextLocation][arriveCnt] > arriveTime {
-					//		cost[nextLocation][arriveCnt] = arriveTime
-					//		heap.Push(hp, [3]int{nextLocation, arriveTime, arriveCnt})
-					//	}
-					//}
 				}
 			}
 		}
@@ -696,7 +683,7 @@ func reverseWords3(s string) string {
 	return string(bytes)
 }
 
-// 64. 最小路径和
+// 64. 最小路径和 动态规划
 func minPathSum(grid [][]int) int {
 	dp := make([][]int, len(grid))
 	for i := 0; i < len(grid); i++ {
@@ -715,4 +702,109 @@ func minPathSum(grid [][]int) int {
 		}
 	}
 	return dp[len(grid)-1][len(grid[0])-1]
+}
+
+// 1312. 让字符串成为回文串的最少插入次数 区间dp
+// 1312. 让字符串成为回文串的最少插入次数
+func minInsertions(s string) int {
+	n := len(s)
+	dp := make([][]int, n)
+	for i := 0; i < n; i++ {
+		dp[i] = make([]int, n)
+	}
+	for i := n - 1; i >= 0; i-- {
+		for j := i; j < n; j++ {
+			if i == j {
+				dp[i][j] = 0
+			} else if i+1 == j {
+				if s[i] == s[j] {
+					dp[i][j] = 0
+				} else {
+					dp[i][j] = 1
+				}
+			} else {
+				if s[i] == s[j] {
+					dp[i][j] = dp[i+1][j-1]
+				} else {
+					dp[i][j] = min(dp[i+1][j], dp[i][j-1]) + 1
+				}
+			}
+		}
+	}
+	return dp[0][n-1]
+}
+
+// 516. 最长回文子序列
+func longestPalindromeSubseq(s string) int {
+	n := len(s)
+	dp := make([][]int, n)
+	for i := 0; i < n; i++ {
+		dp[i] = make([]int, n)
+	}
+	for i := n - 1; i >= 0; i-- {
+		for j := i; j < n; j++ {
+			if i == j {
+				dp[i][j] = 1
+			} else if i+1 == j {
+				if s[i] == s[j] {
+					dp[i][j] = 2
+				} else {
+					dp[i][j] = 1
+				}
+			} else {
+				if s[i] == s[j] {
+					dp[i][j] = dp[i+1][j-1] + 2
+				} else {
+					dp[i][j] = max(dp[i+1][j], dp[i][j-1])
+				}
+			}
+		}
+	}
+	return dp[0][n-1]
+}
+
+// 486. 预测赢家 博弈论 每个人都会做出让对方最差的选择
+func predictTheWinner(nums []int) bool {
+	n := len(nums)
+	dp := make([][]int, n)
+	var sum int
+	for i := 0; i < n; i++ {
+		dp[i] = make([]int, n)
+		sum += nums[i]
+	}
+	for i := n - 1; i >= 0; i-- {
+		for j := i; j < n; j++ {
+			if i == j {
+				dp[i][j] = nums[i]
+			} else if i+1 == j {
+				dp[i][j] = max(nums[i], nums[j])
+			} else {
+				dp[i][j] = max(nums[i]+min(dp[i+2][j], dp[i+1][j-1]), nums[j]+min(dp[i][j-2], dp[i+1][j-1]))
+			}
+		}
+	}
+	return dp[0][n-1] >= sum-dp[0][n-1]
+}
+
+// 877. 石子游戏
+func stoneGame(nums []int) bool {
+	n := len(nums)
+	dp := make([][]int, n)
+	var sum int
+	for i := 0; i < n; i++ {
+		dp[i] = make([]int, n)
+		sum += nums[i]
+	}
+	for i := n - 1; i >= 0; i-- {
+		for j := i; j < n; j++ {
+			if i == j {
+				dp[i][j] = nums[i]
+			} else if i+1 == j {
+				dp[i][j] = max(nums[i], nums[j])
+			} else {
+				dp[i][j] = max(nums[i]+min(dp[i+2][j], dp[i+1][j-1]), nums[j]+min(dp[i][j-2], dp[i+1][j-1]))
+			}
+		}
+	}
+	return dp[0][n-1] >= sum-dp[0][n-1]
 }

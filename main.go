@@ -998,6 +998,3 @@ func restoreIpAddresses(s string) (ans []string) {
 	dfs(0, 0, []string{})
 	return
 }
-func main() {
-	fmt.Println(restoreIpAddresses("25525511135"))
-}

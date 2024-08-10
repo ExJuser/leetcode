@@ -978,3 +978,57 @@ func minimumFuelCost(roads [][]int, seats int) int64 {
 	}
 	return cost
 }
+
+// 2246. 相邻字符不同的最长路径 拓扑排序写成的屎山
+func longestPath(parent []int, s string) int {
+	//向上返回最长的无重复序列长度
+	//父结点选两个最大的作为答案
+	n := len(parent)
+	graph := make([]map[int]struct{}, n)
+	for i := 0; i < n; i++ {
+		graph[i] = make(map[int]struct{})
+	}
+	inDegree := make(map[int]int)
+	for from, p := range parent {
+		to := p
+		if to != -1 {
+			graph[to][from] = struct{}{}
+			inDegree[to]++
+		}
+	}
+	var dfs func(i int) int
+	var ans int
+	dfs = func(i int) int {
+		//递归出口：叶子结点
+		if inDegree[i] == 0 {
+			delete(inDegree, i)
+			ans = max(ans, 1)
+			return 1
+		}
+		var maxLen int
+		//遍历他的子节点 前提是相邻元素不同
+		lengths := make([]int, 0, len(graph[i]))
+		for k, _ := range graph[i] {
+			//相邻元素不同
+			if s[k] != s[i] {
+				dfsk := dfs(k)
+				lengths = append(lengths, dfsk)
+				maxLen = max(maxLen, dfsk)
+			} else {
+				dfs(k)
+			}
+			inDegree[i]--
+		}
+		slices.SortFunc(lengths, func(a, b int) int {
+			return b - a
+		})
+		res := 0
+		for j := 0; j < min(len(lengths), 2); j++ {
+			res += lengths[j]
+		}
+		ans = max(ans, res+1)
+		return maxLen + 1
+	}
+	dfs(0)
+	return ans
+}

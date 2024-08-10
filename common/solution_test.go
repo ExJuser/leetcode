@@ -93,3 +93,6 @@ func TestMinimumFuelCost(t *testing.T) {
 		{0, 1}, {1, 2},
 	}, 3))
 }
+func TestLongestPath(t *testing.T) {
+	t.Log(longestPath([]int{-1, 0, 1}, "aab"))
+}

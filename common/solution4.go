@@ -983,7 +983,7 @@ func minimumFuelCost(roads [][]int, seats int) int64 {
 func longestPath(parent []int, s string) int {
 	n := len(parent)
 	graph := make([][]int, n)
-	for from := 1; from < len(parent); from++ {
+	for from := 1; from < n; from++ {
 		to := parent[from]
 		graph[to] = append(graph[to], from)
 	}

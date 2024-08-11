@@ -96,3 +96,7 @@ func TestMinimumFuelCost(t *testing.T) {
 func TestLongestPath(t *testing.T) {
 	t.Log(longestPath([]int{-1, 0, 1}, "aab"))
 }
+
+func TestMaxUncrossedLines(t *testing.T) {
+	t.Log(maxUncrossedLines([]int{1, 4, 2}, []int{1, 2, 4}))
+}

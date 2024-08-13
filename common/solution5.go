@@ -1,5 +1,11 @@
 package common
 
+import (
+	"slices"
+	"strconv"
+	"strings"
+)
+
 // 2684. 矩阵中移动的最大次数 普通二维dp
 func maxMoves(grid [][]int) int {
 	dp := make([][]int, len(grid))
@@ -203,4 +209,29 @@ func maxUncrossedLines(nums1 []int, nums2 []int) int {
 		}
 	}
 	return dp[len(nums1)-1][len(nums2)-1]
+}
+
+// 179. 最大数
+func largestNumber(nums []int) string {
+	slices.SortFunc(nums, func(a, b int) int {
+		strA := strconv.Itoa(a)
+		strB := strconv.Itoa(b)
+		return strings.Compare(strB+strA, strA+strB)
+	})
+	sb := strings.Builder{}
+	for _, num := range nums {
+		sb.WriteString(strconv.Itoa(num))
+	}
+	str := sb.String()
+	//去掉前导0 找到第一个非零索引
+	var i int
+	if str[0] == '0' && len(str) > 1 {
+		for i < len(str) && str[i] == '0' {
+			i++
+		}
+	}
+	if i == len(str) {
+		return "0"
+	}
+	return str[i:]
 }

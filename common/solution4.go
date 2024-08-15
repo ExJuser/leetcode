@@ -5,7 +5,6 @@ import (
 	"math"
 	"math/rand/v2"
 	"slices"
-	"strings"
 )
 
 type minHeap [][3]int
@@ -451,27 +450,27 @@ func copyRandomList(head *Node) *Node {
 }
 
 // 151. 反转字符串中的单词
-func reverseWords(s string) string {
-	//遇到非空格向后遍历 遇到空格加入slice
-	//遇到空格 向后遍历直到非空格
-	strs := make([]string, 0, len(s))
-	for i := 0; i < len(s); {
-		j := i + 1
-		if s[i] == ' ' {
-			for j < len(s) && s[j] == ' ' {
-				j++
-			}
-		} else {
-			for j < len(s) && s[j] != ' ' {
-				j++
-			}
-			strs = append(strs, s[i:j])
-		}
-		i = j
-	}
-	slices.Reverse(strs)
-	return strings.Join(strs, " ")
-}
+//func reverseWords(s string) string {
+//	//遇到非空格向后遍历 遇到空格加入slice
+//	//遇到空格 向后遍历直到非空格
+//	strs := make([]string, 0, len(s))
+//	for i := 0; i < len(s); {
+//		j := i + 1
+//		if s[i] == ' ' {
+//			for j < len(s) && s[j] == ' ' {
+//				j++
+//			}
+//		} else {
+//			for j < len(s) && s[j] != ' ' {
+//				j++
+//			}
+//			strs = append(strs, s[i:j])
+//		}
+//		i = j
+//	}
+//	slices.Reverse(strs)
+//	return strings.Join(strs, " ")
+//}
 
 // 19. 删除链表的倒数第 N 个结点 快慢指针
 func removeNthFromEnd(head *ListNode, n int) *ListNode {

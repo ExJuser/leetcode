@@ -591,3 +591,112 @@ func compareVersion(version1 string, version2 string) int {
 	}
 	return 0
 }
+
+func firstMissingPositive(nums []int) int {
+	for i := 0; i < len(nums); i++ {
+		for nums[i] > 0 && nums[i] < len(nums) && nums[nums[i]-1] != nums[i] {
+			nums[i], nums[nums[i]-1] = nums[nums[i]-1], nums[i]
+		}
+	}
+	for i := 0; i < len(nums); i++ {
+		if nums[i] != i+1 {
+			return i + 1
+		}
+	}
+	return len(nums) + 1
+}
+
+// 先用栈模拟一遍找到不合法的括号位置
+func longestValidParentheses(s string) int {
+	stack := make([]int, 0, len(s))
+	for i, ch := range s {
+		if ch == '(' {
+			stack = append(stack, i)
+		} else {
+			if len(stack) > 0 && s[stack[len(stack)-1]] == '(' {
+				stack = stack[:len(stack)-1]
+			} else {
+				stack = append(stack, i)
+			}
+		}
+	}
+	//遍历一遍得到不合法的位置
+	sequence := make([]int, len(s))
+	for i := 0; i < len(stack); i++ {
+		sequence[stack[i]] = 1
+	}
+	//寻找最长的i序列
+	var ans int
+	var length int
+	for i := 0; i < len(sequence); i++ {
+		if sequence[i] == 0 {
+			length++
+			ans = max(ans, length)
+		} else {
+			length = 0
+		}
+	}
+	return ans
+}
+
+func reverseWords(s string) string {
+	//遇到空格就向后找到第一个非空格
+	//遇到非空格就向后找到第一个空格
+	strs := make([]string, 0, len(s))
+	var i int
+	for i < len(s) {
+		if s[i] == ' ' {
+			for i < len(s) && s[i] == ' ' {
+				i++
+			} //出来之后要么是非空格要么结束
+		} else { //非空格
+			//向后找到第一个空格
+			j := i
+			for j < len(s) && s[j] != ' ' {
+				j++
+			}
+			//出来之后j要么到了末尾 要么是空格
+			strs = append(strs, s[i:j])
+			i = j + 1
+		}
+	}
+	slices.Reverse(strs)
+	return strings.Join(strs, " ")
+}
+
+// 129. 求根节点到叶节点数字之和
+func sumNumbers(root *TreeNode) (ans int) {
+	var dfs func(node *TreeNode, sum int)
+	dfs = func(node *TreeNode, sum int) {
+		if node == nil {
+			return
+		}
+		if node.Left == nil && node.Right == nil {
+			ans += 10*sum + node.Val
+			return
+		}
+		sum = sum*10 + node.Val
+		dfs(node.Left, sum)
+		dfs(node.Right, sum)
+	}
+	dfs(root, 0)
+	return
+}
+
+//func isSameTree(p *TreeNode, q *TreeNode) bool {
+//	var dfs func(p, q *TreeNode) bool
+//	dfs = func(p, q *TreeNode) bool {
+//		if p == nil || q == nil {
+//			if p == nil && q == nil {
+//				return true
+//			}
+//			return false
+//		}
+//		return p.Val == q.Val && dfs(p.Left, q.Right) && dfs(p.Right, q.Left)
+//	}
+//	return dfs(p, q)
+//}
+//
+//func isSymmetric(root *TreeNode) bool {
+//	return isSameTree(root.Left, root.Right)
+//}

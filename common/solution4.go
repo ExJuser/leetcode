@@ -5,7 +5,6 @@ import (
 	"math"
 	"math/rand/v2"
 	"slices"
-	"strconv"
 	"strings"
 )
 
@@ -613,43 +612,43 @@ func reverseListRecursive(head *ListNode) *ListNode {
 	return dfs(head)
 }
 
-func restoreIpAddresses(s string) (ans []string) {
-	var check func(left, right int) bool
-	//check直接传入left和right比较好
-	check = func(left, right int) bool {
-		if left > right || right >= len(s) {
-			return false
-		}
-		str := s[left : right+1]
-		if str[0] == '0' {
-			return len(str) == 1
-		}
-		num, _ := strconv.Atoi(str)
-		return num <= 255 && num >= 0
-	}
-	var dfs func(left, right int, path []string)
-	dfs = func(left, right int, path []string) {
-		if right == len(s) && len(path) == 4 {
-			ans = append(ans, strings.Join(path, "."))
-			return
-		}
-
-		//选择不切割 只有right-left满足条件的情况下才可以不切割
-		//而且right不能为最后一位
-		if right-left <= 1 && right != len(s)-1 {
-			dfs(left, right+1, path)
-		}
-
-		//选择切割 此时已经切割的份数不能超过3
-		if check(left, right) && len(path) <= 3 {
-			path = append(path, s[left:right+1])
-			dfs(right+1, right+1, path)
-			path = path[:len(path)-1]
-		}
-	}
-	dfs(0, 0, []string{})
-	return
-}
+//func restoreIpAddresses(s string) (ans []string) {
+//	var check func(left, right int) bool
+//	//check直接传入left和right比较好
+//	check = func(left, right int) bool {
+//		if left > right || right >= len(s) {
+//			return false
+//		}
+//		str := s[left : right+1]
+//		if str[0] == '0' {
+//			return len(str) == 1
+//		}
+//		num, _ := strconv.Atoi(str)
+//		return num <= 255 && num >= 0
+//	}
+//	var dfs func(left, right int, path []string)
+//	dfs = func(left, right int, path []string) {
+//		if right == len(s) && len(path) == 4 {
+//			ans = append(ans, strings.Join(path, "."))
+//			return
+//		}
+//
+//		//选择不切割 只有right-left满足条件的情况下才可以不切割
+//		//而且right不能为最后一位
+//		if right-left <= 1 && right != len(s)-1 {
+//			dfs(left, right+1, path)
+//		}
+//
+//		//选择切割 此时已经切割的份数不能超过3
+//		if check(left, right) && len(path) <= 3 {
+//			path = append(path, s[left:right+1])
+//			dfs(right+1, right+1, path)
+//			path = path[:len(path)-1]
+//		}
+//	}
+//	dfs(0, 0, []string{})
+//	return
+//}
 
 func mySqrt(x int) int {
 	left, right := 0, x

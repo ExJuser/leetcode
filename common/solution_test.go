@@ -100,3 +100,14 @@ func TestLongestPath(t *testing.T) {
 func TestMaxUncrossedLines(t *testing.T) {
 	t.Log(maxUncrossedLines([]int{1, 4, 2}, []int{1, 2, 4}))
 }
+
+func TestMergeSlice(t *testing.T) {
+	nums1 := []int{1, 2, 3, 4, 5}
+	nums2 := []int{2, 3, 5, 6, 9, 10}
+	fmt.Println(MergeSlice(nums1, nums2))
+}
+
+func TestDeleteDuplicates(t *testing.T) {
+	list := GenerateLinkedListFromSlice([]int{1, 2, 3, 3, 4, 4, 5})
+	PrintLinkedList(deleteDuplicates(list))
+}

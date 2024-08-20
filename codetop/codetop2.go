@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"slices"
 )
 
@@ -664,4 +665,113 @@ func reorderList(head *ListNode) {
 		}
 	}
 	merge(head, reversed)
+}
+
+// 62. 不同路径
+func uniquePaths(m int, n int) int {
+	dp := make([][]int, m)
+	for i := 0; i < m; i++ {
+		dp[i] = make([]int, n)
+	}
+	for i := 0; i < m; i++ {
+		dp[i][0] = 1
+	}
+	for i := 0; i < n; i++ {
+		dp[0][i] = 1
+	}
+	for i := 1; i < m; i++ {
+		for j := 1; j < n; j++ {
+			dp[i][j] = dp[i-1][j] + dp[i][j-1]
+		}
+	}
+	return dp[m-1][n-1]
+}
+
+// 64. 最小路径和
+func minPathSum(grid [][]int) int {
+	for i := 1; i < len(grid); i++ {
+		grid[i][0] += grid[i-1][0]
+	}
+	for i := 1; i < len(grid[0]); i++ {
+		grid[0][i] += grid[0][i-1]
+	}
+	for i := 1; i < len(grid); i++ {
+		for j := 1; j < len(grid[i]); j++ {
+			grid[i][j] += min(grid[i-1][j], grid[i][j-1])
+		}
+	}
+	return grid[len(grid)-1][len(grid[0])-1]
+}
+
+// 1143. 最长公共子序列
+func longestCommonSubsequence(text1 string, text2 string) int {
+	dp := make([][]int, len(text1))
+	for i := 0; i < len(text1); i++ {
+		dp[i] = make([]int, len(text2))
+	}
+	for i := 0; i < len(text1); i++ {
+		if text1[i] == text2[0] {
+			for j := i; j < len(text1); j++ {
+				dp[j][0] = 1
+			}
+		}
+	}
+	for i := 0; i < len(text2); i++ {
+		if text2[i] == text1[0] {
+			for j := i; j < len(text2); j++ {
+				dp[0][j] = 1
+			}
+		}
+	}
+	for i := 1; i < len(text1); i++ {
+		for j := 1; j < len(text2); j++ {
+			if text1[i] == text2[j] {
+				dp[i][j] = dp[i-1][j-1] + 1
+			} else {
+				dp[i][j] = max(dp[i-1][j], dp[i][j-1], dp[i-1][j-1])
+			}
+		}
+	}
+	return dp[len(text1)-1][len(text2)-1]
+}
+
+// 72. 编辑距离
+func minDistance(word1 string, word2 string) int {
+	m, n := len(word1), len(word2)
+	dp := make([][]int, m+1)
+	for i := 0; i < m+1; i++ {
+		dp[i] = make([]int, n+1)
+	}
+	for i := 1; i < m+1; i++ {
+		dp[i][0] = i
+	}
+	for i := 1; i < n+1; i++ {
+		dp[0][i] = i
+	}
+	for i := 0; i < m; i++ {
+		for j := 0; j < n; j++ {
+			if word1[i] == word2[j] {
+				dp[i+1][j+1] = dp[i][j]
+			} else {
+				dp[i+1][j+1] = min(dp[i][j+1]+1, dp[i+1][j]+1, dp[i][j]+1)
+			}
+		}
+	}
+	return dp[m][n]
+}
+
+// 124. 二叉树中的最大路径和
+func maxPathSum(root *TreeNode) int {
+	var ans = math.MinInt
+	var dfs func(node *TreeNode) int
+	dfs = func(node *TreeNode) int {
+		if node == nil {
+			return 0
+		}
+		left, right := dfs(node.Left), dfs(node.Right)
+		ans = max(ans, left+right+node.Val, left+node.Val, right+node.Val, node.Val)
+		return max(left+node.Val, right+node.Val, node.Val)
+	}
+	dfs(root)
+	return ans
 }

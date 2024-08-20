@@ -32,3 +32,10 @@ func TestMergeTwoLists(t *testing.T) {
 func TestSqrt(t *testing.T) {
 	fmt.Println(sqrt(586))
 }
+func TestConvertToTitle(t *testing.T) {
+	fmt.Println(convertToTitle(701))
+}
+func TestReorder(t *testing.T) {
+	list := generateListFromSlice([]int{1, 2, 3, 4})
+	reorderList(list)
+}

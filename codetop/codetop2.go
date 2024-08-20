@@ -1,6 +1,7 @@
 package main
 
 import (
+	"container/heap"
 	"math"
 	"slices"
 )
@@ -774,4 +775,62 @@ func maxPathSum(root *TreeNode) int {
 	}
 	dfs(root)
 	return ans
+}
+
+// 739. 每日温度 单调栈 寻找下一个更高的 维护单调减的单调栈
+func dailyTemperatures(temperatures []int) []int {
+	stack := make([]int, 0, len(temperatures))
+	ans := make([]int, len(temperatures))
+	for i := 0; i < len(temperatures); i++ {
+		for len(stack) > 0 && temperatures[stack[len(stack)-1]] < temperatures[i] {
+			ans[stack[len(stack)-1]] = i - stack[len(stack)-1]
+			stack = stack[:len(stack)-1]
+		}
+		stack = append(stack, i)
+	}
+	return ans
+}
+
+type FrequencyHeap [][2]int
+
+func (f *FrequencyHeap) Len() int {
+	return len(*f)
+}
+
+func (f *FrequencyHeap) Less(i, j int) bool {
+	return (*f)[i][1] < (*f)[j][1]
+}
+
+func (f *FrequencyHeap) Swap(i, j int) {
+	(*f)[i], (*f)[j] = (*f)[j], (*f)[i]
+}
+
+func (f *FrequencyHeap) Push(x any) {
+	*f = append(*f, x.([2]int))
+}
+
+func (f *FrequencyHeap) Pop() any {
+	x := (*f)[f.Len()-1]
+	*f = (*f)[:f.Len()-1]
+	return x
+}
+
+// 347. 前 K 个高频元素 出现频率前k高
+func topKFrequent(nums []int, k int) (ans []int) {
+	occur := make(map[int]int)
+	//先统计一遍全部元素的出现频率
+	for _, num := range nums {
+		occur[num]++
+	}
+	hp := &FrequencyHeap{}
+	for num, times := range occur {
+		heap.Push(hp, [2]int{num, times})
+		if hp.Len() > k {
+			heap.Pop(hp)
+		}
+	}
+	for _, p := range *hp {
+		ans = append(ans, p[0])
+	}
+	return
 }

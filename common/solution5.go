@@ -307,7 +307,7 @@ func longestCommonSubsequence(text1 string, text2 string) int {
 	return dp[m][n]
 }
 
-// 72. 编辑距离
+// 72. 编辑距离 多申请一位
 func minDistance(word1 string, word2 string) int {
 	m, n := len(word1), len(word2)
 	dp := make([][]int, m+1)

@@ -39,3 +39,17 @@ func TestReorder(t *testing.T) {
 	list := generateListFromSlice([]int{1, 2, 3, 4})
 	reorderList(list)
 }
+
+func TestAdd(t *testing.T) {
+	num1 := "123"
+	num2 := "999"
+	fmt.Println(add(num1, num2))
+}
+
+func TestMultiplyByBit(t *testing.T) {
+	fmt.Println(multiplyByBit("123", '9', 2))
+}
+
+func TestMultiply(t *testing.T) {
+	multiply("123", "0")
+}

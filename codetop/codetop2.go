@@ -834,3 +834,172 @@ func topKFrequent(nums []int, k int) (ans []int) {
 	}
 	return
 }
+
+func add(num1 string, num2 string) string {
+	ans := make([]byte, 0, len(num1)+len(num2))
+	bytes1 := []byte(num1)
+	bytes2 := []byte(num2)
+	slices.Reverse(bytes1)
+	slices.Reverse(bytes2)
+	carry := 0
+	var i, j int
+	for i < len(bytes1) || j < len(bytes2) || carry != 0 {
+		var val int
+		if i < len(bytes1) {
+			val += int(bytes1[i] - '0')
+			i++
+		}
+		if j < len(bytes2) {
+			val += int(bytes2[j] - '0')
+			j++
+		}
+		if carry != 0 {
+			val += carry
+		}
+		carry = val / 10
+		val %= 10
+		ans = append(ans, byte(val+'0'))
+	}
+	slices.Reverse(ans)
+	return string(ans)
+}
+
+func multiplyByBit(num1 string, digit byte, zeroCount int) string {
+	//zeroCount表示在结果后面加几位0
+	bytes := []byte(num1)
+	ans := make([]byte, 0, len(num1))
+	slices.Reverse(bytes)
+	carry := 0
+	digitInt := int(digit - '0')
+	for i := 0; i < len(bytes) || carry != 0; i++ {
+		var val int
+		if i < len(bytes) {
+			val += digitInt * int(bytes[i]-'0')
+		}
+		if carry != 0 {
+			val += carry
+		}
+		carry = val / 10
+		val %= 10
+		ans = append(ans, byte(val+'0'))
+	}
+	slices.Reverse(ans)
+	for i := 0; i < zeroCount; i++ {
+		ans = append(ans, '0')
+	}
+	return string(ans)
+}
+
+// 43. 字符串相乘
+func multiply(num1 string, num2 string) string {
+	if num1 == "0" || num2 == "0" {
+		return "0"
+	}
+	temp := make([]string, 0, len(num2))
+	for i := len(num2) - 1; i >= 0; i-- {
+		temp = append(temp, multiplyByBit(num1, num2[i], len(num2)-i-1))
+	}
+	ans := temp[0]
+	for i := 1; i < len(temp); i++ {
+		ans = add(ans, temp[i])
+	}
+	return ans
+}
+
+// 70. 爬楼梯
+//
+//	func climbStairs(n int) int {
+//		if n <= 2 {
+//			return n
+//		}
+//		dp := make([]int, n+1)
+//		dp[1] = 1
+//		dp[2] = 2
+//		for i := 3; i <= n; i++ {
+//			dp[i] = dp[i-1] + dp[i-2]
+//		}
+//		return dp[n]
+//	}
+//
+// 70. 爬楼梯
+func climbStairs(n int) int {
+	if n <= 2 {
+		return n
+	}
+	dp1 := 1
+	dp2 := 2
+	for i := 3; i <= n; i++ {
+		dp1, dp2 = dp2, dp1+dp2
+	}
+	return dp2
+}
+
+// 118. 杨辉三角
+func generate(numRows int) (ans [][]int) {
+	if numRows == 1 {
+		return [][]int{{1}}
+	}
+	if numRows == 2 {
+		return [][]int{{1}, {1, 1}}
+	}
+	ans = append(ans, []int{1}, []int{1, 1})
+	for i := 3; i <= numRows; i++ {
+		row := make([]int, i)
+		row[0] = 1
+		row[len(row)-1] = 1
+		for j := 1; j < len(row)-1; j++ {
+			row[j] = ans[i-2][j-1] + ans[i-2][j]
+		}
+		ans = append(ans, row)
+	}
+	return
+}
+
+func rob(nums []int) int {
+	if len(nums) == 1 {
+		return nums[0]
+	}
+	dp := make([]int, len(nums))
+	dp[0] = nums[0]
+	dp[1] = max(nums[0], nums[1])
+	for i := 2; i < len(nums); i++ {
+		dp[i] = max(dp[i-1], dp[i-2]+nums[i])
+	}
+	return dp[len(nums)-1]
+}
+
+// 279. 完全平方数
+func numSquares(n int) int {
+	if n == 1 {
+		return 1
+	}
+	dp := make([]int, n+1)
+	dp[0] = 0
+	dp[1] = 1
+	for i := 2; i <= n; i++ {
+		dp[i] = math.MaxInt
+		for j := 1; j*j <= i; j++ {
+			if dp[i-j*j] != math.MaxInt {
+				dp[i] = min(dp[i], dp[i-j*j]+1)
+			}
+		}
+	}
+	return dp[n]
+}
+
+// 322. 零钱兑换 完全背包问题
+func coinChange(coins []int, amount int) int {
+	dp := make([]int, amount+1)
+	for i := 1; i < len(dp); i++ {
+		dp[i] = amount + 1
+	}
+	for i := 0; i < len(coins); i++ {
+		for j := coins[i]; j <= amount; j++ {
+			dp[j] = min(dp[j], dp[j-coins[i]]+1)
+		}
+	}
+	if dp[amount] == amount+1 {
+		return -1
+	}
+	return dp[amount]
+}

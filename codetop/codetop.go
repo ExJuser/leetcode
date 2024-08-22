@@ -512,30 +512,30 @@ func longestPalindrome(s string) string {
 }
 
 // 102. 二叉树的层序遍历
-func levelOrder(root *TreeNode) (ans [][]int) {
-	if root == nil {
-		return
-	}
-	queue := make([]*TreeNode, 0, 2000)
-	queue = append(queue, root)
-	for len(queue) > 0 {
-		size := len(queue)
-		level := make([]int, 0, size)
-		for i := 0; i < size; i++ {
-			x := queue[0]
-			queue = queue[1:]
-			level = append(level, x.Val)
-			if x.Left != nil {
-				queue = append(queue, x.Left)
-			}
-			if x.Right != nil {
-				queue = append(queue, x.Right)
-			}
-		}
-		ans = append(ans, level)
-	}
-	return
-}
+//func levelOrder(root *TreeNode) (ans [][]int) {
+//	if root == nil {
+//		return
+//	}
+//	queue := make([]*TreeNode, 0, 2000)
+//	queue = append(queue, root)
+//	for len(queue) > 0 {
+//		size := len(queue)
+//		level := make([]int, 0, size)
+//		for i := 0; i < size; i++ {
+//			x := queue[0]
+//			queue = queue[1:]
+//			level = append(level, x.Val)
+//			if x.Left != nil {
+//				queue = append(queue, x.Left)
+//			}
+//			if x.Right != nil {
+//				queue = append(queue, x.Right)
+//			}
+//		}
+//		ans = append(ans, level)
+//	}
+//	return
+//}
 
 // 层序遍历的递归实现
 func levelOrder2(root *TreeNode) (ans [][]int) {
@@ -750,33 +750,33 @@ func search(nums []int, target int) int {
 }
 
 // 200. 岛屿数量 dfs
-func numIslands(grid [][]byte) int {
-	directions := [][]int{
-		{0, 1}, {0, -1}, {1, 0}, {-1, 0},
-	}
-	var dfs func(i, j int)
-	dfs = func(i, j int) {
-		//位置不合法或者访问过或者不是陆地
-		if i < 0 || i >= len(grid) || j < 0 || j >= len(grid[0]) || grid[i][j] != '1' {
-			return
-		}
-		grid[i][j] = '2'
-		for _, d := range directions {
-			ii, jj := i+d[0], j+d[1]
-			dfs(ii, jj)
-		}
-	}
-	var cnt int
-	for i := 0; i < len(grid); i++ {
-		for j := 0; j < len(grid[0]); j++ {
-			if grid[i][j] == '1' {
-				cnt++
-				dfs(i, j)
-			}
-		}
-	}
-	return cnt
-}
+//func numIslands(grid [][]byte) int {
+//	directions := [][]int{
+//		{0, 1}, {0, -1}, {1, 0}, {-1, 0},
+//	}
+//	var dfs func(i, j int)
+//	dfs = func(i, j int) {
+//		//位置不合法或者访问过或者不是陆地
+//		if i < 0 || i >= len(grid) || j < 0 || j >= len(grid[0]) || grid[i][j] != '1' {
+//			return
+//		}
+//		grid[i][j] = '2'
+//		for _, d := range directions {
+//			ii, jj := i+d[0], j+d[1]
+//			dfs(ii, jj)
+//		}
+//	}
+//	var cnt int
+//	for i := 0; i < len(grid); i++ {
+//		for j := 0; j < len(grid[0]); j++ {
+//			if grid[i][j] == '1' {
+//				cnt++
+//				dfs(i, j)
+//			}
+//		}
+//	}
+//	return cnt
+//}
 
 // 200. 岛屿数量 bfs
 func numIslands2(grid [][]byte) int {
@@ -813,34 +813,34 @@ func numIslands2(grid [][]byte) int {
 }
 
 // 695. 岛屿的最大面积
-func maxAreaOfIsland(grid [][]int) int {
-	directions := [][]int{
-		{0, 1}, {0, -1}, {1, 0}, {-1, 0},
-	}
-	var dfs func(i, j int) int
-	dfs = func(i, j int) int {
-		//位置不合法或者访问过或者不是陆地
-		if i < 0 || i >= len(grid) || j < 0 || j >= len(grid[0]) || grid[i][j] != 1 {
-			return 0
-		}
-		grid[i][j] = 2
-		cnt := 1
-		for _, d := range directions {
-			ii, jj := i+d[0], j+d[1]
-			cnt += dfs(ii, jj)
-		}
-		return cnt
-	}
-	var ans int
-	for i := 0; i < len(grid); i++ {
-		for j := 0; j < len(grid[0]); j++ {
-			if grid[i][j] == 1 {
-				ans = max(ans, dfs(i, j))
-			}
-		}
-	}
-	return ans
-}
+//func maxAreaOfIsland(grid [][]int) int {
+//	directions := [][]int{
+//		{0, 1}, {0, -1}, {1, 0}, {-1, 0},
+//	}
+//	var dfs func(i, j int) int
+//	dfs = func(i, j int) int {
+//		//位置不合法或者访问过或者不是陆地
+//		if i < 0 || i >= len(grid) || j < 0 || j >= len(grid[0]) || grid[i][j] != 1 {
+//			return 0
+//		}
+//		grid[i][j] = 2
+//		cnt := 1
+//		for _, d := range directions {
+//			ii, jj := i+d[0], j+d[1]
+//			cnt += dfs(ii, jj)
+//		}
+//		return cnt
+//	}
+//	var ans int
+//	for i := 0; i < len(grid); i++ {
+//		for j := 0; j < len(grid[0]); j++ {
+//			if grid[i][j] == 1 {
+//				ans = max(ans, dfs(i, j))
+//			}
+//		}
+//	}
+//	return ans
+//}
 
 // LC827
 // 463. 岛屿的周长

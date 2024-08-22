@@ -457,22 +457,54 @@ func deleteDuplicates2(head *ListNode) *ListNode {
 }
 
 // 83. 删除排序链表中的重复元素 也可以用递归解决
+//func deleteDuplicates(head *ListNode) *ListNode {
+//	var dfs func(node *ListNode) *ListNode
+//	dfs = func(node *ListNode) *ListNode {
+//		if node == nil || node.Next == nil {
+//			return node
+//		}
+//		cur := node
+//		if node.Val == node.Next.Val {
+//			//向后遍历到第一个不相等的
+//			val := node.Val
+//			for cur.Next != nil && cur.Next.Val == val {
+//				cur = cur.Next
+//			}
+//		}
+//		node.Next = dfs(cur.Next)
+//		return node
+//	}
+//	return dfs(head)
+//}
+
+// 保留一个 画图！
+//
+//	func deleteDuplicates(head *ListNode) *ListNode {
+//		dummy := &ListNode{Next: head}
+//		for cur := head; cur != nil; cur = cur.Next {
+//			p := cur
+//			for p != nil && p.Val == cur.Val {
+//				p = p.Next
+//			}
+//			cur.Next = p
+//		}
+//		return dummy.Next
+//	}
+//
+// 82. 删除排序链表中的重复元素 II
 func deleteDuplicates(head *ListNode) *ListNode {
-	var dfs func(node *ListNode) *ListNode
-	dfs = func(node *ListNode) *ListNode {
-		if node == nil || node.Next == nil {
-			return node
-		}
-		cur := node
-		if node.Val == node.Next.Val {
-			//向后遍历到第一个不相等的
-			val := node.Val
-			for cur.Next != nil && cur.Next.Val == val {
-				cur = cur.Next
+	dummy := &ListNode{Next: head}
+	cur := dummy
+	for cur.Next != nil && cur.Next.Next != nil {
+		if cur.Next.Val == cur.Next.Next.Val {
+			p := cur
+			for p.Next != nil && p.Next.Val == cur.Next.Val {
+				p = p.Next
 			}
+			cur.Next = p.Next
+		} else {
+			cur = cur.Next
 		}
-		node.Next = dfs(cur.Next)
-		return node
 	}
-	return dfs(head)
+	return dummy.Next
 }

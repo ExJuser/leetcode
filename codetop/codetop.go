@@ -212,49 +212,49 @@ func (m *minHeap) Pop() any {
 }
 
 // 堆排序实现
-func findKthLargest(nums []int, k int) int {
-	hp := &minHeap{}
-	for _, num := range nums {
-		heap.Push(hp, num)
-		if hp.Len() > k {
-			heap.Pop(hp)
-		}
-	}
-	return (*hp)[0]
-}
+//func findKthLargest(nums []int, k int) int {
+//	hp := &minHeap{}
+//	for _, num := range nums {
+//		heap.Push(hp, num)
+//		if hp.Len() > k {
+//			heap.Pop(hp)
+//		}
+//	}
+//	return (*hp)[0]
+//}
 
 // 快速选择实现
-func findKthLargest2(nums []int, k int) int {
-	var helper func(left, right, k int) int
-	helper = func(left, right, k int) int {
-		// MARK 第一个注意点
-		if left >= right {
-			return nums[k]
-		}
-		i, j := left, right
-		pivot := nums[rand.IntN(right-left+1)+left]
-		for i <= j {
-			for nums[i] < pivot {
-				i++
-			}
-			for nums[j] > pivot {
-				j--
-			}
-			if i <= j {
-				nums[i], nums[j] = nums[j], nums[i]
-				i++
-				j--
-			}
-		}
-		// MARK 第二个注意点
-		if j >= k {
-			return helper(left, j, k)
-		} else {
-			return helper(i, right, k)
-		}
-	}
-	return helper(0, len(nums)-1, len(nums)-k)
-}
+//func findKthLargest2(nums []int, k int) int {
+//	var helper func(left, right, k int) int
+//	helper = func(left, right, k int) int {
+//		// MARK 第一个注意点
+//		if left >= right {
+//			return nums[k]
+//		}
+//		i, j := left, right
+//		pivot := nums[rand.IntN(right-left+1)+left]
+//		for i <= j {
+//			for nums[i] < pivot {
+//				i++
+//			}
+//			for nums[j] > pivot {
+//				j--
+//			}
+//			if i <= j {
+//				nums[i], nums[j] = nums[j], nums[i]
+//				i++
+//				j--
+//			}
+//		}
+//		// MARK 第二个注意点
+//		if j >= k {
+//			return helper(left, j, k)
+//		} else {
+//			return helper(i, right, k)
+//		}
+//	}
+//	return helper(0, len(nums)-1, len(nums)-k)
+//}
 
 // ——————————————————————————————————————————————————————————
 // 25. K 个一组翻转链表
@@ -267,27 +267,27 @@ func getListLength(head *ListNode) int {
 	return ans
 }
 
-func reverseKGroup(head *ListNode, k int) *ListNode {
-	//有可能修改队首节点的都创建一个虚拟头节点方便边界的处理
-	dummy := &ListNode{Next: head}
-	//首先需要得到链表的长度
-	n := getListLength(head)
-	var temp = dummy
-	var cur = head
-	var pre *ListNode
-	for i := 0; i < n/k; i++ {
-		for j := 0; j < k; j++ {
-			nxt := cur.Next
-			cur.Next = pre
-			pre, cur = cur, nxt
-		}
-		newTemp := temp.Next
-		temp.Next.Next = cur
-		temp.Next = pre
-		temp = newTemp
-	}
-	return dummy.Next
-}
+//func reverseKGroup(head *ListNode, k int) *ListNode {
+//	//有可能修改队首节点的都创建一个虚拟头节点方便边界的处理
+//	dummy := &ListNode{Next: head}
+//	//首先需要得到链表的长度
+//	n := getListLength(head)
+//	var temp = dummy
+//	var cur = head
+//	var pre *ListNode
+//	for i := 0; i < n/k; i++ {
+//		for j := 0; j < k; j++ {
+//			nxt := cur.Next
+//			cur.Next = pre
+//			pre, cur = cur, nxt
+//		}
+//		newTemp := temp.Next
+//		temp.Next.Next = cur
+//		temp.Next = pre
+//		temp = newTemp
+//	}
+//	return dummy.Next
+//}
 
 // 递归解法
 func reverseKGroup2(head *ListNode, k int) *ListNode {

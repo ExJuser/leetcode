@@ -1,7 +1,10 @@
 package main
 
 import (
+	"container/heap"
 	"math"
+	"math/rand/v2"
+	"slices"
 	"sort"
 	"strings"
 )
@@ -508,3 +511,271 @@ func deleteDuplicates(head *ListNode) *ListNode {
 	}
 	return dummy.Next
 }
+
+// 25. K 个一组翻转链表
+//
+//	func reverseKGroup(head *ListNode, k int) *ListNode {
+//		dummy := &ListNode{Next: head}
+//		//首先需要获取链表的长度
+//		var length int
+//		for cur := head; cur != nil; cur = cur.Next {
+//			length++
+//		}
+//		var pre *ListNode
+//		cur := head
+//		temp := dummy
+//		for i := 0; i < length/k; i++ {
+//			for j := 0; j < k; j++ {
+//				nxt := cur.Next
+//				cur.Next = pre
+//				cur, pre = nxt, cur
+//			}
+//			newTemp := temp.Next
+//			temp.Next.Next = cur
+//			temp.Next = pre
+//			temp = newTemp
+//		}
+//		return dummy.Next
+//	}
+//
+// 25. K 个一组翻转链表 递归
+func reverseKGroup(head *ListNode, k int) *ListNode {
+	var dfs func(node *ListNode) *ListNode
+	var length func(node *ListNode) int
+	dfs = func(node *ListNode) *ListNode {
+		//如果剩余的节点数量不足k个 直接返回
+		if length(node) < k {
+			return node
+		}
+
+		cur := node
+		temp := node
+		var pre *ListNode
+		for i := 0; i < k; i++ {
+			nxt := cur.Next
+			cur.Next = pre
+			pre, cur = cur, nxt
+		}
+		temp.Next = dfs(cur)
+		return pre
+	}
+	length = func(node *ListNode) int {
+		var ans int
+		for cur := node; cur != nil; cur = cur.Next {
+			ans++
+		}
+		return ans
+	}
+	return dfs(head)
+}
+
+// 572. 另一棵树的子树 写的很烂
+//
+//	func isSubtree(root *TreeNode, subRoot *TreeNode) bool {
+//		var isSameTree func(treeA, treeB *TreeNode) bool
+//		isSameTree = func(treeA, treeB *TreeNode) bool {
+//			if treeA == nil || treeB == nil {
+//				return treeA == treeB
+//			}
+//			return treeA.Val == treeB.Val && isSameTree(treeA.Left, treeB.Left) && isSameTree(treeA.Right, treeB.Right)
+//		}
+//		var dfs func(root *TreeNode, subRoot *TreeNode) bool
+//		dfs = func(root *TreeNode, subRoot *TreeNode) bool {
+//			if root == nil {
+//				return false
+//			}
+//			if isSameTree(root, subRoot) {
+//				return true
+//			}
+//			if dfs(root.Left, subRoot) || dfs(root.Right, subRoot) {
+//				return true
+//			}
+//			return false
+//		}
+//		return dfs(root, subRoot)
+//	}
+//
+// 572. 另一棵树的子树
+func isSubtree(root *TreeNode, subRoot *TreeNode) bool {
+	var isSameTree func(treeA, treeB *TreeNode) bool
+	isSameTree = func(treeA, treeB *TreeNode) bool {
+		if treeA == nil || treeB == nil {
+			return treeA == treeB
+		}
+		return treeA.Val == treeB.Val && isSameTree(treeA.Left, treeB.Left) && isSameTree(treeA.Right, treeB.Right)
+	}
+	var dfs func(node *TreeNode) bool
+	dfs = func(node *TreeNode) bool {
+		if node == nil {
+			return false
+		}
+		if node.Val == subRoot.Val && isSameTree(node, subRoot) {
+			return true
+		}
+		return dfs(node.Left) || dfs(node.Right)
+	}
+	return dfs(root)
+}
+
+// 第一种：快速选择算法
+func findKthLargest(nums []int, k int) int {
+	var helper func(left, right, k int) int
+	helper = func(left, right, k int) int {
+		if left >= right {
+			return nums[k]
+		}
+		pivot := nums[rand.IntN(right-left+1)+left]
+		i, j := left, right
+		for i <= j {
+			for nums[i] < pivot {
+				i++
+			}
+			for nums[j] > pivot {
+				j--
+			}
+			if i <= j {
+				nums[i], nums[j] = nums[j], nums[i]
+				i++
+				j--
+			}
+		}
+		if k <= j {
+			return helper(left, j, k)
+		} else {
+			return helper(i, right, k)
+		}
+	}
+	return helper(0, len(nums)-1, len(nums)-k)
+}
+
+// 堆排序 最小堆
+func findKthLargest2(nums []int, k int) int {
+	hp := &minHeap{}
+	for _, num := range nums {
+		heap.Push(hp, num)
+		if hp.Len() > k {
+			heap.Pop(hp)
+		}
+	}
+	return (*hp)[0]
+}
+
+// 209. 长度最小的子数组
+func minSubArrayLen(target int, nums []int) int {
+	var ans = len(nums) + 1
+	var left, sum int
+	for right := 0; right < len(nums); right++ {
+		sum += nums[right]
+		for ; sum >= target; left++ {
+			ans = min(ans, right-left+1)
+			sum -= nums[left]
+		}
+	}
+	if ans == len(nums)+1 {
+		return 0
+	}
+	return ans
+}
+
+// 335. 路径交叉 暴力超时
+func isSelfCrossing(distance []int) bool {
+	directions := [][]int{
+		{0, 1}, {-1, 0}, {0, -1}, {1, 0},
+	}
+	oriX, oriY := 0, 0
+	set := map[[2]int]struct{}{[2]int{0, 0}: {}}
+	for i := 0; i < len(distance); i++ {
+		d := directions[i%4]
+		for j := 0; j < distance[i]; j++ {
+			x, y := oriX+d[0], oriY+d[1]
+			if _, ok := set[[2]int{x, y}]; ok { //交叉
+				return true
+			}
+			set[[2]int{x, y}] = struct{}{}
+			oriX, oriY = x, y
+		}
+	}
+	return false
+}
+
+// 435. 无重叠区间
+func eraseOverlapIntervals(intervals [][]int) int {
+	slices.SortFunc(intervals, func(a, b []int) int {
+		return a[0] - b[0]
+	})
+	var ans int
+	pre := intervals[0]
+	for i := 1; i < len(intervals); i++ {
+		cur := intervals[i]
+		if cur[0] >= pre[1] { //没有重叠
+			pre = cur
+		} else { //有重叠部分 这两个必须移除一个 那么移除哪一个？
+			//移除右边更长的那一个
+			ans++
+			if cur[1] < pre[1] {
+				pre = cur
+			}
+		}
+	}
+	return ans
+}
+
+// 先统计一遍0,1,2分别有多少个
+//
+//	func sortColors(nums []int) {
+//		var zero, one int
+//		for _, num := range nums {
+//			if num == 0 {
+//				zero++
+//			} else if num == 1 {
+//				one++
+//			}
+//		}
+//		var zeroIndex, oneIndex, twoIndex = 0, zero, zero + one
+//		for i := 0; i < len(nums); {
+//			if nums[i] == 0 && zeroIndex < zero {
+//				nums[zeroIndex], nums[i] = nums[i], nums[zeroIndex]
+//				zeroIndex++
+//			} else if nums[i] == 1 && oneIndex < zero+one {
+//				nums[oneIndex], nums[i] = nums[i], nums[oneIndex]
+//				oneIndex++
+//			} else if nums[i] == 2 && twoIndex < len(nums) {
+//				nums[twoIndex], nums[i] = nums[i], nums[twoIndex]
+//				twoIndex++
+//			} else {
+//				i++
+//			}
+//		}
+//	}
+//
+// 75. 颜色分类
+func sortColors(nums []int) {
+	zeroIndex, twoIndex := 0, len(nums)-1
+	for i := 0; i <= twoIndex; {
+		if nums[i] == 0 {
+			nums[zeroIndex], nums[i] = nums[i], nums[zeroIndex]
+			zeroIndex++
+			i++
+		} else if nums[i] == 2 {
+			nums[twoIndex], nums[i] = nums[i], nums[twoIndex]
+			twoIndex--
+		} else {
+			i++
+		}
+	}
+}
+
+//	func lengthOfLIS(nums []int) int {
+//		sequence := make([]int, 0, len(nums))
+//		for _, num := range nums {
+//			//找到插入位置
+//			index := sort.SearchInts(sequence, num)
+//			if index == len(sequence) {
+//				sequence = append(sequence, num)
+//			} else {
+//				sequence[index] = num
+//			}
+//		}
+//		return len(sequence)
+//	}
+//

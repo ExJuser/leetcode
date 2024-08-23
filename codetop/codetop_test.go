@@ -53,7 +53,6 @@ func TestMultiplyByBit(t *testing.T) {
 func TestMultiply(t *testing.T) {
 	multiply("123", "0")
 }
-
-func TestFindNumber(t *testing.T) {
-	findNumberOfLIS([]int{1, 2, 4, 3, 5, 4, 7, 2})
+func TestLong(t *testing.T) {
+	longestWord([]string{"cat", "banana", "dog", "nana", "walk", "walker", "dogwalker"})
 }

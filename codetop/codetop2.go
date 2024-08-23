@@ -122,18 +122,6 @@ func findAnagrams(s string, p string) (ans []int) {
 	return
 }
 
-// 560. 和为 K 的子数组
-func subarraySum(nums []int, k int) int {
-	var ans, sum int
-	prefix := map[int]int{0: 1}
-	for _, num := range nums {
-		sum += num
-		ans += prefix[sum-k]
-		prefix[sum]++
-	}
-	return ans
-}
-
 // 239. 滑动窗口最大值
 func maxSlidingWindow(nums []int, k int) (ans []int) {
 	//维护滑动窗口内的最大值 即维护一个单调减的单调队列

@@ -1013,21 +1013,21 @@ func getIntersectionNode2(headA, headB *ListNode) *ListNode {
 }
 
 // 234. 回文链表
-func isPalindrome(head *ListNode) bool {
-	//找到链表中点然后翻转 再逐一比较
-	slow, fast := head, head
-	for fast != nil && fast.Next != nil {
-		slow = slow.Next
-		fast = fast.Next.Next
-	}
-	reversed := reverseList(slow)
-	for p1, p2 := head, reversed; p1 != nil && p2 != nil; p1, p2 = p1.Next, p2.Next {
-		if p1.Val != p2.Val {
-			return false
-		}
-	}
-	return true
-}
+//func isPalindrome(head *ListNode) bool {
+//	//找到链表中点然后翻转 再逐一比较
+//	slow, fast := head, head
+//	for fast != nil && fast.Next != nil {
+//		slow = slow.Next
+//		fast = fast.Next.Next
+//	}
+//	reversed := reverseList(slow)
+//	for p1, p2 := head, reversed; p1 != nil && p2 != nil; p1, p2 = p1.Next, p2.Next {
+//		if p1.Val != p2.Val {
+//			return false
+//		}
+//	}
+//	return true
+//}
 
 // 142. 环形链表 II
 func detectCycle(head *ListNode) *ListNode {
@@ -1285,23 +1285,23 @@ func mergeKLists(lists []*ListNode) *ListNode {
 }
 
 // 56. 合并区间
-func merge(intervals [][]int) (ans [][]int) {
-	slices.SortFunc(intervals, func(a, b []int) int {
-		return a[0] - b[0]
-	})
-	pre := intervals[0]
-	for i := 1; i < len(intervals); i++ {
-		cur := intervals[i]
-		if cur[0] > pre[1] {
-			ans = append(ans, pre)
-			pre = cur
-		} else {
-			pre[1] = max(pre[1], cur[1])
-		}
-	}
-	ans = append(ans, pre)
-	return
-}
+//func merge(intervals [][]int) (ans [][]int) {
+//	slices.SortFunc(intervals, func(a, b []int) int {
+//		return a[0] - b[0]
+//	})
+//	pre := intervals[0]
+//	for i := 1; i < len(intervals); i++ {
+//		cur := intervals[i]
+//		if cur[0] > pre[1] {
+//			ans = append(ans, pre)
+//			pre = cur
+//		} else {
+//			pre[1] = max(pre[1], cur[1])
+//		}
+//	}
+//	ans = append(ans, pre)
+//	return
+//}
 
 // 19. 删除链表的倒数第 N 个结点
 func removeNthFromEnd(head *ListNode, n int) *ListNode {

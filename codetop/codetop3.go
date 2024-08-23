@@ -7,6 +7,7 @@ import (
 	"slices"
 	"sort"
 	"strings"
+	"unicode"
 )
 
 // 139. 单词拆分
@@ -779,3 +780,159 @@ func sortColors(nums []int) {
 //		return len(sequence)
 //	}
 //
+
+func merge(nums1 []int, m int, nums2 []int, n int) {
+	index := m + n - 1
+	i, j := m-1, n-1
+	for i >= 0 && j >= 0 {
+		if nums1[i] >= nums2[j] {
+			nums1[index] = nums1[i]
+			i--
+		} else {
+			nums1[index] = nums2[j]
+			j--
+		}
+		index--
+	}
+	for ; i >= 0; i-- {
+		nums1[index] = nums1[i]
+		index--
+	}
+
+	for ; j >= 0; j-- {
+		nums1[index] = nums2[j]
+		index--
+	}
+}
+
+// 59. 螺旋矩阵 II 注意++ -- 和 i 的位置
+func generateMatrix(n int) [][]int {
+	matrix := make([][]int, n)
+	for i := 0; i < n; i++ {
+		matrix[i] = make([]int, n)
+	}
+	top, bottom := 0, n-1
+	left, right := 0, n-1
+	var num = 1
+	for left <= right && top <= bottom {
+		for i := left; i <= right; i++ {
+			matrix[top][i] = num
+			num++
+		}
+		top++
+		for i := top; i <= bottom; i++ {
+			matrix[i][right] = num
+			num++
+		}
+		right--
+		for i := right; i >= left; i-- {
+			matrix[bottom][i] = num
+			num++
+		}
+		bottom--
+		for i := bottom; i >= top; i-- {
+			matrix[i][left] = num
+			num++
+		}
+		left++
+	}
+	return matrix
+}
+
+// 560. 和为 K 的子数组
+func subarraySum(nums []int, k int) int {
+	prefix := map[int]int{0: 1}
+	var sum, ans int
+	for i := 0; i < len(nums); i++ {
+		sum += nums[i]
+		ans += prefix[sum-k]
+		prefix[sum]++
+	}
+	return ans
+}
+
+func minimumTotal(triangle [][]int) int {
+	//可以从相同下标或者下标减一的位置过来
+	n := len(triangle)
+	if n == 1 {
+		return triangle[0][0]
+	}
+	dp := make([][]int, n)
+	for i := 0; i < n; i++ {
+		dp[i] = make([]int, len(triangle[i]))
+	}
+	dp[0][0] = triangle[0][0]
+	var ans = math.MaxInt
+	for i := 1; i < n; i++ {
+		for j := 0; j < len(triangle[i]); j++ {
+			if j >= len(dp[i-1]) {
+				dp[i][j] = dp[i-1][j-1] + triangle[i][j]
+			} else if j-1 < 0 {
+				dp[i][j] = dp[i-1][j] + triangle[i][j]
+			} else {
+				dp[i][j] = min(dp[i-1][j-1]+triangle[i][j], dp[i-1][j]+triangle[i][j])
+			}
+			if i == n-1 {
+				ans = min(ans, dp[i][j])
+			}
+		}
+	}
+	return ans
+}
+
+// 125. 验证回文串 将所有大写字符转换为小写字符、并移除所有非字母数字字符
+func isPalindrome(s string) bool {
+	bytes := make([]byte, 0, len(s))
+	for _, ch := range s {
+		if unicode.IsLetter(ch) { //是字母
+			bytes = append(bytes, byte(unicode.ToLower(ch)))
+		} else if unicode.IsDigit(ch) { //是数字
+			bytes = append(bytes, byte(ch))
+		}
+	}
+	for i := 0; i < len(bytes); i++ {
+		if bytes[i] != bytes[len(bytes)-i-1] {
+			return false
+		}
+	}
+	return true
+}
+
+// 面试题 17.15. 最长单词
+func longestWord(words []string) string {
+	//可以使用多次
+	var combinedByOtherWords func(word string) bool
+	combinedByOtherWords = func(word string) bool {
+		if len(word) == 0 {
+			return false
+		}
+		dp := make([]bool, len(word))
+		for i := 0; i < len(words); i++ {
+			if words[i] != word && strings.HasPrefix(word, words[i]) {
+				dp[len(words[i])-1] = true
+			}
+		}
+		for i := 0; i < len(dp); i++ {
+			if dp[i] {
+				for j := 0; j < len(words); j++ {
+					if words[j] != word && strings.HasPrefix(word[i+1:], words[j]) {
+						dp[i+len(words[j])] = true
+					}
+				}
+			}
+		}
+		return dp[len(word)-1]
+	}
+	slices.SortFunc(words, func(a, b string) int {
+		if len(a) == len(b) {
+			return strings.Compare(a, b)
+		}
+		return len(b) - len(a)
+	})
+	for i := 0; i < len(words); i++ {
+		if combinedByOtherWords(words[i]) {
+			return words[i]
+		}
+	}
+	return ""
+}

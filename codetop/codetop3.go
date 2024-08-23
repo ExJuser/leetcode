@@ -936,3 +936,26 @@ func longestWord(words []string) string {
 	}
 	return ""
 }
+
+// 109. 有序链表转换二叉搜索树
+func sortedListToBST(head *ListNode) *TreeNode {
+	//找到中点 左右断开
+	if head == nil {
+		return nil
+	}
+	if head.Next == nil {
+		return &TreeNode{Val: head.Val}
+	}
+	var preSlow *ListNode
+	slow, fast := head, head
+	for fast != nil && fast.Next != nil {
+		preSlow = slow
+		slow = slow.Next
+		fast = fast.Next.Next
+	}
+	preSlow.Next = nil
+	rootVal := slow.Val
+	left := sortedListToBST(head)
+	right := sortedListToBST(slow.Next)
+	return &TreeNode{Val: rootVal, Left: left, Right: right}
+}

@@ -484,32 +484,32 @@ func twoSum(nums []int, target int) []int {
 
 // ————————————————————————————————————————————————————————————————
 // 5. 最长回文子串
-func longestPalindrome(s string) string {
-	n := len(s)
-	dp := make([][]bool, n)
-	for i := 0; i < n; i++ {
-		dp[i] = make([]bool, n)
-	}
-	var ans string
-	for i := n - 1; i >= 0; i-- {
-		for j := i; j < n; j++ {
-			if i == j {
-				dp[i][j] = true
-			} else if j-i == 1 {
-				dp[i][j] = s[i] == s[j]
-			} else {
-				if s[i] == s[j] {
-					dp[i][j] = dp[i+1][j-1]
-				}
-			}
-			//每次都在这里错 首先得是回文子串才行
-			if dp[i][j] && j-i+1 > len(ans) {
-				ans = s[i : j+1]
-			}
-		}
-	}
-	return ans
-}
+//func longestPalindrome(s string) string {
+//	n := len(s)
+//	dp := make([][]bool, n)
+//	for i := 0; i < n; i++ {
+//		dp[i] = make([]bool, n)
+//	}
+//	var ans string
+//	for i := n - 1; i >= 0; i-- {
+//		for j := i; j < n; j++ {
+//			if i == j {
+//				dp[i][j] = true
+//			} else if j-i == 1 {
+//				dp[i][j] = s[i] == s[j]
+//			} else {
+//				if s[i] == s[j] {
+//					dp[i][j] = dp[i+1][j-1]
+//				}
+//			}
+//			//每次都在这里错 首先得是回文子串才行
+//			if dp[i][j] && j-i+1 > len(ans) {
+//				ans = s[i : j+1]
+//			}
+//		}
+//	}
+//	return ans
+//}
 
 // 102. 二叉树的层序遍历
 //func levelOrder(root *TreeNode) (ans [][]int) {
@@ -1399,26 +1399,26 @@ func subsets(nums []int) (ans [][]int) {
 }
 
 // 39. 组合总和 数字可以被无限选取
-func combinationSum(candidates []int, target int) (ans [][]int) {
-	var dfs func(index, sum int, path []int)
-	dfs = func(index, sum int, path []int) {
-		if sum > target {
-			return
-		}
-		if index == len(candidates) {
-			if sum == target {
-				ans = append(ans, append([]int{}, path...))
-			}
-			return
-		}
-		path = append(path, candidates[index])
-		dfs(index, sum+candidates[index], path)
-		path = path[:len(path)-1]
-		dfs(index+1, sum, path)
-	}
-	dfs(0, 0, []int{})
-	return
-}
+//func combinationSum(candidates []int, target int) (ans [][]int) {
+//	var dfs func(index, sum int, path []int)
+//	dfs = func(index, sum int, path []int) {
+//		if sum > target {
+//			return
+//		}
+//		if index == len(candidates) {
+//			if sum == target {
+//				ans = append(ans, append([]int{}, path...))
+//			}
+//			return
+//		}
+//		path = append(path, candidates[index])
+//		dfs(index, sum+candidates[index], path)
+//		path = path[:len(path)-1]
+//		dfs(index+1, sum, path)
+//	}
+//	dfs(0, 0, []int{})
+//	return
+//}
 
 func mergeList(l1, l2 *ListNode) *ListNode {
 	dummy := &ListNode{}

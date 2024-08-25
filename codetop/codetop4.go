@@ -124,3 +124,39 @@ type Solution struct {
 func (this *Solution) GetRandom() int {
 	return this.nodes[rand.IntN(len(this.nodes))].Val
 }
+
+// 547. 省份数量
+func findCircleNum(isConnected [][]int) int {
+	n := len(isConnected)
+	father := make([]int, n)
+	for i := 0; i < len(father); i++ {
+		father[i] = i
+	}
+	var merge func(i, j int) bool
+	var find func(i int) int
+	find = func(i int) int {
+		if father[i] != i {
+			father[i] = find(father[i])
+		}
+		return father[i]
+	}
+	merge = func(x, y int) bool {
+		fx, fy := find(x), find(y)
+		if fx != fy {
+			father[fx] = fy
+			return true
+		}
+		return false
+	}
+	var ans = n
+	for i := 0; i < n; i++ {
+		for j := 0; j < n; j++ {
+			if isConnected[i][j] == 1 {
+				if merge(i, j) {
+					ans--
+				}
+			}
+		}
+	}
+	return ans
+}

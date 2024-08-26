@@ -56,3 +56,7 @@ func TestMultiply(t *testing.T) {
 func TestLong(t *testing.T) {
 	longestWord([]string{"cat", "banana", "dog", "nana", "walk", "walker", "dogwalker"})
 }
+
+func TestFindTargetSumWays(t *testing.T) {
+	findTargetSumWays([]int{1, 1, 1, 1, 1}, 3)
+}

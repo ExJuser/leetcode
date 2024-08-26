@@ -1,6 +1,8 @@
 package main
 
-import "math/rand/v2"
+import (
+	"math/rand/v2"
+)
 
 // 5. 最长回文子串
 func longestPalindrome(s string) string {
@@ -159,4 +161,58 @@ func findCircleNum(isConnected [][]int) int {
 		}
 	}
 	return ans
+}
+
+// 234. 回文链表
+func isPalindrome(head *ListNode) bool {
+	slow, fast := head, head
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+	}
+	var reverse func(node *ListNode) *ListNode
+	reverse = func(node *ListNode) *ListNode {
+		var pre *ListNode
+		for cur := node; cur != nil; {
+			nxt := cur.Next
+			cur.Next = pre
+			pre, cur = cur, nxt
+		}
+		return pre
+	}
+	for p, q := head, reverse(slow); p != nil && q != nil; p, q = p.Next, q.Next {
+		if p.Val != q.Val {
+			return false
+		}
+	}
+	return true
+}
+
+func findTargetSumWays(nums []int, target int) int {
+	var sum int
+	for _, num := range nums {
+		sum += num
+	}
+	diff := sum - target
+	if diff%2 != 0 {
+		return 0
+	}
+	bag := diff / 2
+	dp := make([][]int, len(nums))
+	for i := 0; i < len(dp); i++ {
+		dp[i] = make([]int, bag+1)
+	}
+	dp[0][0] += 1
+	if nums[0] <= bag {
+		dp[0][nums[0]] += 1
+	}
+	for i := 1; i < len(nums); i++ {
+		for j := 0; j <= bag; j++ {
+			dp[i][j] = dp[i-1][j]
+			if j >= nums[i] {
+				dp[i][j] += dp[i-1][j-nums[i]]
+			}
+		}
+	}
+	return dp[len(nums)-1][bag]
 }

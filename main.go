@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"slices"
+	"sort"
 	"strconv"
 	"strings"
 	"unicode"
@@ -997,4 +998,32 @@ func restoreIpAddresses(s string) (ans []string) {
 	}
 	dfs(0, 0, []string{})
 	return
+}
+func combinationSum2(candidates []int, target int) (ans [][]int) {
+	sort.Ints(candidates)
+	used := make([]bool, len(candidates))
+	var dfs func(index, sum int, path []int)
+	dfs = func(index, sum int, path []int) {
+		if sum > target {
+			return
+		}
+		if sum == target {
+			ans = append(ans, append([]int{}, path...))
+			return
+		}
+		for i := index; i < len(candidates); i++ {
+			if !used[i] && (i == index || candidates[i] != candidates[i-1]) {
+				used[i] = true
+				path = append(path, candidates[i])
+				dfs(i+1, sum+candidates[i], path)
+				path = path[:len(path)-1]
+				used[i] = false
+			}
+		}
+	}
+	dfs(0, 0, []int{})
+	return
+}
+func main() {
+	combinationSum2([]int{10, 1, 2, 7, 6, 1, 5}, 8)
 }

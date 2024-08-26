@@ -7,7 +7,6 @@ import (
 	"slices"
 	"sort"
 	"strings"
-	"unicode"
 )
 
 // 139. 单词拆分
@@ -881,22 +880,22 @@ func minimumTotal(triangle [][]int) int {
 }
 
 // 125. 验证回文串 将所有大写字符转换为小写字符、并移除所有非字母数字字符
-func isPalindrome(s string) bool {
-	bytes := make([]byte, 0, len(s))
-	for _, ch := range s {
-		if unicode.IsLetter(ch) { //是字母
-			bytes = append(bytes, byte(unicode.ToLower(ch)))
-		} else if unicode.IsDigit(ch) { //是数字
-			bytes = append(bytes, byte(ch))
-		}
-	}
-	for i := 0; i < len(bytes); i++ {
-		if bytes[i] != bytes[len(bytes)-i-1] {
-			return false
-		}
-	}
-	return true
-}
+//func isPalindrome(s string) bool {
+//	bytes := make([]byte, 0, len(s))
+//	for _, ch := range s {
+//		if unicode.IsLetter(ch) { //是字母
+//			bytes = append(bytes, byte(unicode.ToLower(ch)))
+//		} else if unicode.IsDigit(ch) { //是数字
+//			bytes = append(bytes, byte(ch))
+//		}
+//	}
+//	for i := 0; i < len(bytes); i++ {
+//		if bytes[i] != bytes[len(bytes)-i-1] {
+//			return false
+//		}
+//	}
+//	return true
+//}
 
 // 面试题 17.15. 最长单词
 func longestWord(words []string) string {

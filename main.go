@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"math"
 	"slices"
-	"sort"
 	"strconv"
 	"strings"
 	"unicode"
@@ -999,31 +998,46 @@ func restoreIpAddresses(s string) (ans []string) {
 	dfs(0, 0, []string{})
 	return
 }
-func combinationSum2(candidates []int, target int) (ans [][]int) {
-	sort.Ints(candidates)
-	used := make([]bool, len(candidates))
-	var dfs func(index, sum int, path []int)
-	dfs = func(index, sum int, path []int) {
-		if sum > target {
-			return
+func removeDuplicateLetters(s string) string {
+	//维护每一个字符出现的最晚位置
+	//如果一个字符已经是最晚出现的位置 直接加入答案
+	//如果不是最晚出现的位置 如果是下一个期望的字符 加入
+	//什么是下一个期望的字符
+	//-1代表没有出现 -2表示已经使用过 其他非负数表示最晚出现位置
+	//下一个期望字符就是第一个非负数
+	latestAppear := make([]int, 26)
+	//默认没有出现
+	for i := 0; i < 26; i++ {
+		latestAppear[i] = -1
+	}
+	nextExpected := 'z' + 1
+	//最晚出现位置
+	for i, ch := range s {
+		if ch < nextExpected {
+			nextExpected = ch
 		}
-		if sum == target {
-			ans = append(ans, append([]int{}, path...))
-			return
-		}
-		for i := index; i < len(candidates); i++ {
-			if !used[i] && (i == index || candidates[i] != candidates[i-1]) {
-				used[i] = true
-				path = append(path, candidates[i])
-				dfs(i+1, sum+candidates[i], path)
-				path = path[:len(path)-1]
-				used[i] = false
+		latestAppear[int(ch-'a')] = i
+	}
+	ans := make([]byte, 0, 26)
+	for i, ch := range s {
+		if nextExpected <= 'z' {
+			if latestAppear[int(ch-'a')] == i {
+				ans = append(ans, byte(ch))
+				latestAppear[int(ch-'a')] = -2
+			} else {
+				if nextExpected == ch {
+					ans = append(ans, byte(ch))
+					latestAppear[int(ch-'a')] = -2
+					//找到下一个expected
+					for nextExpected <= 'z' && latestAppear[int(nextExpected-'a')] < 0 {
+						nextExpected++
+					}
+				}
 			}
 		}
 	}
-	dfs(0, 0, []int{})
-	return
+	return string(ans)
 }
 func main() {
-	combinationSum2([]int{10, 1, 2, 7, 6, 1, 5}, 8)
+	fmt.Println(removeDuplicateLetters("cbacdcbc"))
 }

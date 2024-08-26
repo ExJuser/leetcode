@@ -216,3 +216,101 @@ func findTargetSumWays(nums []int, target int) int {
 	}
 	return dp[len(nums)-1][bag]
 }
+
+//	type Entry struct {
+//		Key, Value int
+//	}
+//
+//	type DoubleNode struct {
+//		Entry *Entry
+//		Next  *DoubleNode
+//		Prev  *DoubleNode
+//	}
+//
+//	type DoubleList struct {
+//		DummyHead, DummyTail *DoubleNode
+//	}
+//
+//	func NewDoubleList() *DoubleList {
+//		dummyHead := &DoubleNode{}
+//		dummyTail := &DoubleNode{}
+//		dummyHead.Next = dummyTail
+//		dummyTail.Prev = dummyHead
+//		return &DoubleList{
+//			DummyHead: dummyHead,
+//			DummyTail: dummyTail,
+//		}
+//	}
+//
+//	func (l *DoubleList) MoveToFront(node *DoubleNode) {
+//		//先把他删除 再移动到头部
+//		l.RemoveNode(node)
+//		l.PushFront(node)
+//	}
+//
+//	func (l *DoubleList) RemoveNode(node *DoubleNode) {
+//		node.Next.Prev = node.Prev
+//		node.Prev.Next = node.Next
+//		node.Prev = nil
+//		node.Next = nil
+//	}
+//
+//	func (l *DoubleList) PushFront(node *DoubleNode) {
+//		node.Next = l.DummyHead.Next
+//		l.DummyHead.Next.Prev = node
+//		l.DummyHead.Next = node
+//		node.Prev = l.DummyHead
+//	}
+//
+//	func (l *DoubleList) Last() *DoubleNode {
+//		return l.DummyTail.Prev
+//	}
+//
+//	type LRUCache struct {
+//		List      *DoubleList
+//		KeyToNode map[int]*DoubleNode
+//		Capacity  int
+//	}
+//
+//	func Constructor(capacity int) LRUCache {
+//		list := NewDoubleList()
+//		keyToNode := make(map[int]*DoubleNode)
+//		return LRUCache{
+//			List:      list,
+//			KeyToNode: keyToNode,
+//			Capacity:  capacity,
+//		}
+//	}
+//
+//	func (this *LRUCache) Get(key int) int {
+//		if node, ok := this.KeyToNode[key]; ok {
+//			//移动到最前面
+//			this.List.MoveToFront(node)
+//			return node.Entry.Value
+//		} else {
+//			return -1
+//		}
+//	}
+//
+//	func (this *LRUCache) Put(key int, value int) {
+//		if node, ok := this.KeyToNode[key]; ok {
+//			node.Entry.Value = value
+//			this.List.MoveToFront(node)
+//		} else {
+//			newNode := &DoubleNode{
+//				Entry: &Entry{
+//					Key:   key,
+//					Value: value,
+//				},
+//			}
+//			this.List.PushFront(newNode)
+//			this.KeyToNode[key] = newNode
+//			if len(this.KeyToNode) > this.Capacity {
+//				//从最后删除一个
+//				lastNode := this.List.Last()
+//				this.List.RemoveNode(lastNode)
+//				delete(this.KeyToNode, lastNode.Entry.Key)
+//			}
+//		}
+//	}
+//

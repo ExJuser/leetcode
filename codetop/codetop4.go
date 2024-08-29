@@ -1,7 +1,10 @@
 package main
 
 import (
+	"math"
 	"math/rand/v2"
+	"slices"
+	"strconv"
 )
 
 // 5. 最长回文子串
@@ -111,9 +114,9 @@ func merge2(nums1 []int, m int, nums2 []int, n int) {
 	}
 }
 
-type Solution struct {
-	nodes []*ListNode
-}
+//type Solution struct {
+//	nodes []*ListNode
+//}
 
 //func Constructor(head *ListNode) Solution {
 //	nodes := make([]*ListNode, 0)
@@ -123,9 +126,9 @@ type Solution struct {
 //	return Solution{nodes: nodes}
 //}
 
-func (this *Solution) GetRandom() int {
-	return this.nodes[rand.IntN(len(this.nodes))].Val
-}
+//func (this *Solution) GetRandom() int {
+//	return this.nodes[rand.IntN(len(this.nodes))].Val
+//}
 
 // 547. 省份数量
 func findCircleNum(isConnected [][]int) int {
@@ -314,3 +317,341 @@ func findTargetSumWays(nums []int, target int) int {
 //		}
 //	}
 //
+
+func shuffle(nums []int) []int {
+	for i := 0; i < len(nums); i++ {
+		index := rand.IntN(len(nums)-i) + i
+		nums[i], nums[index] = nums[index], nums[i]
+	}
+	return nums
+}
+
+//	type Solution struct {
+//		original []int
+//	}
+//
+//	func Constructor(nums []int) Solution {
+//		return Solution{
+//			original: nums,
+//		}
+//	}
+//
+//	func (this *Solution) Reset() []int {
+//		return this.original
+//	}
+//
+//	func (this *Solution) Shuffle() []int {
+//		shuffled := make([]int, len(this.original))
+//		copy(shuffled, this.original)
+//		n := len(shuffled)
+//		for i := 0; i < n; i++ {
+//			index := rand.IntN(n-i) + i
+//			shuffled[index], shuffled[i] = shuffled[i], shuffled[index]
+//		}
+//		return shuffled
+//	}
+//
+// 958. 二叉树的完全性检验
+// func isCompleteTree(root *TreeNode) bool {
+//
+// }
+// 面试题 17.14. 最小K个数
+func smallestK(arr []int, k int) []int {
+	var helper func(left, right, k int) int
+	helper = func(left, right, k int) int {
+		if left >= right {
+			return arr[k]
+		}
+		pivot := arr[rand.IntN(right-left+1)+left]
+		i, j := left, right
+		for i <= j {
+			for arr[i] < pivot {
+				i++
+			}
+			for arr[j] > pivot {
+				j--
+			}
+			if i <= j {
+				arr[i], arr[j] = arr[j], arr[i]
+				i++
+				j--
+			}
+		}
+		if k <= j {
+			return helper(left, j, k)
+		} else {
+			return helper(i, right, k)
+		}
+	}
+	if k == 0 {
+		return []int{}
+	}
+	helper(0, len(arr)-1, k)
+	return arr[:k]
+}
+
+// 58. 最后一个单词的长度
+func lengthOfLastWord(s string) int {
+	//从后向前 从第一个非空格遍历到第一个空格
+	i := len(s) - 1
+	for ; i >= 0; i-- {
+		if s[i] != ' ' {
+			for j := i - 1; j >= 0; j-- {
+				if s[j] == ' ' {
+					return i - j
+				}
+			}
+			return i + 1
+		}
+	}
+	return i + 1
+}
+
+// 958. 二叉树的完全性检验 在层序遍历一个二叉树的时候，一个非空节点之前不能有空节点
+//
+//	func isCompleteTree(root *TreeNode) bool {
+//		queue := make([]*TreeNode, 0)
+//		queue = append(queue, root)
+//		empty := false
+//		for len(queue) > 0 {
+//			x := queue[0]
+//			queue = queue[1:]
+//			if x == nil {
+//				empty = true
+//			} else {
+//				if empty {
+//					return false
+//				}
+//				queue = append(queue, x.Left)
+//				queue = append(queue, x.Right)
+//			}
+//		}
+//		return true
+//	}
+//
+// 958. 二叉树的完全性检验 编号不能超过节点总数
+func isCompleteTree(root *TreeNode) bool {
+	var nodeCount func(node *TreeNode) int
+	nodeCount = func(node *TreeNode) int {
+		if node == nil {
+			return 0
+		}
+		return 1 + nodeCount(node.Left) + nodeCount(node.Right)
+	}
+	count := nodeCount(root)
+	var dfs func(node *TreeNode, index int) bool
+	dfs = func(node *TreeNode, index int) bool {
+		if node == nil {
+			return true
+		}
+		if index > count {
+			return false
+		}
+		return dfs(node.Left, index*2) && dfs(node.Right, index*2+1)
+	}
+	return dfs(root, 1)
+}
+
+// 328. 奇偶链表
+func oddEvenList(head *ListNode) *ListNode {
+	if head == nil {
+		return head
+	}
+	odd := head
+	even, evenHead := head.Next, head.Next
+	for even != nil && even.Next != nil {
+		odd.Next = even.Next
+		odd = odd.Next
+		even.Next = odd.Next
+		even = even.Next
+	}
+	odd.Next = evenHead
+	return head
+}
+
+// 523. 连续的子数组和
+// func checkSubarraySum(nums []int, k int) bool {
+//
+// }
+// 128. 最长连续序列
+func longestConsecutive2(nums []int) int {
+	mp := make(map[int]bool)
+	for _, num := range nums {
+		mp[num] = true
+	}
+	var ans int
+	for k, _ := range mp {
+		if !mp[k-1] { //是序列中的第一个数
+			j := k + 1
+			for mp[j] {
+				j++
+			}
+			ans = max(ans, j-k)
+		}
+	}
+	return ans
+}
+
+// 最多可以完成两笔交易 且不能同时参与多笔交易
+// 状态机：初始状态0 第一次持有1 第一次卖出2 第二次持有3 第二次卖出4
+func maxProfit3(prices []int) int {
+	dp := make([][5]int, len(prices))
+	dp[0][1] = -prices[0]
+	dp[0][3] = -prices[0]
+	for i := 1; i < len(prices); i++ {
+		//第一次持有：之前就第一次持有 未持有状态下买入
+		dp[i][1] = max(dp[i-1][1], dp[i-1][0]-prices[i])
+		//第一次卖出：之间就已经卖出 之前第一次持有状态下卖出
+		dp[i][2] = max(dp[i-1][2], dp[i-1][1]+prices[i])
+		//第二次持有：
+		dp[i][3] = max(dp[i-1][3], dp[i-1][2]-prices[i])
+		dp[i][4] = max(dp[i-1][4], dp[i-1][3]+prices[i])
+	}
+	return dp[len(dp)-1][4]
+}
+
+// 415. 字符串相加
+func addStrings(num1 string, num2 string) string {
+	ans := make([]byte, 0, len(num1))
+	bytes1 := []byte(num1)
+	bytes2 := []byte(num2)
+	slices.Reverse(bytes1)
+	slices.Reverse(bytes2)
+	carry := 0
+	var i, j int
+	for i < len(bytes1) || j < len(bytes2) || carry != 0 {
+		var val int
+		if i < len(bytes1) {
+			val += int(bytes1[i] - '0')
+			i++
+		}
+		if j < len(bytes2) {
+			val += int(bytes2[j] - '0')
+			j++
+		}
+		if carry != 0 {
+			val += carry
+		}
+		carry = val / 10
+		val %= 10
+		ans = append(ans, byte(val+'0'))
+	}
+	slices.Reverse(ans)
+	return string(ans)
+}
+
+// 82. 删除排序链表中的重复元素 II 重复元素不保留
+//
+//	func deleteDuplicates(head *ListNode) *ListNode {
+//		if head == nil || head.Next == nil {
+//			return head
+//		}
+//		if head.Val == head.Next.Val {
+//			p := head.Next.Next
+//			for p != nil && p.Val == head.Val {
+//				p = p.Next
+//			}
+//			return deleteDuplicates(p)
+//		} else {
+//			head.Next = deleteDuplicates(head.Next)
+//			return head
+//		}
+//	}
+//
+// 82. 删除排序链表中的重复元素 II
+func deleteDuplicates(head *ListNode) *ListNode {
+	dummy := &ListNode{Next: head}
+	cur := dummy
+	for cur.Next != nil && cur.Next.Next != nil {
+		if cur.Next.Val == cur.Next.Next.Val {
+			p := cur.Next.Next.Next
+			for p != nil && p.Val == cur.Next.Val {
+				p = p.Next
+			}
+			cur.Next = p
+		} else {
+			cur = cur.Next
+		}
+	}
+	return dummy.Next
+}
+
+// 92. 反转链表 II
+func reverseBetween(head *ListNode, left int, right int) *ListNode {
+	dummy := &ListNode{Next: head}
+	cur := dummy
+	var temp *ListNode
+	for i := 0; i < left; i++ {
+		temp = cur
+		cur = cur.Next
+	}
+	var pre *ListNode
+	for i := 0; i <= right-left; i++ {
+		nxt := cur.Next
+		cur.Next = pre
+		pre, cur = cur, nxt
+	}
+	temp.Next.Next = cur
+	temp.Next = pre
+	return dummy.Next
+}
+
+// 628. 三个数的最大乘积
+func maximumProduct(nums []int) int {
+	//最大的三个和最小的两个即可
+	max1, max2, max3 := math.MinInt, math.MinInt, math.MinInt
+	min1, min2 := math.MaxInt, math.MaxInt
+	for _, num := range nums {
+		if num > max1 {
+			max3 = max2
+			max2 = max1
+			max1 = num
+		} else if num > max2 {
+			max3 = max2
+			max2 = num
+		} else if num > max3 {
+			max3 = num
+		}
+
+		if num < min1 {
+			min2 = min1
+			min1 = num
+		} else if num < min2 {
+			min2 = num
+		}
+	}
+	return max(max1*max2*max3, min1*min2*max1)
+}
+
+func decodeString(s string) string {
+	numTemp := make([]byte, 0, len(s))
+	numStack := make([]int, 0, len(s))
+	temp := make([]byte, 0, len(s))
+	//遇到左括号 记录数字
+	//遇到右括号 弹出一个数字 重复
+	for _, ch := range s {
+		if ch >= '0' && ch <= '9' {
+			numTemp = append(numTemp, byte(ch))
+		} else if ch >= 'a' && ch <= 'z' {
+			temp = append(temp, byte(ch))
+		} else if ch == '[' { //收集数字
+			num, _ := strconv.Atoi(string(numTemp))
+			temp = append(temp, byte(ch))
+			numStack = append(numStack, num)
+			numTemp = []byte{}
+		} else { //遇到右括号
+			times := numStack[len(numStack)-1]
+			numStack = numStack[:len(numStack)-1]
+			i := len(temp) - 1
+			for temp[i] != '[' {
+				i--
+			}
+			toAppend := string(temp[i+1:])
+			temp = temp[:i]
+			for i := 0; i < times; i++ {
+				temp = append(temp, toAppend...)
+			}
+		}
+	}
+	return string(temp)
+}

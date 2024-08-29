@@ -1038,6 +1038,36 @@ func removeDuplicateLetters(s string) string {
 	}
 	return string(ans)
 }
+
+func maximumPrimeDifference(nums []int) int {
+	//找到第一个质数和最后一个质数
+	var i int
+	for ; i < len(nums); i++ {
+		if check(nums[i]) {
+			break
+		}
+	}
+	var j = len(nums) - 1
+	for ; j >= 0; j-- {
+		if check(nums[j]) {
+			break
+		}
+	}
+	return j - i
+}
+
+func check(num int) bool {
+	if num <= 3 {
+		return true
+	}
+	for i := 2; i <= num/2; i++ {
+		if num%i == 0 {
+			return false
+		}
+	}
+	return true
+}
+
 func main() {
-	fmt.Println(removeDuplicateLetters("cbacdcbc"))
+	maximumPrimeDifference([]int{4, 8, 2, 8})
 }

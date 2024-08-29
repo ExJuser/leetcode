@@ -60,3 +60,20 @@ func TestLong(t *testing.T) {
 func TestFindTargetSumWays(t *testing.T) {
 	findTargetSumWays([]int{1, 1, 1, 1, 1}, 3)
 }
+
+func TestSmallestK(t *testing.T) {
+	fmt.Println(smallestK([]int{1, 3, 5, 7, 2, 4, 6, 8}, 4))
+}
+
+func TestAddStrings(t *testing.T) {
+	fmt.Println(addStrings("456", "77"))
+}
+func TestDecodeString(t *testing.T) {
+	fmt.Println(decodeString("3[a]2[bc]"))
+}
+
+func TestSerialize(t *testing.T) {
+	root := GenerateTreeFromLevelOrder([]int{1, 2, 3, -1, -1, 4, 5})
+
+	fmt.Println()
+}

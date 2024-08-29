@@ -495,22 +495,22 @@ func deleteDuplicates2(head *ListNode) *ListNode {
 //	}
 //
 // 82. 删除排序链表中的重复元素 II
-func deleteDuplicates(head *ListNode) *ListNode {
-	dummy := &ListNode{Next: head}
-	cur := dummy
-	for cur.Next != nil && cur.Next.Next != nil {
-		if cur.Next.Val == cur.Next.Next.Val {
-			p := cur
-			for p.Next != nil && p.Next.Val == cur.Next.Val {
-				p = p.Next
-			}
-			cur.Next = p.Next
-		} else {
-			cur = cur.Next
-		}
-	}
-	return dummy.Next
-}
+//func deleteDuplicates(head *ListNode) *ListNode {
+//	dummy := &ListNode{Next: head}
+//	cur := dummy
+//	for cur.Next != nil && cur.Next.Next != nil {
+//		if cur.Next.Val == cur.Next.Next.Val {
+//			p := cur
+//			for p.Next != nil && p.Next.Val == cur.Next.Val {
+//				p = p.Next
+//			}
+//			cur.Next = p.Next
+//		} else {
+//			cur = cur.Next
+//		}
+//	}
+//	return dummy.Next
+//}
 
 // 25. K 个一组翻转链表
 //
@@ -539,35 +539,35 @@ func deleteDuplicates(head *ListNode) *ListNode {
 //	}
 //
 // 25. K 个一组翻转链表 递归
-func reverseKGroup(head *ListNode, k int) *ListNode {
-	var dfs func(node *ListNode) *ListNode
-	var length func(node *ListNode) int
-	dfs = func(node *ListNode) *ListNode {
-		//如果剩余的节点数量不足k个 直接返回
-		if length(node) < k {
-			return node
-		}
-
-		cur := node
-		temp := node
-		var pre *ListNode
-		for i := 0; i < k; i++ {
-			nxt := cur.Next
-			cur.Next = pre
-			pre, cur = cur, nxt
-		}
-		temp.Next = dfs(cur)
-		return pre
-	}
-	length = func(node *ListNode) int {
-		var ans int
-		for cur := node; cur != nil; cur = cur.Next {
-			ans++
-		}
-		return ans
-	}
-	return dfs(head)
-}
+//func reverseKGroup(head *ListNode, k int) *ListNode {
+//	var dfs func(node *ListNode) *ListNode
+//	var length func(node *ListNode) int
+//	dfs = func(node *ListNode) *ListNode {
+//		//如果剩余的节点数量不足k个 直接返回
+//		if length(node) < k {
+//			return node
+//		}
+//
+//		cur := node
+//		temp := node
+//		var pre *ListNode
+//		for i := 0; i < k; i++ {
+//			nxt := cur.Next
+//			cur.Next = pre
+//			pre, cur = cur, nxt
+//		}
+//		temp.Next = dfs(cur)
+//		return pre
+//	}
+//	length = func(node *ListNode) int {
+//		var ans int
+//		for cur := node; cur != nil; cur = cur.Next {
+//			ans++
+//		}
+//		return ans
+//	}
+//	return dfs(head)
+//}
 
 // 572. 另一棵树的子树 写的很烂
 //

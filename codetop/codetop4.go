@@ -5,6 +5,7 @@ import (
 	"math/rand/v2"
 	"slices"
 	"strconv"
+	"strings"
 )
 
 // 5. 最长回文子串
@@ -33,23 +34,23 @@ func longestPalindrome(s string) string {
 }
 
 // 1143. 最长公共子序列
-func longestCommonSubsequence(text1 string, text2 string) int {
-	//dpij 以i-1 j-1为结尾的最长公共子序列 这样创建dp数组不需要额外的初始化
-	dp := make([][]int, len(text1)+1)
-	for i := 0; i < len(dp); i++ {
-		dp[i] = make([]int, len(text2)+1)
-	}
-	for i := 0; i < len(text1); i++ {
-		for j := 0; j < len(text2); j++ {
-			if text1[i] == text2[j] {
-				dp[i+1][j+1] = dp[i][j] + 1
-			} else {
-				dp[i+1][j+1] = max(dp[i+1][j], dp[i][j+1])
-			}
-		}
-	}
-	return dp[len(text1)][len(text2)]
-}
+//func longestCommonSubsequence(text1 string, text2 string) int {
+//	//dpij 以i-1 j-1为结尾的最长公共子序列 这样创建dp数组不需要额外的初始化
+//	dp := make([][]int, len(text1)+1)
+//	for i := 0; i < len(dp); i++ {
+//		dp[i] = make([]int, len(text2)+1)
+//	}
+//	for i := 0; i < len(text1); i++ {
+//		for j := 0; j < len(text2); j++ {
+//			if text1[i] == text2[j] {
+//				dp[i+1][j+1] = dp[i][j] + 1
+//			} else {
+//				dp[i+1][j+1] = max(dp[i+1][j], dp[i][j+1])
+//			}
+//		}
+//	}
+//	return dp[len(text1)][len(text2)]
+//}
 
 // 763. 划分字母区间
 func partitionLabels(s string) (ans []int) {
@@ -654,4 +655,62 @@ func decodeString(s string) string {
 		}
 	}
 	return string(temp)
+}
+
+type Codec struct {
+}
+
+//func Constructor() Codec {
+//
+//}
+
+// Serializes a tree to a single string.
+func (this *Codec) serialize(root *TreeNode) string {
+	if root == nil {
+		return "X"
+	}
+	return strconv.Itoa(root.Val) + this.serialize(root.Left) + "," + this.serialize(root.Right)
+}
+
+// Deserializes your encoded data to tree.
+func (this *Codec) deserialize(data string) *TreeNode {
+	list := strings.Split(data, ",")
+	return BuildTree(&list)
+}
+
+func BuildTree(list *[]string) *TreeNode {
+	rootVal := (*list)[0]
+	if rootVal == "X" {
+		return nil
+	}
+	*list = (*list)[1:]
+	val, _ := strconv.Atoi(rootVal)
+	root := &TreeNode{Val: val}
+	root.Left = BuildTree(list)
+	root.Right = BuildTree(list)
+	return root
+}
+func minDiffInBST(root *TreeNode) int {
+	var ans = math.MaxInt
+	//一个节点和其左子树的最大值 一个节点和其右子树的最小值之间的差异
+	//向上返回当前子树的最大值和最小值
+	var dfs func(node *TreeNode) (int, int)
+	dfs = func(node *TreeNode) (int, int) {
+		if node == nil {
+			return math.MinInt, math.MaxInt
+		}
+		leftMin, leftMax := dfs(node.Left)
+		rightMin, rightMax := dfs(node.Right)
+		ans = min(ans, abs(node.Val-leftMax), abs(node.Val-rightMin))
+		return max(leftMax, rightMax, node.Val), min(leftMin, rightMin, node.Val)
+	}
+	dfs(root)
+	return ans
+}
+
+func abs(num int) int {
+	if num < 0 {
+		return -num
+	}
+	return num
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 	"math/rand/v2"
 	"slices"
@@ -713,4 +714,37 @@ func abs(num int) int {
 		return -num
 	}
 	return num
+}
+
+func findShortestSubArray(nums []int) int {
+	cnt := make(map[int][]int)
+	var degree int
+	for i, num := range nums {
+		if v, ok := cnt[num]; !ok { //第一次出现
+			cnt[num] = []int{1, i, i}
+		} else {
+			v[0] += 1
+			v[2] = i
+		}
+		degree = max(degree, cnt[num][0])
+	}
+	fmt.Println(degree)
+	var ans = len(nums)
+	for _, v := range cnt {
+		if v[0] == degree {
+			ans = min(ans, v[2]-v[1]+1)
+		}
+	}
+	return ans
+}
+
+func bubbleSort(nums []int) []int {
+	for i := 0; i < len(nums); i++ {
+		for j := 0; j < len(nums)-i-1; j++ {
+			if nums[j] > nums[j+1] {
+				nums[j], nums[j+1] = nums[j+1], nums[j]
+			}
+		}
+	}
+	return nums
 }

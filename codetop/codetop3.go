@@ -5,7 +5,6 @@ import (
 	"math"
 	"math/rand/v2"
 	"slices"
-	"sort"
 	"strings"
 )
 
@@ -49,19 +48,19 @@ func wordBreak(s string, wordDict []string) bool {
 //	}
 //
 // 300. 最长递增子序列 优化版本
-func lengthOfLIS(nums []int) int {
-	sequence := make([]int, 0, len(nums))
-	for _, num := range nums {
-		//找到插入位置
-		index := sort.SearchInts(sequence, num)
-		if index == len(sequence) {
-			sequence = append(sequence, num)
-		} else {
-			sequence[index] = num
-		}
-	}
-	return len(sequence)
-}
+//func lengthOfLIS(nums []int) int {
+//	sequence := make([]int, 0, len(nums))
+//	for _, num := range nums {
+//		//找到插入位置
+//		index := sort.SearchInts(sequence, num)
+//		if index == len(sequence) {
+//			sequence = append(sequence, num)
+//		} else {
+//			sequence[index] = num
+//		}
+//	}
+//	return len(sequence)
+//}
 
 // 152. 乘积最大子数组
 func maxProduct(nums []int) int {

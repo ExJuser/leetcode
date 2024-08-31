@@ -737,14 +737,30 @@ func findShortestSubArray(nums []int) int {
 	}
 	return ans
 }
-
-func bubbleSort(nums []int) []int {
+func lengthOfLIS(nums []int) int {
+	sequence := make([]int, 0, len(nums))
 	for i := 0; i < len(nums); i++ {
-		for j := 0; j < len(nums)-i-1; j++ {
-			if nums[j] > nums[j+1] {
-				nums[j], nums[j+1] = nums[j+1], nums[j]
-			}
+		index := SearchInts(sequence, nums[i])
+		if index == len(sequence) {
+			sequence = append(sequence, nums[i])
+		} else {
+			sequence[index] = nums[i]
 		}
 	}
-	return nums
+	return len(sequence)
+}
+
+func SearchInts(nums []int, target int) int {
+	left, right := 0, len(nums)-1
+	ans := len(nums)
+	for left <= right {
+		mid := (right-left)/2 + left
+		if nums[mid] >= target {
+			right = mid - 1
+			ans = mid
+		} else {
+			left = mid + 1
+		}
+	}
+	return ans
 }

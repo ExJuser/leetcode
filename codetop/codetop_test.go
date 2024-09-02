@@ -1,10 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 )
 
 func Test(t *testing.T) {
-	nums := []int{10, 9, 2, 5, 3, 7, 101, 18}
-	lengthOfLIS(nums)
+	fmt.Println(mergeSort([]int{1, 5, 5, 89, 4, 2, 4, 55, 6, 85, 2}))
 }

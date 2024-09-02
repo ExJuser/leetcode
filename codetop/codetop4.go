@@ -764,3 +764,41 @@ func SearchInts(nums []int, target int) int {
 	}
 	return ans
 }
+
+func mergeSort(nums []int) []int {
+	var helper func(left, right int)
+	var merge func(left, mid, right int)
+	helper = func(left, right int) {
+		if left >= right {
+			return
+		}
+		mid := (right-left)/2 + left
+		helper(left, mid)
+		helper(mid+1, right)
+		merge(left, mid, right)
+	}
+	merge = func(left, mid, right int) {
+		temp := make([]int, 0, right-left+1)
+		i, j := left, mid+1
+		for i <= mid && j <= right {
+			if nums[i] <= nums[j] {
+				temp = append(temp, nums[i])
+				i++
+			} else {
+				temp = append(temp, nums[j])
+				j++
+			}
+		}
+		for ; i <= mid; i++ {
+			temp = append(temp, nums[i])
+		}
+		for ; j <= right; j++ {
+			temp = append(temp, nums[j])
+		}
+		for i := 0; i < len(temp); i++ {
+			nums[i+left] = temp[i]
+		}
+	}
+	helper(0, len(nums)-1)
+	return nums
+}

@@ -859,13 +859,17 @@ func solveNQueens(n int) (ans [][]string) {
 		//不能在同行同列 不能在斜线上 根据新皇后的位置快速判断是否存在冲突
 		isLegal func(path [][]string, i, j int) bool
 	)
-	initPath = func(n int) (path [][]string) {
+	initPath = func(n int) [][]string {
+		path := make([][]string, n)
+		for i := 0; i < n; i++ {
+			path[i] = make([]string, n)
+		}
 		for i := 0; i < n; i++ {
 			for j := 0; j < n; j++ {
 				path[i][j] = "."
 			}
 		}
-		return
+		return path
 	}
 	dfs = func(i int, path [][]string) {
 		if i == n {

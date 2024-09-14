@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand/v2"
+	"net"
 	"slices"
 	"strconv"
 	"strings"
@@ -801,4 +802,39 @@ func mergeSort(nums []int) []int {
 	}
 	helper(0, len(nums)-1)
 	return nums
+}
+func validIPAddress(queryIP string) string {
+	ip := net.ParseIP(queryIP)
+	if ip == nil {
+		return "Neither"
+	}
+	if ip.To4() != nil {
+		for _, s := range strings.Split(queryIP, ".") {
+			if len(s) > 1 && s[0] == '0' {
+				return "Neither"
+			}
+		}
+		return "IPv4"
+	}
+	for _, s := range strings.Split(queryIP, ":") {
+		if len(s) > 4 || s == "" {
+			return "Neither"
+		}
+	}
+	return "IPv6"
+}
+
+func mySqrt(x int) float64 {
+	left, right := float64(0), float64(x)
+	var ans float64 = -1
+	for right-left >= 1e-10 {
+		mid := (right-left)/2 + left
+		if mid*mid <= float64(x) {
+			ans = mid
+			left = mid
+		} else {
+			right = mid
+		}
+	}
+	return ans
 }

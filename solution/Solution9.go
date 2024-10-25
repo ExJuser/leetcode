@@ -716,3 +716,20 @@ func findCircleNum(isConnected [][]int) (ans int) {
 func removeTrailingZeros(num string) string {
 	return strings.TrimRight(num, "0")
 }
+
+// LCR 139. 训练计划 I
+func trainingPlan(actions []int) []int {
+	oddIndex, evenIndex := 0, len(actions)-1
+	var index int
+	for oddIndex < evenIndex {
+		if actions[index]%2 == 0 {
+			actions[evenIndex], actions[index] = actions[index], actions[evenIndex]
+			evenIndex--
+		} else {
+			actions[oddIndex] = actions[index]
+			oddIndex++
+			index++
+		}
+	}
+	return actions
+}
